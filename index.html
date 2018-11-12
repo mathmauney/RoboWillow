@@ -22,7 +22,7 @@
 
 	<script>
 	    var pokemap = $.ajax({
-          url:"https://gist.githubusercontent.com/mathmauney/a3ea787a3c2c1fb7ca0e2ea1ae5b7b2c/raw/b446ee0fa77c0043f78ca8f3ecaeab54c012660e/map.geojson",
+          url:"http://mathmauney.no-ip.org/map.json",
           dataType: "json",
           success: console.log("Pokemap data successfully loaded."),
 		  error: function (xhr) {
@@ -32,6 +32,8 @@
         })
 		$.when(pokemap).done(function(){
 			var map = L.map('mapid').setView([42.44, -76.48], 14);
+			map.setMaxBounds(map.getBounds());
+			map.options.minZoom = 13;
 
 			var basic = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
 				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, Icons made by <a href="https://theartificial.com" title="The Artificial">The Artificial</a>',
@@ -47,18 +49,41 @@
 				category;
 				
 			var icons = {
+				'Gen 1 Starter': L.icon({iconUrl: "./001-bulbasaur.png", iconSize: [30,30]}),
 				'Caterpie': L.icon({iconUrl: "./img/010-caterpie.png", iconSize: [30,30]}),
-				'Spinda': L.icon({iconUrl: "./img/327-spinda-7.png", iconSize: [30,30]})
+				'Clefable': L.icon({iconUrl: "./img/036-clefable.png", iconSize: [30,30]}),
+				'Wigglytuff': L.icon({iconUrl: "./img/040-wigglytuff.png", iconSize: [30,30]}),
+				'Golbat': L.icon({iconUrl: "./img/042-golbat.png", iconSize: [30,30]}),
+				'Mankey': L.icon({iconUrl: "./img/056-mankey.png", iconSize: [30,30]}),
+				'Poliwag or Vulpix': L.icon({iconUrl: "./img/060-poliwag.png", iconSize: [30,30]}),
+				'Machop': L.icon({iconUrl: "./img/066-machop.png", iconSize: [30,30]}),
+				'Gastly': L.icon({iconUrl: "./img/092-gastly.png", iconSize: [30,30]}),
+				'Onix': L.icon({iconUrl: "./img/095-onix.png", iconSize: [30,30]}),
+				'Voltorb': L.icon({iconUrl: "./img/100-voltorb.png", iconSize: [30,30]}),
+				'Exeggcute': L.icon({iconUrl: "./img/102-exeggcute.png", iconSize: [30,30]}),
+				'Chansey': L.icon({iconUrl: "./img/113-chansey.png", iconSize: [30,30]}),
+				'Jynx': L.icon({iconUrl: "./img/124-jynx.png", iconSize: [30,30]}),
+				'Electabuzz': L.icon({iconUrl: "./img/125-electabuzz.png", iconSize: [30,30]}),
+				'Magmar': L.icon({iconUrl: "./img/126-magmar.png", iconSize: [30,30]}),
+				'Pinsir': L.icon({iconUrl: "./img/127-pinsir.png", iconSize: [30,30]}),
+				'Magikarp': L.icon({iconUrl: "./img/129-magikarp.png", iconSize: [30,30]}),
+				'Eevee': L.icon({iconUrl: "./img/133-eevee.png", iconSize: [30,30]}),
+				'Dratini': L.icon({iconUrl: "./img/147-dratini.png", iconSize: [30,30]}),
+				'Pineco': L.icon({iconUrl: "./img/204-pineco.png", iconSize: [30,30]}),
+				'Larvitar': L.icon({iconUrl: "./img/246-larvitar.png", iconSize: [30,30]}),
+				'Nincada': L.icon({iconUrl: "./img/290-nincada.png", iconSize: [30,30]}),
+				'Spinda': L.icon({iconUrl: "./img/327-spinda-7.png", iconSize: [30,30]}),
 			}
 			
 			function onEachFeature(feature, layer) {
 				// does this feature have a property named popupContent?
 				if (feature.properties && feature.properties.Reward) {
-					layer.bindPopup("<div><h3>" + feature.properties.Reward + "</h3>" + feature.properties.Task + "</div>");
+					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +"</div>");
 					layer.setIcon(icons[feature.properties.Reward]);
 					category = feature.properties.Reward;
 				} else {
-					category = 'Unreported'
+					category = 'Unreported';
+					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>");
 				}
 				if (typeof categories[category] === "undefined") {
 					categories[category] = [];
@@ -76,12 +101,22 @@
 				categoryName,
 				categoryArray,
 				categoryLG;
-
-			for (categoryName in categories) {
-				categoryArray = categories[categoryName];
-				categoryLG = L.layerGroup(categoryArray).addTo(map);
-				categoryLG.categoryName = categoryName;
-				overlaysObj[categoryName] = categoryLG;
+				
+			categoryName = 'Unreported'	
+			categoryArray = categories[categoryName];
+			categoryLG = L.layerGroup(categoryArray).addTo(map);
+			categoryLG.categoryName = categoryName;
+			overlaysObj[categoryName] = categoryLG;
+				
+				
+			for (x in Object.keys(categories).sort()) {
+				categoryName = Object.keys(categories).sort()[x]
+				if (categoryName != 'Unreported'){
+					categoryArray = categories[categoryName];
+					categoryLG = L.layerGroup(categoryArray).addTo(map);
+					categoryLG.categoryName = categoryName;
+					overlaysObj[categoryName] = categoryLG;
+				}
 			}
 
 
