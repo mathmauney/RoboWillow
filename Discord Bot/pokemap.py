@@ -37,7 +37,7 @@ def find_stop(taskmap,stop_name):
         for stop in taskmap:
             if stop.properties['Stop Name'] == stop_name:
                 if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
-                    reset_all_tasks(stop)
+                    reset_task(stop)
                 return stop
                 stop_not_found = False
         break
