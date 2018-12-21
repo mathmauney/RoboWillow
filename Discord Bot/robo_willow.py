@@ -32,7 +32,7 @@ try:
     if reset_bool:
         taskmap.save(map_path)
     print('Map successfully loaded')
-except:
+except FileNotFoundError:
     taskmap = pygeoj.new()
     print('No map found at: ' + map_path +'. Creating new map now')
 
@@ -192,19 +192,19 @@ async def deletetask(task_str):
             del tasklist[i]
             await client.say('Deleted Task')
 
-@client.command
+@client.command()
 async def nicknamestop(stop_name,nickname):
     stop_name = stop_name
     stop = pokemap.find_stop(taskmap,stop_name)
     pokemap.add_stop_nickname(stop,nickname)
     taskmap.save(map_path)
             
-@client.command
+@client.command()
 async def nicknametask(task_name,nickname):
     task_name = task_name
     stop = pokemap.find_task(tasklist,task_name)
     pokemap.add_task_nickname(task,nickname)  
-    pokemap.save_object(tasklist,task_path)
+    pokemap.save_object(tasklist,task_path)    
     
 @client.event
 async def on_message(message):
@@ -238,7 +238,7 @@ async def on_message(message):
                 shiny should be either 'True' or 'False'
                 reward_type should be either 'Encounter', 'Stardust', 'Item', or 'Rare Candy'"""
                 msg.add_field(name=command_name,value=command_help, inline=False)
-                await bot_embed_respond(message.channel, embed=msg)
+                await bot_embed_respond(message.channel, msg)
             elif 'listtasks' in message.content.lower():
                 msg=discord.Embed(colour=discord.Colour(0x186a0))
                 command_name = 'listtasks'
@@ -318,6 +318,7 @@ async def list_servers():
         print("Current servers:")
         for server in client.servers:
             print(server.name)
+        print(datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S"))
         await asyncio.sleep(1800)
 
 

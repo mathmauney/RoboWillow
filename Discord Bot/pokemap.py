@@ -17,7 +17,11 @@ def reset_old_tasks(taskmap):
 #    backup_name = datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_task_backup.json'
 #    taskmap.save(backup_name)
     for stop in taskmap:
-        if stop.properties.get('Last Edit',0) != int(datetime.datetime.now().strftime("%j")):
+        if not('Nicknames' in stop.properties):
+            stop.properties['Nicknames'] = []
+        if 'nicknames' in stop.properties:
+            del stop.properties['nicknames']
+        if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
             reset_task(stop)
             stops_reset = True
     return stops_reset
@@ -37,12 +41,12 @@ def reset_all_tasks(taskmap):
 def find_stop(taskmap,stop_name):       
     stops_found = []
     for stop in taskmap:
-        if (stop.properties['Stop Name'].title() == stop_name.title() or stop.properties['Stop Name'].title() == stop_name.title()) :
+        if (stop.properties['Stop Name'].title() == stop_name.title() or stop_name.lower() in stop.properties['Nicknames']) :
             if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
                 reset_all_tasks(taskmap)
             stops_found.append(stop)
     if len(stops_found) == 0:
-        raise ValueError('Stop name not found')
+        raise StopNotFound()
     elif len(stops_found) == 1: 
         return stops_found[0]
     else:
@@ -86,9 +90,9 @@ def add_stop_nickname(stop,nickname):
     if 'Nicknames' not in stop.properties:
         stop.properties['Nicknames'] = []
     if (len(stop.properties['Nicknames']) == 1 and stop.properties['Nicknames'][0].startswith('temp')):
-        stop.properties['Nicknames'][0] = nickname
+        stop.properties['Nicknames'][0] = nickname.lower()
     else:
-        stop.properties['Nicknames'].append(nickname)
+        stop.properties['Nicknames'].append(nickname.lower())
     
 def add_task_nickname(task,nickname):
     task.nicknames.append(nickname)
@@ -130,3 +134,8 @@ class MutlipleStopsFound(PokemapException):
                 msg += stop.properties['Nicknames'][0] + ', '
             msg = msg [:-2] + '.'    
         self.message = msg
+        
+class StopNotFound(PokemapException):
+    """Exception for when stop not found with the given search string"""
+    def __init__(self):
+        self.message = "No stop found with the given string."
