@@ -103,7 +103,7 @@ def save_object(obj, filename):
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 
-def add_stop_nickname(stop,nickname):
+def add_stop_nickname(stop, nickname):
     """Add a nickname to a stop."""
     if 'Nicknames' not in stop.properties:
         stop.properties['Nicknames'] = []
@@ -113,7 +113,7 @@ def add_stop_nickname(stop,nickname):
         stop.properties['Nicknames'].append(nickname.lower())
 
 
-def add_task_nickname(task,nickname):
+def add_task_nickname(task, nickname):
     """Add a nickname to a task."""
     task.nicknames.append(nickname)
 
