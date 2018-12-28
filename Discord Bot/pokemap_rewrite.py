@@ -4,6 +4,34 @@ import datetime
 import pygeoj
 
 
+def load(filepath=None, data=None, **kwargs):
+    """Load a geojson file or dictionary, validates it, and returns an extended GeojsonFile instance.
+
+    In order for a geojson dict to be considered a file,
+    it cannot just be single geometries, so this class always
+    saves them as the toplevel FeatureCollection type,
+    and requires the files it loads to be the same.
+    To load with a different text encoding use the 'encoding' argument.
+    Parameters:
+    - **filepath** (optional): The path of a geojson file to load.
+    - **data** (optional): A complete geojson dictionary to load.
+    Returns:
+    - A GeojsonFile instance.
+
+    """
+    return ResearchMap(filepath, data, **kwargs)
+
+
+def new():
+    """Create a new empty geojson file instance.
+
+    Returns:
+    - An empty GeojsonFile instance.
+
+    """
+    return ResearchMap()
+
+
 class Task:
     """Research task class, specified by the display name and quest."""
 
@@ -28,7 +56,24 @@ class Task:
 
 
 class Tasklist:
-    """Future class if the tasklist ends up needing one."""
+    """Class for the tasklist, mostly just groups the tasks together and allows for searching."""
+
+    def __init__(self):
+        """Initialize the tasklist."""
+        self.tasks = []
+
+    def find_task(self, task_str):
+        """Find a task in the list with a given reward or quest."""
+        task_str = task_str.title()
+        task_not_found = True
+        while task_not_found:
+            for tasks in self.tasks:
+                if (task_str == tasks.reward.title()) or (task_str == tasks.quest.title()) or (task_str == tasks.name.title()):
+                    return tasks
+                    task_not_found = False
+                    break
+                    if task_not_found:
+                        raise ValueError('Task not found')
 
     pass
 
@@ -97,6 +142,13 @@ class ResearchMap(pygeoj.GeojsonFile):
                     stop.properties['Nicknames'].append('temp' + str(temp_num))
                     temp_num += 1
             raise MutlipleStopsFound(stops_found)
+
+    def new_stop(self, coordinates, name):
+        """Create a new stop."""
+        self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
+                                  'Last Edit': int(datetime.datetime.now().strftime("%j")), 'Nicknames': []
+                                  },
+                      geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
 
     def reset_old(self):
         """Check for and reset only old stops in the map. This should get deprecated by moving the last edit to the map properties."""
