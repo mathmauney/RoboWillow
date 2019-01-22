@@ -174,7 +174,7 @@ async def resettasklist():
     tasklist.clear()
 
 
-@client.command()
+@client.command(aliases=['tasklist'])
 async def listtasks():
     """List the known tasks."""
     value_str = []
