@@ -21,14 +21,14 @@ class Task:
         else:
             self.reward_type = 'Encounter'
         if ' or ' in self.reward:  # Try to parse the name into rewards
-            self.rewards = self.name.split(' or ')
+            self.rewards = self.reward.split(' or ')
         elif 'Gen 1 Starter' in self.reward:
             self.rewards = ['Bulbasaur', 'Squirtle', 'Charmander']
         else:
-            self.rewards = [self.name]
-        self.icon = self.rewards[1]
+            self.rewards = [self.reward]
+        self.icon = self.rewards[0]
 
-    def addnickname(self, name):
+    def add_nickname(self, name):
         """Add a nickname to the task."""
         if not(name in self.nicknames):
             self.nicknames.append(name)
@@ -64,6 +64,12 @@ class Tasklist:
         if task_not_found:
             raise TaskNotFound()
 
+    def remove_task(self, task):
+        """Remove a task from the list."""
+        for i in len(self.tasks):
+            if self.tasks[i] is task:
+                del self.tasks[i]
+
     def save(self, filename='tasklist.pkl'):
         """Save the tasklist."""
         with open(filename, 'wb') as output:
@@ -95,9 +101,26 @@ class Stop(pygeoj.Feature):
         else:
             raise TaskAlreadyAssigned(self, task)
 
+    def add_nickname(self, nickname):
+            """Add a nickname to a stop."""
+            if 'Nicknames' not in self.properties:
+                self.properties['Nicknames'] = []
+            if (len(self.properties['Nicknames']) == 1 and self.properties['Nicknames'][0].startswith('temp')):
+                self.properties['Nicknames'][0] = nickname.title()
+            else:
+                self.properties['Nicknames'].append(nickname.title())
+
 
 class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a default one that checks for proper long/lat formating
     """Class for the research map. Hopefully this will allow for multiple servers with seperate maps to be stored easily at once."""
+    def __getitem__(self, index):
+        """Get a feature based on its index, like geojfile[7]"""
+        return Stop(self._data["features"][index])
+
+    def __iter__(self):
+        """Iterates through and yields each feature in the file."""
+        for featuredict in self._data["features"]:
+            yield Stop(featuredict)
 
     def add_stop(self, obj=None, geometry=None, properties=None):
         r"""
@@ -117,7 +140,6 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             feat = obj.copy()
         else:
             feat = Stop(geometry=geometry, properties=properties).__geo_interface__
-        feat.map = self
         self._data["features"].append(feat)
 
     def find_stop(self, stop_name):
