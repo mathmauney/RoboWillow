@@ -182,7 +182,7 @@ async def listtasks():
     else:
         for tasks in tasklist.tasks:
             to_add = tasks.quest + ' for a ' + tasks.reward
-            if tasks.shiny == 'True':
+            if tasks.shiny is True:
                 to_add += ' ✨'
             if tasks.reward_type == 'Rare Candy':
                 to_add += ' 🍬'
@@ -329,7 +329,7 @@ async def on_message(message):
             await client.add_reaction(prev_message, '👍')
             await client.add_reaction(message, '👍')
         except pokemap.PokemapException as e:
-            await client.say(e.message)
+            await client.send_message(message.channel, e.message)
     else:
         try:
             stop_name = message.content

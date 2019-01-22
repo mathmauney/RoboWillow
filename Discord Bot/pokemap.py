@@ -8,20 +8,22 @@ import pickle
 class Task:
     """Research task class, specified by the display name and quest."""
 
-    def __init__(self, name, quest, shiny=False):
+    def __init__(self, name, quest, shiny):
         """Initialize the task object and parse the input name into the rewards if possible."""
         self.reward = name.title()
-        self.quest = quest.title()
+        self.quest = quest
         self.shiny = shiny
         self.nicknames = []
         if 'Rare' in self.reward:    # Check to see what the reward type is
             self.reward_type = 'Rare Candy'
+            self.nicknames.append(quest + ' RC')
         elif 'Stardust' in self.reward:
             self.reward_type = 'Stardust'
         else:
             self.reward_type = 'Encounter'
-        if ' or ' in self.reward:  # Try to parse the name into rewards
-            self.rewards = self.reward.split(' or ')
+        if ' Or ' in self.reward:  # Try to parse the name into rewards
+            self.rewards = self.reward.split(' Or ')
+            self.reward = self.reward.replace('Or', 'or')
         elif 'Gen 1 Starter' in self.reward:
             self.rewards = ['Bulbasaur', 'Squirtle', 'Charmander']
         else:
@@ -57,7 +59,7 @@ class Tasklist:
         task_not_found = True
         while task_not_found:
             for task in self.tasks:
-                if (task_str == task.reward) or (task_str == task.quest) or (task_str in task.rewards):
+                if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in task.rewards):
                     return task
                     task_not_found = False
             break
@@ -66,7 +68,7 @@ class Tasklist:
 
     def remove_task(self, task):
         """Remove a task from the list."""
-        for i in len(self.tasks):
+        for i in range(len(self.tasks)):
             if self.tasks[i] is task:
                 del self.tasks[i]
 

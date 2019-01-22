@@ -52,20 +52,19 @@
 
 			var icons = {
 				'Rare Candy': L.icon({iconUrl: "./img/rare_candy.png", iconSize: [30,30]}),
-				'Gen 1 Starter': L.icon({iconUrl: "./img/001-bulbasaur.png", iconSize: [30,30]}),
+				'Bulbasaur': L.icon({iconUrl: "./img/001-bulbasaur.png", iconSize: [30,30]}),
 				'Caterpie': L.icon({iconUrl: "./img/010-caterpie.png", iconSize: [30,30]}),
 				'Clefable': L.icon({iconUrl: "./img/036-clefable.png", iconSize: [30,30]}),
 				'Wigglytuff': L.icon({iconUrl: "./img/040-wigglytuff.png", iconSize: [30,30]}),
 				'Golbat': L.icon({iconUrl: "./img/042-golbat.png", iconSize: [30,30]}),
 				'Golduck': L.icon({iconUrl: "./img/055-golduck.png", iconSize: [30,30]}),
 				'Mankey': L.icon({iconUrl: "./img/056-mankey.png", iconSize: [30,30]}),
-				'Poliwag or Vulpix': L.icon({iconUrl: "./img/060-poliwag.png", iconSize: [30,30]}),
+				'Poliwag': L.icon({iconUrl: "./img/060-poliwag.png", iconSize: [30,30]}),
 				'Machop': L.icon({iconUrl: "./img/066-machop.png", iconSize: [30,30]}),
 				'Gastly': L.icon({iconUrl: "./img/092-gastly.png", iconSize: [30,30]}),
 				'Onix': L.icon({iconUrl: "./img/095-onix.png", iconSize: [30,30]}),
 				'Voltorb': L.icon({iconUrl: "./img/100-voltorb.png", iconSize: [30,30]}),
 				'Exeggcute': L.icon({iconUrl: "./img/102-exeggcute.png", iconSize: [30,30]}),
-				'Exeggcute or Lanturn': L.icon({iconUrl: "./img/102-exeggcute.png", iconSize: [30,30]}),
 				'Chansey': L.icon({iconUrl: "./img/113-chansey.png", iconSize: [30,30]}),
 				'Jynx': L.icon({iconUrl: "./img/124-jynx.png", iconSize: [30,30]}),
 				'Electabuzz': L.icon({iconUrl: "./img/125-electabuzz.png", iconSize: [30,30]}),
@@ -91,8 +90,8 @@
 				if (feature.properties && feature.properties.Reward) {
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +"</div>");
 					if (feature.properties.Category == 'Encounter') {
-						layer.setIcon(icons[feature.properties.Reward]);
-						category = feature.properties.Reward;
+						layer.setIcon(icons[feature.properties.Icon]);
+						category = feature.properties.Icon;
 					} else {
 						layer.setIcon(icons[feature.properties.Category]);
 						category = feature.properties.Category;
