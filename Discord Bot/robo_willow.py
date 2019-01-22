@@ -180,21 +180,24 @@ async def listtasks():
     value_str = []
     str_num = 0
     value_str.append('')
-    for tasks in tasklist:
-        to_add = tasks.quest + ' for a ' + tasks.reward
-        if tasks.shiny == 'True':
-            to_add += ' ✨'
-        if tasks.reward_type == 'Rare Candy':
-            to_add += ' 🍬'
-        to_add += '\n'
-        if (len(value_str[str_num])+len(to_add) > 1000):
-            str_num += 1
-            value_str.append('')
-        value_str[str_num] += to_add
-    for i in range(len(value_str)):
-        msg = discord.Embed(colour=discord.Colour(0x186a0))
-        msg.add_field(name='Currently Known Tasks', value=value_str[i], inline=False)
-        await client.say(embed=msg)
+    if tasklist == []:
+        await client.say("No tasks known")
+    else:
+        for tasks in tasklist:
+            to_add = tasks.quest + ' for a ' + tasks.reward
+            if tasks.shiny == 'True':
+                to_add += ' ✨'
+            if tasks.reward_type == 'Rare Candy':
+                to_add += ' 🍬'
+            to_add += '\n'
+            if (len(value_str[str_num])+len(to_add) > 1000):
+                str_num += 1
+                value_str.append('')
+            value_str[str_num] += to_add
+        for i in range(len(value_str)):
+            msg = discord.Embed(colour=discord.Colour(0x186a0))
+            msg.add_field(name='Currently Known Tasks', value=value_str[i], inline=False)
+            await client.say(embed=msg)
 
 
 @client.command()
