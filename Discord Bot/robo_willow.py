@@ -1,7 +1,6 @@
 """Discord bot for mapping out pokemon go research and other misc functions."""
 import asyncio
 import pokemap
-import pygeoj
 import pickle
 import discord
 import datetime
@@ -23,13 +22,13 @@ maintainer_handle = '@mathmauney'
 # Load In Saved Data
 # Initialize Map Object
 try:
-    taskmap = pygeoj.load(map_path)
+    taskmap = pokemap.load(map_path)
     reset_bool = pokemap.reset_old_tasks(taskmap)
     if reset_bool:
         taskmap.save(map_path)
     print('Map successfully loaded')
 except FileNotFoundError:
-    taskmap = pygeoj.new()
+    taskmap = pokemap.new()
     print('No map found at: ' + map_path + '. Creating new map now')
 
 # Import the tasklist object or create new one
@@ -37,7 +36,7 @@ try:
     with open(task_path, 'rb') as input:
         tasklist = pickle.load(input)
 except TypeError:
-    tasklist = []
+    tasklist = pokemap.Tasklist()
 
 # Startup Bot Instance
 client = Bot(command_prefix=bot_prefix)
@@ -108,7 +107,7 @@ async def addstop(*args):
             name_args = args[0:n_args-2]
         name = ' '.join(name_args)
         try:
-            pokemap.add_stop(taskmap, [long, lat], name)
+            taskmap.new_stop([long, lat], name)
             taskmap.save(map_path)
             await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
         except Exception as e:
@@ -130,13 +129,11 @@ async def settask(*args):
             stop_name = stop_name.title()
             stop = pokemap.find_stop(taskmap, stop_name)
             task = pokemap.find_task(tasklist, task_str)
-            pokemap.set_task(stop, task)
+            stop.set_task(task)
             await client.say('Task set.')
             taskmap.save(map_path)
         except pokemap.PokemapException as e:
             await client.say(e.message)
-        except Exception:
-            await client.say('Error in task assignment. Task was probably not found. Tried to find task: ' + task_str + ' for stop: ' + stop_name)
     else:
         await client.say('Not enough arguments.')
 
@@ -146,9 +143,9 @@ async def resetstop(*args):
     """Reset the task associated with a stop."""
     stop_name = ' '.join(args)
     stop_name = stop_name
-    stop = pokemap.find_stop(taskmap, stop_name)
+    stop = taskmap.find_stop(taskmap, stop_name)
     try:
-        pokemap.reset_task(stop)
+        stop.reset()
         taskmap.save(map_path)
         client.say('Removed tasks from stop.')
     except pokemap.PokemapException as e:
@@ -159,8 +156,8 @@ async def resetstop(*args):
 async def addtask(reward, quest, shiny=False, reward_type='Encounter'):
     """Add a task to a stop."""
     try:
-        tasklist.append(pokemap.Task(reward, quest, reward_type, shiny))
-        pokemap.save_object(tasklist, task_path)
+        tasklist.add_task(pokemap.Task(reward, quest, reward_type, shiny))
+        tasklist.save(task_path)
         client.say('Task Added')
     except pokemap.PokemapException as e:
         await client.say(e.message)
@@ -170,20 +167,20 @@ async def addtask(reward, quest, shiny=False, reward_type='Encounter'):
 async def resettasklist():
     """Backup and reset the tasklist."""
     backup_name = datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
-    pokemap.save_object(tasklist, backup_name)
+    tasklist.save(backup_name)
     tasklist.clear()
 
 
-@client.command()
+@client.command(aliases=['tasklist'])
 async def listtasks():
     """List the known tasks."""
     value_str = []
     str_num = 0
     value_str.append('')
-    if tasklist == []:
+    if tasklist.tasks == []:
         await client.say("No tasks known")
     else:
-        for tasks in tasklist:
+        for tasks in tasklist.tasks:
             to_add = tasks.quest + ' for a ' + tasks.reward
             if tasks.shiny == 'True':
                 to_add += ' ✨'
@@ -201,42 +198,35 @@ async def listtasks():
 
 
 @client.command()
-async def deletestop(*args):
+async def deletestop(stop_str):
     """Delete a stop."""
-    stop_name = ' '.join(args)
-    stop_name = stop_name
-    for i in range(len(taskmap)):
-        if taskmap[i].properties['Stop Name'].title() == stop_name.title():
-            del taskmap[i]
-            await client.say('Deleted Stop')
+    stop = taskmap.find_stop(stop_str)
+    taskmap.remove_stop(stop)
     taskmap.save(map_path)
 
 
 @client.command()
 async def deletetask(task_str):
     """Delete a task."""
-    for i in range(len(tasklist)):
-        if tasklist[i].reward == task_str:
-            del tasklist[i]
-            await client.say('Deleted Task')
+    task = tasklist.find_task(task_str)
+    tasklist.remove_task(task)
+    tasklist.save(task_path)
 
 
 @client.command()
 async def nicknamestop(stop_name, nickname):
     """Add a nickname to a stop."""
-    stop_name = stop_name
-    stop = pokemap.find_stop(taskmap, stop_name)
-    pokemap.add_stop_nickname(stop, nickname)
+    stop = taskmap.find_stop(stop_name)
+    stop.add_nickname(nickname)
     taskmap.save(map_path)
 
 
 @client.command()
 async def nicknametask(task_name, nickname):
     """Add a nickname to a task."""
-    task_name = task_name
-    task = pokemap.find_task(tasklist, task_name)
-    pokemap.add_task_nickname(task, nickname)
-    pokemap.save_object(tasklist, task_path)
+    task = tasklist.find_task(task_name)
+    task.add_nickname(nickname)
+    taskmap.save_object(task_path)
 
 
 @client.event
