@@ -7,10 +7,10 @@ import discord
 import datetime
 from discord import Game
 from discord.ext.commands import Bot
+from token import discord_token
 
 # Setup Variables
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
-discord_token = 'NTEwNDY5NjI3NDc4ODAyNDM1.DsczsA.lv7-Pkok6Id07DlF2yuzdfohZNQ'    # Discord API token from https://discordapp.com/developers/applications
 map_path = '/var/www/html/map.json'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
 task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from if the bot is restarted
 latitude_range = [42, 43]    # These ranges will give the use an error if they try to create stops outside of them, and will correct flipped latitude and longitude if the ranges are distinct
@@ -180,21 +180,24 @@ async def listtasks():
     value_str = []
     str_num = 0
     value_str.append('')
-    for tasks in tasklist:
-        to_add = tasks.quest + ' for a ' + tasks.reward
-        if tasks.shiny == 'True':
-            to_add += ' ✨'
-        if tasks.reward_type == 'Rare Candy':
-            to_add += ' 🍬'
-        to_add += '\n'
-        if (len(value_str[str_num])+len(to_add) > 1000):
-            str_num += 1
-            value_str.append('')
-        value_str[str_num] += to_add
-    for i in range(len(value_str)):
-        msg = discord.Embed(colour=discord.Colour(0x186a0))
-        msg.add_field(name='Currently Known Tasks', value=value_str[i], inline=False)
-        await client.say(embed=msg)
+    if tasklist == []:
+        await client.say("No tasks known")
+    else:
+        for tasks in tasklist:
+            to_add = tasks.quest + ' for a ' + tasks.reward
+            if tasks.shiny == 'True':
+                to_add += ' ✨'
+            if tasks.reward_type == 'Rare Candy':
+                to_add += ' 🍬'
+            to_add += '\n'
+            if (len(value_str[str_num])+len(to_add) > 1000):
+                str_num += 1
+                value_str.append('')
+            value_str[str_num] += to_add
+        for i in range(len(value_str)):
+            msg = discord.Embed(colour=discord.Colour(0x186a0))
+            msg.add_field(name='Currently Known Tasks', value=value_str[i], inline=False)
+            await client.say(embed=msg)
 
 
 @client.command()
