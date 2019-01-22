@@ -88,24 +88,24 @@ async def addstop(*args):
     n_args = len(args)
     if n_args >= 2:  # Checks to see if enough arguements have been given
         if args[-1].startswith('https:'):  # Checks if the lat/long has been given as an ingress intel URL
-            name_args = args[0:n_args-1]
+            name_args = args[0:n_args - 1]
             ingress_url = args[-1]
             pll_location = ingress_url.find('pll')  # Finds the part of the url that describes the portal location
             if pll_location != -1:
                 comma_location = ingress_url.find(',', pll_location)  # Finds the comma in the portal location and then splits into lat and long
-                lat = float(ingress_url[pll_location+4:comma_location])
-                long = float(ingress_url[comma_location+1:])
+                lat = float(ingress_url[pll_location + 4:comma_location])
+                long = float(ingress_url[comma_location + 1:])
             else:  # If no portal location data was found in the URL
                 await client.say('')
                 return
         elif n_args > 2:
-            lat = float(args[n_args-2])
-            long = float(args[n_args-1])
+            lat = float(args[n_args - 2])
+            long = float(args[n_args - 1])
             if (long > 0) and (lat < 0):
                 temp = lat
                 lat = long
                 long = temp
-            name_args = args[0:n_args-2]
+            name_args = args[0:n_args - 2]
         name = ' '.join(name_args)
         try:
             pokemap.add_stop(taskmap, [long, lat], name)
@@ -115,7 +115,7 @@ async def addstop(*args):
             print(e)
             await client.say('Error in stop creation. Double check formating of command.')
     else:
-        await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
+        await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "' + bot_prefix[0] + 'help addstop" command for detailed instructions')
 
 
 @client.command()
@@ -304,9 +304,9 @@ async def on_message(message):
                 await client.send_message(message.channel, embed=msg)
             elif 'advanced' in message.content.lower():
                 commands = {}
-                commands[bot_prefix[0]+'deletetask'] = 'Remove a task from the list.'
-                commands[bot_prefix[0]+'deletestop'] = 'Remove a stop from the local map.'
-                commands[bot_prefix[0]+'resettasklist'] = 'Completely clear the tasklist. Use only if the tasklist has become corrupted,' +\
+                commands[bot_prefix[0] + 'deletetask'] = 'Remove a task from the list.'
+                commands[bot_prefix[0] + 'deletestop'] = 'Remove a stop from the local map.'
+                commands[bot_prefix[0] + 'resettasklist'] = 'Completely clear the tasklist. Use only if the tasklist has become corrupted,' +\
                     ' otherwise use the deletetask command to remove unwanted tasks one by one.'
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
                 for command, description in commands.items():
@@ -314,11 +314,11 @@ async def on_message(message):
                 await bot_embed_respond(message, msg)
             else:
                 commands = {}
-                commands[bot_prefix[0]+'addstop'] = 'Add a new stop to the map.'
-                commands[bot_prefix[0]+'addtask'] = 'Define a new task and reward set.'
-                commands[bot_prefix[0]+'listtasks'] = 'Lists all tasks the bot currently knows along with their rewards.'
-                commands[bot_prefix[0]+'resetstop'] = 'Removes any task associated with a given stop. Use if a stop was misreported'
-                commands[bot_prefix[0]+'settask'] = 'Assign a task to a stop.'
+                commands[bot_prefix[0] + 'addstop'] = 'Add a new stop to the map.'
+                commands[bot_prefix[0] + 'addtask'] = 'Define a new task and reward set.'
+                commands[bot_prefix[0] + 'listtasks'] = 'Lists all tasks the bot currently knows along with their rewards.'
+                commands[bot_prefix[0] + 'resetstop'] = 'Removes any task associated with a given stop. Use if a stop was misreported'
+                commands[bot_prefix[0] + 'settask'] = 'Assign a task to a stop.'
 
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
                 for command, description in commands.items():
