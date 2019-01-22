@@ -22,7 +22,7 @@
 
 	<script>
 	    var pokemap = $.ajax({
-          url:"http://mathmauney.no-ip.org/map.json",
+          url:"https://mathmauney.no-ip.org/map.json",
           dataType: "json",
           success: console.log("Pokemap data successfully loaded."),
 		  error: function (xhr) {
@@ -49,11 +49,13 @@
 				category;
 				
 			var icons = {
-				'Gen 1 Starter': L.icon({iconUrl: "./001-bulbasaur.png", iconSize: [30,30]}),
+				'Rare Candy': L.icon({iconUrl: "./img/rare_candy.png", iconSize: [30,30]}),
+				'Gen 1 Starter': L.icon({iconUrl: "./img/001-bulbasaur.png", iconSize: [30,30]}),
 				'Caterpie': L.icon({iconUrl: "./img/010-caterpie.png", iconSize: [30,30]}),
 				'Clefable': L.icon({iconUrl: "./img/036-clefable.png", iconSize: [30,30]}),
 				'Wigglytuff': L.icon({iconUrl: "./img/040-wigglytuff.png", iconSize: [30,30]}),
 				'Golbat': L.icon({iconUrl: "./img/042-golbat.png", iconSize: [30,30]}),
+				'Golduck': L.icon({iconUrl: "./img/055-golduck.png", iconSize: [30,30]}),
 				'Mankey': L.icon({iconUrl: "./img/056-mankey.png", iconSize: [30,30]}),
 				'Poliwag or Vulpix': L.icon({iconUrl: "./img/060-poliwag.png", iconSize: [30,30]}),
 				'Machop': L.icon({iconUrl: "./img/066-machop.png", iconSize: [30,30]}),
@@ -68,19 +70,30 @@
 				'Pinsir': L.icon({iconUrl: "./img/127-pinsir.png", iconSize: [30,30]}),
 				'Magikarp': L.icon({iconUrl: "./img/129-magikarp.png", iconSize: [30,30]}),
 				'Eevee': L.icon({iconUrl: "./img/133-eevee.png", iconSize: [30,30]}),
+				'Porygon': L.icon({iconUrl: "./img/137-porygon.png", iconSize: [30,30]}),
 				'Dratini': L.icon({iconUrl: "./img/147-dratini.png", iconSize: [30,30]}),
+				'Lanturn': L.icon({iconUrl: "./img/171-lanturn.png", iconSize: [30,30]}),
+				'Misdreavus': L.icon({iconUrl: "./img/200-misdreavus.png", iconSize: [30,30]}),
 				'Pineco': L.icon({iconUrl: "./img/204-pineco.png", iconSize: [30,30]}),
 				'Larvitar': L.icon({iconUrl: "./img/246-larvitar.png", iconSize: [30,30]}),
 				'Nincada': L.icon({iconUrl: "./img/290-nincada.png", iconSize: [30,30]}),
-				'Spinda': L.icon({iconUrl: "./img/327-spinda-7.png", iconSize: [30,30]}),
+				'Numel': L.icon({iconUrl: "./img/322-numel.png", iconSize: [30,30]}),
+				'Spinda': L.icon({iconUrl: "./img/327-spinda-6.png", iconSize: [30,30]}),
+				'Feebas': L.icon({iconUrl: "./img/349-feebas.png", iconSize: [30,30]}),
 			}
 			
 			function onEachFeature(feature, layer) {
 				// does this feature have a property named popupContent?
 				if (feature.properties && feature.properties.Reward) {
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +"</div>");
-					layer.setIcon(icons[feature.properties.Reward]);
-					category = feature.properties.Reward;
+					if (feature.properties.Category == 'Encounter') {
+						layer.setIcon(icons[feature.properties.Reward]);
+						category = feature.properties.Reward;
+					} else {
+						layer.setIcon(icons[feature.properties.Category]);
+						category = feature.properties.Category;
+					}
+					
 				} else {
 					category = 'Unreported';
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>");
@@ -104,7 +117,11 @@
 				
 			categoryName = 'Unreported'	
 			categoryArray = categories[categoryName];
-			categoryLG = L.layerGroup(categoryArray).addTo(map);
+			if (Object.keys(categories).length == 1){
+				categoryLG = L.layerGroup(categoryArray).addTo(map);
+			} else {
+			categoryLG = L.layerGroup(categoryArray);
+			}
 			categoryLG.categoryName = categoryName;
 			overlaysObj[categoryName] = categoryLG;
 				
