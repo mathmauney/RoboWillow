@@ -59,7 +59,7 @@ class Tasklist:
         task_not_found = True
         while task_not_found:
             for task in self.tasks:
-                if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in task.rewards):
+                if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in task.rewards) or (task_str in task.nicknames):
                     return task
                     task_not_found = False
             break
