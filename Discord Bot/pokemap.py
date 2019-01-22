@@ -1,140 +1,191 @@
 """This module implements the functions and classes for making maps of research tasks in pokemon go."""
 
 import datetime
+import pygeoj
 import pickle
 
 
-def add_stop(taskmap, coordinates, name):
-    """Add a stop to a given map.
+class Task:
+    """Research task class, specified by the display name and quest."""
 
-    Args:
-        taskap (pygeoj map): map to add the stop to.
-        coordinates (tuple): location of the stop in [longitude, latitude].
-        name (str)- name of the stop to be added.
-    Returns:
-        none
-
-    """
-    taskmap.add_feature(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
-                                    'Last Edit': int(datetime.datetime.now().strftime("%j")), 'Nicknames': []
-                                    },
-                        geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
-
-
-def reset_old_tasks(taskmap):
-    """Reset the tasks that are out of date in a map."""
-    stops_reset = False
-    for stop in taskmap:
-        if not('Nicknames' in stop.properties):
-            stop.properties['Nicknames'] = []
-        if 'nicknames' in stop.properties:
-            del stop.properties['nicknames']
-        if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
-            reset_task(stop)
-            stops_reset = True
-    return stops_reset
-
-
-def reset_task(stop):
-    """Reset the task on a stop."""
-    stop.properties['Task'] = ''
-    stop.properties['Reward'] = ''
-    stop.properties['marker-color'] = '#808080'
-    stop.properties['Last Edit'] = int(datetime.datetime.now().strftime("%j"))
-
-
-def reset_all_tasks(taskmap):
-    """Reset all the stops in a map."""
-    backup_name = datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_task_backup.json'
-    taskmap.save(backup_name)
-    for stop in taskmap:
-        reset_task(stop)
-
-
-def find_stop(taskmap, stop_name):
-    """Find a stop in a given map by its name."""
-    stops_found = []
-    for stop in taskmap:
-        if (stop.properties['Stop Name'].title() == stop_name.title() or stop_name.lower() in stop.properties['Nicknames']):
-            if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
-                reset_all_tasks(taskmap)
-            stops_found.append(stop)
-    if len(stops_found) == 0:
-        raise StopNotFound()
-    elif len(stops_found) == 1:
-        return stops_found[0]
-    else:
-        temp_num = 1
-        for stop in stops_found:
-            if not(stop.properties['Nicknames']):
-                stop.properties['Nicknames'].append('temp' + str(temp_num))
-                temp_num += 1
-        raise MutlipleStopsFound(stops_found)
-
-
-def set_task(stop, task):
-    """Add a task to a stop, checking if the stop already has a task."""
-    if stop.properties['Task'] == '':
-        stop.properties['Task'] = task.quest
-        stop.properties['Reward'] = task.reward
-        stop.properties['Last Edit'] = int(datetime.datetime.now().strftime("%j"))
-        stop.properties['Category'] = task.reward_type
-    else:
-        raise TaskAlreadyAssigned(stop, task)
-
-
-def find_task(tasklist, task_str):
-    """Find a task in the list with a given reward or quest."""
-    task_str = task_str.title()
-    task_not_found = True
-    while task_not_found:
-        for tasks in tasklist:
-            if (task_str == tasks.reward.title()) or (task_str == tasks.quest.title()):
-                return tasks
-                task_not_found = False
-        break
-    if task_not_found:
-        raise ValueError('Task not found')
-
-
-def save_object(obj, filename):
-    """Save an object using pickle."""
-    with open(filename, 'wb') as output:  # Overwrites any existing file.
-        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
-
-
-def add_stop_nickname(stop, nickname):
-    """Add a nickname to a stop."""
-    if 'Nicknames' not in stop.properties:
-        stop.properties['Nicknames'] = []
-    if (len(stop.properties['Nicknames']) == 1 and stop.properties['Nicknames'][0].startswith('temp')):
-        stop.properties['Nicknames'][0] = nickname.lower()
-    else:
-        stop.properties['Nicknames'].append(nickname.lower())
-
-
-def add_task_nickname(task, nickname):
-    """Add a nickname to a task."""
-    task.nicknames.append(nickname)
-
-
-# Classes
-# Task Class
-class Task():
-    """Class for Pokemon Go research tasks."""
-
-    def __init__(self, reward, quest, reward_type, shiny):
-        """Initialize the task object based on the given inputs."""
-        self.reward = reward
-        self.quest = quest
-        self.reward_type = reward_type
+    def __init__(self, name, quest, shiny=False):
+        """Initialize the task object and parse the input name into the rewards if possible."""
+        self.reward = name.title()
+        self.quest = quest.title()
         self.shiny = shiny
         self.nicknames = []
+        if 'Rare' in self.reward:    # Check to see what the reward type is
+            self.reward_type = 'Rare Candy'
+        elif 'Stardust' in self.reward:
+            self.reward_type = 'Stardust'
+        else:
+            self.reward_type = 'Encounter'
+        if ' or ' in self.reward:  # Try to parse the name into rewards
+            self.rewards = self.name.split(' or ')
+        elif 'Gen 1 Starter' in self.reward:
+            self.rewards = ['Bulbasaur', 'Squirtle', 'Charmander']
+        else:
+            self.rewards = [self.name]
+        self.icon = self.rewards[1]
+
+    def addnickname(self, name):
+        """Add a nickname to the task."""
+        if not(name in self.nicknames):
+            self.nicknames.append(name)
+
+    def set_icon(self, icon):
+        """Choose which reward to use as the icon"""
+        icon = icon.title()
+        if icon in self.rewards:
+            self.icon = icon
+
+
+class Tasklist:
+    """Tasklist class."""
+
+    def __init__(self):
+        """Initialize the tasklist."""
+        self.tasks = []
+
+    def add_task(self, task):
+        """Add a task to the tasklist"""
+        self.tasks.append(task)
+
+    def find_task(self, task_str):
+        """Find a task in the list and return it."""
+        task_str = task_str.title()
+        task_not_found = True
+        while task_not_found:
+            for task in self.tasks:
+                if (task_str == task.reward) or (task_str == task.quest) or (task_str in task.rewards):
+                    return task
+                    task_not_found = False
+            break
+        if task_not_found:
+            raise TaskNotFound()
+
+    def save(self, filename='tasklist.pkl'):
+        """Save the tasklist."""
+        with open(filename, 'wb') as output:
+            pickle.dump(self, output, pickle.HIGHEST_PROTOCOL)
+
+    def clear(self):
+        """Clear the tasklist."""
+        self.tasks = []
+
+
+class Stop(pygeoj.Feature):
+    """Extension of the pygeoj feature class that includes more methods that are useful for pokestops."""
+
+    def reset(self):
+        """Remove the task associated with the stop."""
+        self.properties['Task'] = ''
+        self.properties['Reward'] = ''
+        self.properties['Category'] = ''
+        self.properties['Last Edit'] = int(datetime.datetime.now().strftime("%j"))
+
+    def set_task(self, task):
+        """Add a task to the stop."""
+        if self.properties['Task'] == '':
+            self.properties['Task'] = task.quest
+            self.properties['Last Edit'] = int(datetime.datetime.now().strftime("%j"))
+            self.properties['Category'] = task.reward_type
+            self.properties['Reward'] = task.reward
+            self.properties['Icon'] = task.icon
+        else:
+            raise TaskAlreadyAssigned(self, task)
+
+
+class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a default one that checks for proper long/lat formating
+    """Class for the research map. Hopefully this will allow for multiple servers with seperate maps to be stored easily at once."""
+
+    def add_stop(self, obj=None, geometry=None, properties=None):
+        r"""
+        Add a given feature. If obj isn't specified, geometry and properties can be set as         arguments directly.
+
+        Parameters:
+        - **obj**: Another feature instance, an object with the \_\_geo_interface__ or a        geojson dictionary of the Feature type.
+        - **geometry** (optional): Anything that the Geometry instance can accept.
+        - **properties** (optional): A dictionary of key-value property pairs.
+
+        """
+        properties = properties or {}
+        if isinstance(obj, Stop):
+            # instead of creating copy, the original feat should reference the same one that was added here
+            feat = obj._data
+        elif isinstance(obj, dict):
+            feat = obj.copy()
+        else:
+            feat = Stop(geometry=geometry, properties=properties).__geo_interface__
+        feat.map = self
+        self._data["features"].append(feat)
+
+    def find_stop(self, stop_name):
+        """Find a stop within the map by its name or nickname."""
+        stops_found = []
+        for stop in self:
+            if (stop.properties['Stop Name'].title() == stop_name.title() or stop_name.lower() in stop.properties['Nicknames']):
+                if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
+                    self.reset_all
+                stops_found.append(stop)
+        if len(stops_found) == 0:
+            raise StopNotFound()
+        elif len(stops_found) == 1:
+            return stops_found[0]
+        else:
+            temp_num = 1
+            for stop in stops_found:
+                if not(stop.properties['Nicknames']):
+                    stop.properties['Nicknames'].append('temp' + str(temp_num))
+                    temp_num += 1
+            raise MutlipleStopsFound(stops_found)
+
+    def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
+        """Add a new stop to the map."""
+        self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
+                                  'Last Edit': int(datetime.datetime.now().strftime("%j")), 'Nicknames': []
+                                  },
+                      geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
+
+    def reset_old(self):
+        """Check for and reset only old stops in the map. This should get deprecated by moving the last edit to the map properties."""
+        stops_reset = False
+        for stop in self:
+            if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
+                stop.reset()
+                stops_reset = True
+        return stops_reset
+
+    def reset_all(self):
+        """Reset all the stops in the map."""
+        for stop in self:
+            stop.reset()
+
+    def remove_stop(self, stop):
+        """Remove a stop from the map."""
+        for i in range(len(self)):
+            if self[i] is stop:
+                del self[i]
+
+    def set_reset_time(self, time):     # TODO Figure out how to implement this as a nonfeature property
+        """Set the time (in UTC) that the map should be reset"""
+        pass
+
+
+# Custom functions
+def load(filepath=None, data=None, **kwargs):
+    """Modification of pygeoj.load to work with the ResearchMap class."""
+    return ResearchMap(filepath, data, **kwargs)
+
+
+def new():
+    """Modification of pygeoj.new to work with the ResearchMap class."""
+    return ResearchMap()
 
 
 # Custom Exceptions
 class PokemapException(Exception):
-    """Base class for the module so all module exceptions can be caught together."""
+    """Base class for the module so all module exceptions can be caught together if needed."""
 
     def __init__(self):
         """Add default message."""
@@ -175,3 +226,24 @@ class StopNotFound(PokemapException):
     def __init__(self):
         """Add message based on context of error."""
         self.message = "No stop found with the given string."
+
+
+class TaskNotFound(PokemapException):
+    """Exception for when task not found with the given search string."""
+
+    def __init__(self):
+        """Add message based on context of error."""
+        self.message = "No task found with the given string."
+
+
+class NicknameInUse(PokemapException):
+    """Exception for when a nickname is already associated with a stop or task."""
+
+    def __init__(self, task_or_stop):
+        """Add message based on context of error."""
+        if type(task_or_stop) is Task:
+            task = task_or_stop
+            self.message = "This nickname is already associated with the task: " + task.quest + ' for a ' + task.reward
+        elif type(task_or_stop) is pygeoj.Feature:
+            stop = task_or_stop
+            self.message = "This nickname is already associated with the stop: " + stop.properties['Stop Name']

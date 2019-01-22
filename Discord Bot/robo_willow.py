@@ -6,7 +6,7 @@ import discord
 import datetime
 from discord import Game
 from discord.ext.commands import Bot
-from token import discord_token
+from config import discord_token
 
 # Setup Variables
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
@@ -344,7 +344,7 @@ async def list_servers():
     """List all servers that the bot is in and check for map resets."""
     await client.wait_until_ready()
     while not client.is_closed:
-        reset_bool = pokemap.reset_old_tasks(taskmap)
+        reset_bool = taskmap.reset_old_tasks(taskmap)
         if reset_bool:
             taskmap.save(map_path)
         print("Current servers:")
