@@ -68,8 +68,8 @@ class Tasklist:
 
     def remove_task(self, task):
         """Remove a task from the list."""
-        for i in range(len(self.tasks)):
-            if self.tasks[i] is task:
+        for i, item in enumerate(self.tasks):
+            if item is task:
                 del self.tasks[i]
 
     def save(self, filename='tasklist.pkl'):
@@ -107,7 +107,7 @@ class Stop(pygeoj.Feature):
             """Add a nickname to a stop."""
             if 'Nicknames' not in self.properties:
                 self.properties['Nicknames'] = []
-            if (len(self.properties['Nicknames']) == 1 and self.properties['Nicknames'][0].startswith('temp')):
+            if (len(self.properties['Nicknames']) == 1 and self.properties['Nicknames'][0].startswith('Temp')):
                 self.properties['Nicknames'][0] = nickname.title()
             else:
                 self.properties['Nicknames'].append(nickname.title())
@@ -148,7 +148,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         """Find a stop within the map by its name or nickname."""
         stops_found = []
         for stop in self:
-            if (stop.properties['Stop Name'].title() == stop_name.title() or stop_name.lower() in stop.properties['Nicknames']):
+            if (stop.properties['Stop Name'].title() == stop_name.title()) or (stop_name.title() in stop.properties['Nicknames']) or (stop_name in stop.properties['Nicknames']):
                 if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
                     self.reset_all
                 stops_found.append(stop)
@@ -160,7 +160,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             temp_num = 1
             for stop in stops_found:
                 if not(stop.properties['Nicknames']):
-                    stop.properties['Nicknames'].append('temp' + str(temp_num))
+                    stop.properties['Nicknames'].append('Temp' + str(temp_num))
                     temp_num += 1
             raise MutlipleStopsFound(stops_found)
 
@@ -187,9 +187,10 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def remove_stop(self, stop):
         """Remove a stop from the map."""
-        for i in range(len(self)):
-            if self[i] is stop:
+        for i, item in enumerate(self):
+            if item.properties == stop.properties:
                 del self[i]
+                break
 
     def set_reset_time(self, time):     # TODO Figure out how to implement this as a nonfeature property
         """Set the time (in UTC) that the map should be reset"""
