@@ -1,13 +1,12 @@
 """Discord bot for mapping out pokemon go research and other misc functions."""
 import asyncio
 import pokemap
-import pygeoj
 import pickle
 import discord
 import datetime
 from discord import Game
 from discord.ext.commands import Bot
-from token import discord_token
+from config import discord_token
 
 # Setup Variables
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
@@ -23,21 +22,21 @@ maintainer_handle = '@mathmauney'
 # Load In Saved Data
 # Initialize Map Object
 try:
-    taskmap = pygeoj.load(map_path)
-    reset_bool = pokemap.reset_old_tasks(taskmap)
+    taskmap = pokemap.load(map_path)
+    reset_bool = taskmap.reset_old()
     if reset_bool:
         taskmap.save(map_path)
     print('Map successfully loaded')
 except FileNotFoundError:
-    taskmap = pygeoj.new()
+    taskmap = pokemap.new()
     print('No map found at: ' + map_path + '. Creating new map now')
 
 # Import the tasklist object or create new one
 try:
     with open(task_path, 'rb') as input:
         tasklist = pickle.load(input)
-except TypeError:
-    tasklist = []
+except FileNotFoundError:
+    tasklist = pokemap.Tasklist()
 
 # Startup Bot Instance
 client = Bot(command_prefix=bot_prefix)
@@ -88,34 +87,34 @@ async def addstop(*args):
     n_args = len(args)
     if n_args >= 2:  # Checks to see if enough arguements have been given
         if args[-1].startswith('https:'):  # Checks if the lat/long has been given as an ingress intel URL
-            name_args = args[0:n_args - 1]
+            name_args = args[0:n_args-1]
             ingress_url = args[-1]
             pll_location = ingress_url.find('pll')  # Finds the part of the url that describes the portal location
             if pll_location != -1:
                 comma_location = ingress_url.find(',', pll_location)  # Finds the comma in the portal location and then splits into lat and long
-                lat = float(ingress_url[pll_location + 4:comma_location])
-                long = float(ingress_url[comma_location + 1:])
+                lat = float(ingress_url[pll_location+4:comma_location])
+                long = float(ingress_url[comma_location+1:])
             else:  # If no portal location data was found in the URL
                 await client.say('')
                 return
         elif n_args > 2:
-            lat = float(args[n_args - 2])
-            long = float(args[n_args - 1])
+            lat = float(args[n_args-2])
+            long = float(args[n_args-1])
             if (long > 0) and (lat < 0):
                 temp = lat
                 lat = long
                 long = temp
-            name_args = args[0:n_args - 2]
+            name_args = args[0:n_args-2]
         name = ' '.join(name_args)
         try:
-            pokemap.add_stop(taskmap, [long, lat], name)
+            taskmap.new_stop([long, lat], name)
             taskmap.save(map_path)
             await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
-        except Exception as e:
+        except pokemap.PokemapException as e:
             print(e)
             await client.say('Error in stop creation. Double check formating of command.')
     else:
-        await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "' + bot_prefix[0] + 'help addstop" command for detailed instructions')
+        await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
 
 
 @client.command()
@@ -128,15 +127,13 @@ async def settask(*args):
             stop_args = args[1:]
             stop_name = ' '.join(stop_args)
             stop_name = stop_name.title()
-            stop = pokemap.find_stop(taskmap, stop_name)
-            task = pokemap.find_task(tasklist, task_str)
-            pokemap.set_task(stop, task)
+            stop = taskmap.find_stop(stop_name)
+            task = tasklist.find_task(task_str)
+            stop.set_task(task)
             await client.say('Task set.')
             taskmap.save(map_path)
         except pokemap.PokemapException as e:
             await client.say(e.message)
-        except Exception:
-            await client.say('Error in task assignment. Task was probably not found. Tried to find task: ' + task_str + ' for stop: ' + stop_name)
     else:
         await client.say('Not enough arguments.')
 
@@ -146,9 +143,9 @@ async def resetstop(*args):
     """Reset the task associated with a stop."""
     stop_name = ' '.join(args)
     stop_name = stop_name
-    stop = pokemap.find_stop(taskmap, stop_name)
+    stop = taskmap.find_stop(stop_name)
     try:
-        pokemap.reset_task(stop)
+        stop.reset()
         taskmap.save(map_path)
         client.say('Removed tasks from stop.')
     except pokemap.PokemapException as e:
@@ -156,11 +153,11 @@ async def resetstop(*args):
 
 
 @client.command()
-async def addtask(reward, quest, shiny=False, reward_type='Encounter'):
+async def addtask(reward, quest, shiny=False):
     """Add a task to a stop."""
     try:
-        tasklist.append(pokemap.Task(reward, quest, reward_type, shiny))
-        pokemap.save_object(tasklist, task_path)
+        tasklist.add_task(pokemap.Task(reward, quest, shiny))
+        tasklist.save(task_path)
         client.say('Task Added')
     except pokemap.PokemapException as e:
         await client.say(e.message)
@@ -170,7 +167,7 @@ async def addtask(reward, quest, shiny=False, reward_type='Encounter'):
 async def resettasklist():
     """Backup and reset the tasklist."""
     backup_name = datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
-    pokemap.save_object(tasklist, backup_name)
+    tasklist.save(backup_name)
     tasklist.clear()
 
 
@@ -180,12 +177,12 @@ async def listtasks():
     value_str = []
     str_num = 0
     value_str.append('')
-    if tasklist == []:
+    if tasklist.tasks == []:
         await client.say("No tasks known")
     else:
-        for tasks in tasklist:
+        for tasks in tasklist.tasks:
             to_add = tasks.quest + ' for a ' + tasks.reward
-            if tasks.shiny == 'True':
+            if tasks.shiny is True:
                 to_add += ' ✨'
             if tasks.reward_type == 'Rare Candy':
                 to_add += ' 🍬'
@@ -201,42 +198,35 @@ async def listtasks():
 
 
 @client.command()
-async def deletestop(*args):
+async def deletestop(stop_str):
     """Delete a stop."""
-    stop_name = ' '.join(args)
-    stop_name = stop_name
-    for i in range(len(taskmap)):
-        if taskmap[i].properties['Stop Name'].title() == stop_name.title():
-            del taskmap[i]
-            await client.say('Deleted Stop')
+    stop = taskmap.find_stop(stop_str)
+    taskmap.remove_stop(stop)
     taskmap.save(map_path)
 
 
 @client.command()
 async def deletetask(task_str):
     """Delete a task."""
-    for i in range(len(tasklist)):
-        if tasklist[i].reward == task_str:
-            del tasklist[i]
-            await client.say('Deleted Task')
+    task = tasklist.find_task(task_str)
+    tasklist.remove_task(task)
+    tasklist.save(task_path)
 
 
 @client.command()
 async def nicknamestop(stop_name, nickname):
     """Add a nickname to a stop."""
-    stop_name = stop_name
-    stop = pokemap.find_stop(taskmap, stop_name)
-    pokemap.add_stop_nickname(stop, nickname)
+    stop = taskmap.find_stop(stop_name)
+    stop.add_nickname(nickname)
     taskmap.save(map_path)
 
 
 @client.command()
 async def nicknametask(task_name, nickname):
     """Add a nickname to a task."""
-    task_name = task_name
-    task = pokemap.find_task(tasklist, task_name)
-    pokemap.add_task_nickname(task, nickname)
-    pokemap.save_object(tasklist, task_path)
+    task = tasklist.find_task(task_name)
+    task.add_nickname(nickname)
+    taskmap.save_object(task_path)
 
 
 @client.event
@@ -271,10 +261,10 @@ async def on_message(message):
                 command_name = 'addtask'
                 command_help = """This command lets you add a new task to the tasklist after research changes. If you do so please notify """ + maintainer_handle + """ so they can make sure new tasks show up correctly on the map.
 
-                The correct syntax for the command is !addtask reward quest shiny* reward_type*
-                Values should be put in quotations if they are more than single words (shiny and reward_type are optional).
+                The correct syntax for the command is !addtask reward quest shiny*
+                Values should be put in quotations if they are more than single words (shiny is optional).
                 shiny should be either 'True' or 'False'
-                reward_type should be either 'Encounter', 'Stardust', 'Item', or 'Rare Candy'"""
+                """
                 msg.add_field(name=command_name, value=command_help, inline=False)
                 await bot_embed_respond(message.channel, msg)
             elif 'listtasks' in message.content.lower():
@@ -304,9 +294,9 @@ async def on_message(message):
                 await client.send_message(message.channel, embed=msg)
             elif 'advanced' in message.content.lower():
                 commands = {}
-                commands[bot_prefix[0] + 'deletetask'] = 'Remove a task from the list.'
-                commands[bot_prefix[0] + 'deletestop'] = 'Remove a stop from the local map.'
-                commands[bot_prefix[0] + 'resettasklist'] = 'Completely clear the tasklist. Use only if the tasklist has become corrupted,' +\
+                commands[bot_prefix[0]+'deletetask'] = 'Remove a task from the list.'
+                commands[bot_prefix[0]+'deletestop'] = 'Remove a stop from the local map.'
+                commands[bot_prefix[0]+'resettasklist'] = 'Completely clear the tasklist. Use only if the tasklist has become corrupted,' +\
                     ' otherwise use the deletetask command to remove unwanted tasks one by one.'
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
                 for command, description in commands.items():
@@ -314,11 +304,11 @@ async def on_message(message):
                 await bot_embed_respond(message, msg)
             else:
                 commands = {}
-                commands[bot_prefix[0] + 'addstop'] = 'Add a new stop to the map.'
-                commands[bot_prefix[0] + 'addtask'] = 'Define a new task and reward set.'
-                commands[bot_prefix[0] + 'listtasks'] = 'Lists all tasks the bot currently knows along with their rewards.'
-                commands[bot_prefix[0] + 'resetstop'] = 'Removes any task associated with a given stop. Use if a stop was misreported'
-                commands[bot_prefix[0] + 'settask'] = 'Assign a task to a stop.'
+                commands[bot_prefix[0]+'addstop'] = 'Add a new stop to the map.'
+                commands[bot_prefix[0]+'addtask'] = 'Define a new task and reward set.'
+                commands[bot_prefix[0]+'listtasks'] = 'Lists all tasks the bot currently knows along with their rewards.'
+                commands[bot_prefix[0]+'resetstop'] = 'Removes any task associated with a given stop. Use if a stop was misreported'
+                commands[bot_prefix[0]+'settask'] = 'Assign a task to a stop.'
 
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
                 for command, description in commands.items():
@@ -333,17 +323,17 @@ async def on_message(message):
         prev_message_was_stop = False
         try:
             task_name = message.content
-            task = pokemap.find_task(tasklist, task_name)
-            pokemap.set_task(prev_message_stop, task)
+            task = tasklist.find_task(task_name)
+            prev_message_stop.set_task(task)
             taskmap.save(map_path)
             await client.add_reaction(prev_message, '👍')
             await client.add_reaction(message, '👍')
         except pokemap.PokemapException as e:
-            await client.say(e.message)
+            await client.send_message(message.channel, e.message)
     else:
         try:
             stop_name = message.content
-            prev_message_stop = pokemap.find_stop(taskmap, stop_name)
+            prev_message_stop = taskmap.find_stop(stop_name)
             prev_message_was_stop = True
             prev_message = message
         except pokemap.PokemapException:
@@ -354,7 +344,7 @@ async def list_servers():
     """List all servers that the bot is in and check for map resets."""
     await client.wait_until_ready()
     while not client.is_closed:
-        reset_bool = pokemap.reset_old_tasks(taskmap)
+        reset_bool = taskmap.reset_old()
         if reset_bool:
             taskmap.save(map_path)
         print("Current servers:")
