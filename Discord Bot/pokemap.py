@@ -210,7 +210,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def set_location(self, coordinates):
         """Set the default location of the map"""
-        self._data['loc'] = coordinates
+        self._data['loc'] = [coordinates]
 
     def set_bounds(self, coords1, coords2):
         """Set the bounds for the internet map and for checking stop locations"""
@@ -219,13 +219,13 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         if max(diff0, diff1) > 1:
             raise BoundsTooLarge()
         elif 'loc' in self._data:
-            loc_coords = self._data
+            loc_coords = self._data['loc']
             if ((coords1[0] < loc_coords[0] < coords2[0]) or (coords1[0] > loc_coords[0] > coords2[0])) and ((coords1[1] < loc_coords[1] < coords2[1]) or (coords1[1] > loc_coords[1] > coords2[1])):
-                self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[2]]
+                self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
             else:
                 raise LocationNotInBounds()
         else:
-            self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[2]]
+            self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
 
 
 # Custom functions
