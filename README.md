@@ -2,15 +2,20 @@
 
 RoboWillow is a discord bot designed principly to facilitate the reporting and mapping of Pokemon Go research tasks. This is currently very much a work in process and shouldn't be deployed for anything other than testing. The rest of this README is still a template at this point, and will be updated as the project gets more finalized. 
 
-## Getting Started
-
-Don't get started with this yet, wait for the bot to get a bit more functional.
 
 ### Prerequisites
-
+Python3 (and pip) (Python 3.7 has issues with discord.py currently)
+Web Hosting
 
 ### Installing
+Download the source code and move it to appropriate locations. The html page and img folder should go to whereever the map is to be hosted, and the Bot folder can be moved whereever is convenient
 
+run: 'pip install -r requirements.txt' to install dependencies. 
+
+## Getting Started
+To run the bot a discord token is needed, which is specified in config.py. To run the map a MapBox token is needed, and should be specified in token.js. Other config options are at the start of robo_willow.py and should be edited to fit your community, and the map data location should be changed in index.html. (These will hopefully be moved to better locations in later versions)
+
+Once the configs have been set for your commmunity, the bot can be run using 'python3 robo_willow.py' and can be invited to your server using the discord developer portal where you got the discord token.
 
 ## Current Features
 
@@ -20,46 +25,7 @@ A leaflet map based on the bot's geoJSON data can be found [here](https://mathma
 
 ### Discord Bot
 
-The discord bot supports rudimentary task reporting and mapping. Tasks are currently reset on first bot interaction after midnight. Current commands include:
-
-```
-addstop "Stop Name" latitude longitude
-```
-
-Adds a new stop to the map at the defined latitude and longitude
-
-```
-addtask "Reward" "Quest Requirements" "Reward Type" canBeShiny
-```
-
-Adds a new task to the bot's internal tasklist. The canBeShiny parameter should be either True or False
-
-```
-listtasks
-```
-
-Lists all tasks the bot currently knows along with their rewards.
-
-```
-set task "Reward" "Stop Name"
-```
-
-Assigns a task to a stop
-
-### To Do
-
-## Map
-
-* Finish Fleshing out custom icons for pokemon tasks 
-* Pull from bot geoJSON instead of statically defined test set
-
-## Bot
-
-* Handle task reset at midnight better. 
-* Activate backups better once testing is finished
-* Fill out help dialog better
-* Better error handling when commands fail
-* Move test bot onto a better hosting service than my personal computer
+The discord bot supports task reporting and mapping. Tasks are currently reset at midnight server time, though this will be fixed in later versions. The help (and help advanced) commands can be used to see all the 
 
 
 ### About Project
@@ -72,4 +38,5 @@ See also the list of [contributors](https://github.com/your/project/contributors
 
 ## License
 
-Not sure yet.
+All software is licensed under MIT license.
+Icons are from The Artifical under a CC-BY license
