@@ -222,11 +222,11 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         elif 'loc' in self._data:
             loc_coords = self._data
             if ((coords1[0] < loc_coords[0] < coords2[0]) or (coords1[0] > loc_coords[0] > coords2[0])) and ((coords1[1] < loc_coords[1] < coords2[1]) or (coords1[1] > loc_coords[1] > coords2[1])):
-                self._data[coords1[0], coords1[1], coords2[0], coords2[2]]
+                self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[2]]
             else:
                 raise LocationNotInBounds()
         else:
-            self._data[coords1[0], coords1[1], coords2[0], coords2[2]]
+            self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[2]]
 
 
 # Custom functions
