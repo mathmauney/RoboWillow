@@ -22,8 +22,23 @@
 
 
 	<script>
+			var GET = {};
+			var query = window.location.search.substring(1).split("&");
+			for (var i = 0, max = query.length; i < max; i++)
+			{
+			    if (query[i] === "") // check for trailing & with no param
+			        continue;
+
+			    var param = query[i].split("=");
+			    GET[decodeURIComponent(param[0])] = decodeURIComponent(param[1] || "");
+			}
+			if (!GET.map) {
+				map_name = 'map'
+			} else {
+				map_name = GET.map
+			}
 	    var pokemap = $.ajax({
-          url:"https://mathmauney.no-ip.org/map.json",
+          url:"https://mathmauney.no-ip.org/" + map_name + '.json',
           dataType: "json",
           success: console.log("Pokemap data successfully loaded."),
 		  error: function (xhr) {
@@ -97,7 +112,7 @@
 				'Nosepass': L.icon({iconUrl: "./img/299-nosepass.png", iconSize: [30,30]}),
 				'Manectric': L.icon({iconUrl: "./img/310-manectric.png", iconSize: [30,30]}),
 				'Numel': L.icon({iconUrl: "./img/322-numel.png", iconSize: [30,30]}),
-				'Spinda': L.icon({iconUrl: "./img/327-spinda-6.png", iconSize: [30,30]}),				
+				'Spinda': L.icon({iconUrl: "./img/327-spinda-6.png", iconSize: [30,30]}),
 				'Trapinch': L.icon({iconUrl: "./img/328-trapinch.png", iconSize: [30,30]}),
 				'Lileep': L.icon({iconUrl: "./img/345-lileep.png", iconSize: [30,30]}),
 				'Anorith': L.icon({iconUrl: "./img/347-anorith.png", iconSize: [30,30]}),
@@ -111,7 +126,7 @@
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +"</div>");
 					if (feature.properties.Category == 'Encounter') {
 						layer.setIcon(icons[feature.properties.Icon]);
-						category = feature.properties.Icon;
+						category = feature.properties.Reward;
 					} else {
 						layer.setIcon(icons[feature.properties.Category]);
 						category = feature.properties.Category;
