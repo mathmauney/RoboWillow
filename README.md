@@ -40,4 +40,5 @@ See also the list of [contributors](https://github.com/your/project/contributors
 ## License
 
 All software is licensed under MIT license.
+
 Icons are from The Artifical under a CC-BY license
