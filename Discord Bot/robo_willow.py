@@ -3,7 +3,7 @@ import asyncio
 import pokemap
 import pickle
 import discord
-import datetime
+from datetime import datetime
 from discord import Game
 from discord.ext.commands import Bot
 from config import discord_token
@@ -166,7 +166,7 @@ async def addtask(reward, quest, shiny=False):
 @client.command()
 async def resettasklist():
     """Backup and reset the tasklist."""
-    backup_name = datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
+    backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
     tasklist.save(backup_name)
     tasklist.clear()
 
@@ -341,18 +341,30 @@ async def on_message(message):
 
 
 async def list_servers():
-    """List all servers that the bot is in and check for map resets."""
+    """List all servers that the bot is in."""
     await client.wait_until_ready()
     while not client.is_closed:
-        reset_bool = taskmap.reset_old()
-        if reset_bool:
-            taskmap.save(map_path)
         print("Current servers:")
         for server in client.servers:
             print(server.name)
-        print(datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S"))
         await asyncio.sleep(1800)
 
 
+async def check_maps():
+    """Map resets every hour."""
+    await client.wait_until_ready()
+    while not client.is_closed:
+        print('Checking maps at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
+        reset_bool = taskmap.reset_old()
+        if reset_bool:
+            taskmap.save(map_path)
+            print('Reset map at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
+        now = datetime.strftime(datetime.now(), '%M')
+        diff = (datetime.strptime('10', '%M') - datetime.strptime(now, '%M')).total_seconds()
+        if diff < 0:
+            diff += 3600
+        await asyncio.sleep(diff)
+
 client.loop.create_task(list_servers())
+client.loop.create_task(check_maps())
 client.run(discord_token)
