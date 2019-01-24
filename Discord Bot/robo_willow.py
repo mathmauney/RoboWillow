@@ -360,8 +360,8 @@ async def check_maps():
             taskmap.save(map_path)
             print('Reset map at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
         now = datetime.strftime(datetime.now(), '%M')
-        diff = (datetime.strptime('10', '%M') - datetime.strptime(now, '%M')).total_seconds()
-        if diff < 0:
+        diff = (datetime.strptime('01', '%M') - datetime.strptime(now, '%M')).total_seconds()
+        if diff < 60:
             diff += 3600
         await asyncio.sleep(diff)
 
