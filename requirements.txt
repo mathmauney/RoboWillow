@@ -1,2 +1,5 @@
 discord
 pygeoj
+datetime
+asyncio
+pickle
