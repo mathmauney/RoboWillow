@@ -26,7 +26,7 @@ try:
     reset_bool = taskmap.reset_old()
     if reset_bool:
         taskmap.save(map_path)
-    print('Map successfully loaded')
+    print('Map successfully loaded, map time is: ' + taskmap.now().strftime("%Y.%m.%d.%H%M%S"))
 except FileNotFoundError:
     taskmap = pokemap.new()
     print('No map found at: ' + map_path + '. Creating new map now')
