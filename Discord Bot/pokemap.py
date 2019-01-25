@@ -143,7 +143,6 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             feat = obj.copy()
         else:
             feat = Stop(geometry=geometry, properties=properties).__geo_interface__
-        feat._map = self
         self._data["features"].append(feat)
 
     def find_stop(self, stop_name):
@@ -169,10 +168,13 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
         """Add a new stop to the map."""
-        self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
-                                  'Last Edit': int(self.now().strftime("%j")), 'Nicknames': []
-                                  },
-                      geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
+        if ((self._data['bounds'][0] < coordinates[1] < self._data['bounds'][2]) and (self._data['bounds'][1] < coordinates[0] < self._data['bounds'][3])) or ((self._data['bounds'][2] < coordinates[1] < self._data['bounds'][0]) and (self._data['bounds'][3] < coordinates[0] < self._data['bounds'][1])):
+            self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
+                                      'Last Edit': int(self.now().strftime("%j")), 'Nicknames': []
+                                      },
+                          geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
+        else:
+            raise StopOutsideBoundary()
 
     def reset_old(self):
         """Check for and reset only old stops in the map. This should get deprecated by moving the last edit to the map properties."""
@@ -211,7 +213,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def set_location(self, coordinates):
         """Set the default location of the map"""
-        self._data['loc'] = coordinates
+        self._data['loc'] = [coordinates]
 
     def set_bounds(self, coords1, coords2):
         """Set the bounds for the internet map and for checking stop locations"""
@@ -220,13 +222,13 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         if max(diff0, diff1) > 1:
             raise BoundsTooLarge()
         elif 'loc' in self._data:
-            loc_coords = self._data
+            loc_coords = self._data['loc']
             if ((coords1[0] < loc_coords[0] < coords2[0]) or (coords1[0] > loc_coords[0] > coords2[0])) and ((coords1[1] < loc_coords[1] < coords2[1]) or (coords1[1] > loc_coords[1] > coords2[1])):
-                self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[2]]
+                self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
             else:
                 raise LocationNotInBounds()
         else:
-            self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[2]]
+            self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
 
 
 # Custom functions
@@ -325,3 +327,10 @@ class InvalidTimezone(PokemapException):
     def __init__(self):
         """Add message based on context of error."""
         self.message = "Invalid time zone string, choose one from https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones."
+
+
+class StopOutsideBoundary(PokemapException):
+    """Exception for when a stop is added outside of the boundary"""
+    def __init__(self):
+        """Add message based on context of error."""
+        self.message = "This stop is outside of the boundary set in your map. Contact your maintainer if you feel this is an error with the boundary."

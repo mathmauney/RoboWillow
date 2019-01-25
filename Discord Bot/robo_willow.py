@@ -12,8 +12,6 @@ from config import discord_token
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
 map_path = '/var/www/html/map.json'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
 task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from if the bot is restarted
-latitude_range = [42, 43]    # These ranges will give the use an error if they try to create stops outside of them, and will correct flipped latitude and longitude if the ranges are distinct
-longitude_range = [-77, -76]
 map_URL = 'https://mathmauney.no-ip.org'
 bot_game = "with maps at mathmauney.no-ip.org"
 maintainer_handle = '@mathmauney'
@@ -100,19 +98,13 @@ async def addstop(*args):
         elif n_args > 2:
             lat = float(args[n_args-2])
             long = float(args[n_args-1])
-            if (long > 0) and (lat < 0):
-                temp = lat
-                lat = long
-                long = temp
-            name_args = args[0:n_args-2]
         name = ' '.join(name_args)
         try:
             taskmap.new_stop([long, lat], name)
             taskmap.save(map_path)
             await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
         except pokemap.PokemapException as e:
-            print(e)
-            await client.say('Error in stop creation. Double check formating of command.')
+            await client.say(e.message)
     else:
         await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
 
@@ -228,7 +220,37 @@ async def nicknametask(task_name, nickname):
     """Add a nickname to a task."""
     task = tasklist.find_task(task_name)
     task.add_nickname(nickname)
-    taskmap.save_object(task_path)
+    tasklist.save(task_path)
+
+
+@client.command()
+async def setlocation(lat, long):
+    """Set the location of the map for the web view."""
+    coordinates = [float(lat), float(long)]
+    taskmap.set_location(coordinates)
+    taskmap.save(map_path)
+
+
+@client.command()
+async def setbounds(lat1, long1, lat2, long2):
+    """Set the boundaries of the maps for checking when pokestops are added."""
+    try:
+        coords1 = [float(lat1), float(long1)]
+        coords2 = [float(lat2), float(long2)]
+        taskmap.set_bounds(coords1, coords2)
+        taskmap.save(map_path)
+    except pokemap.PokemapException as e:
+        await client.say(e.message)
+
+
+@client.command()
+async def settimezone(tz_str):
+    """Set the timezone of the map so it resets itself correctly."""
+    try:
+        taskmap.set_time_zone(tz_str)
+        taskmap.save(map_path)
+    except pokemap.PokemapException as e:
+        await client.say(e.message)
 
 
 @client.command(pass_context=True)
@@ -325,6 +347,15 @@ async def on_message(message):
                               'help advanced" to get information on commands for advanced users', inline=False)
                 msg.add_field(name='To view the current map', value='Click [here](' + map_URL + ')', inline=False)
                 await bot_embed_respond(message, msg)
+        elif msg.startswith('setup'):
+            msg = discord.Embed(colour=discord.Colour(0x186a0))
+            command_name = 'Initial Setup Commands'
+            command_help = '- First setup the location of your map by using "' + bot_prefix[0] + 'setlocation lat long", with lat and long being the latitude and longitude near the center of your map area.\n'
+            command_help += '- Then define the bounds of your map using "' + bot_prefix[0] + 'setbounds lat1 long1 lat2 long2" where the latitudes and longitudes are from opposite corners of your map boundary (SW and NE recommended). '
+            command_help += 'The extent of your boundary should be less than one degree of latitude and longitude.\n'
+            command_help += '- Lastly set the timezone your map is in (so it resets at midnight correctly) using "' + bot_prefix[0] + 'settimezone timezone_str" where timezone_str is from the list https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones.'
+            msg.add_field(name=command_name, value=command_help, inline=False)
+            await client.send_message(message.channel, embed=msg)
         else:
             await client.process_commands(message)
     elif prev_message_was_stop:
