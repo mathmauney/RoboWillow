@@ -12,8 +12,6 @@ from config import discord_token
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
 map_path = '/var/www/html/map.json'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
 task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from if the bot is restarted
-latitude_range = [42, 43]    # These ranges will give the use an error if they try to create stops outside of them, and will correct flipped latitude and longitude if the ranges are distinct
-longitude_range = [-77, -76]
 map_URL = 'https://mathmauney.no-ip.org'
 bot_game = "with maps at mathmauney.no-ip.org"
 maintainer_handle = '@mathmauney'
