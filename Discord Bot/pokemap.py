@@ -168,10 +168,13 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
         """Add a new stop to the map."""
-        self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
-                                  'Last Edit': int(self.now().strftime("%j")), 'Nicknames': []
-                                  },
-                      geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
+        if ((self._data['bounds'][0] < coordinates[1] < self._data['bounds'][2]) and (self._data['bounds'][1] < coordinates[0] < self._data['bounds'][3])) or ((self._data['bounds'][2] < coordinates[1] < self._data['bounds'][0]) and (self._data['bounds'][3] < coordinates[0] < self._data['bounds'][1])):
+            self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
+                                      'Last Edit': int(self.now().strftime("%j")), 'Nicknames': []
+                                      },
+                          geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
+        else:
+            raise StopOutsideBoundary()
 
     def reset_old(self):
         """Check for and reset only old stops in the map. This should get deprecated by moving the last edit to the map properties."""
@@ -324,3 +327,10 @@ class InvalidTimezone(PokemapException):
     def __init__(self):
         """Add message based on context of error."""
         self.message = "Invalid time zone string, choose one from https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones."
+
+
+class StopOutsideBoundary(PokemapException):
+    """Exception for when a stop is added outside of the boundary"""
+    def __init__(self):
+        """Add message based on context of error."""
+        self.message = "This stop is outside of the boundary set in your map. Contact your maintainer if you feel this is an error with the boundary."

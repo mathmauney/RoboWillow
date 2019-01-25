@@ -106,8 +106,7 @@ async def addstop(*args):
             taskmap.save(map_path)
             await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
         except pokemap.PokemapException as e:
-            print(e)
-            await client.say('Error in stop creation. Double check formating of command.')
+            await client.say(e.message)
     else:
         await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
 
