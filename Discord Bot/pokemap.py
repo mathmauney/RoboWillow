@@ -181,6 +181,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         stops_reset = False
         for stop in self:
             if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
+                stop._map = self
                 stop.reset()
                 stops_reset = True
         return stops_reset
@@ -188,6 +189,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
     def reset_all(self):
         """Reset all the stops in the map."""
         for stop in self:
+            stop._map = self
             stop.reset()
 
     def remove_stop(self, stop):
@@ -229,6 +231,11 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 raise LocationNotInBounds()
         else:
             self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
+
+    def save(self, filename=None):
+        if filename is None:
+            filename = self._data['path']
+        super().save(filename)
 
 
 # Custom functions

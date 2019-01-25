@@ -33,12 +33,12 @@
 		    GET[decodeURIComponent(param[0])] = decodeURIComponent(param[1] || "");
 		}
 		if (!GET.map) {
-			map_name = 'map'
+			map_name = '510468882469748746'
 		} else {
 			map_name = GET.map
 		}
     var pokemap = $.ajax({
-      url:"https://mathmauney.no-ip.org/" + map_name + '.json',
+      url:"https://mathmauney.no-ip.org/maps/" + map_name + '.json',
       dataType: "json",
       success: console.log("Pokemap data successfully loaded."),
 	  	error: function (xhr) {
