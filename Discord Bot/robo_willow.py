@@ -74,6 +74,20 @@ async def bot_embed_respond(message, msg):
         await client.send_message(message.author, "You seem to have tried to send a command in a channel I can't talk in. Try again in the appropriate channel")
 
 
+def pass_errors(func):
+    """Decorator to pass library errors into a discord message"""
+    async def decorator(self, func):
+        async def check_errors(*args, **kwargs):
+            try:
+                await func(*args, **kwargs)
+            except pokemap.PokemapException as e:
+                await client.say(e.message)
+        return check_errors
+        self.__name__ = func.__name__
+        self.__signature__ = inspect.signature(func)
+    return decorator
+
+
 @client.command()
 async def addstop(*args):
     """Add a stop to the map, contains multiple ways of doing so.
@@ -133,31 +147,28 @@ async def settask(*args):
 
 
 @client.command()
+@pass_errors
 async def resetstop(*args):
     """Reset the task associated with a stop."""
     stop_name = ' '.join(args)
     stop_name = stop_name
     stop = taskmap.find_stop(stop_name)
-    try:
-        stop.reset()
-        taskmap.save(map_path)
-        client.say('Removed tasks from stop.')
-    except pokemap.PokemapException as e:
-        await client.say(e.message)
+    stop.reset()
+    taskmap.save(map_path)
+    client.say('Removed tasks from stop.')
 
 
 @client.command()
+@pass_errors
 async def addtask(reward, quest, shiny=False):
     """Add a task to a stop."""
-    try:
-        tasklist.add_task(pokemap.Task(reward, quest, shiny))
-        tasklist.save(task_path)
-        client.say('Task Added')
-    except pokemap.PokemapException as e:
-        await client.say(e.message)
+    tasklist.add_task(pokemap.Task(reward, quest, shiny))
+    tasklist.save(task_path)
+    client.say('Task Added')
 
 
 @client.command()
+@pass_errors
 async def resettasklist():
     """Backup and reset the tasklist."""
     backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
@@ -166,6 +177,7 @@ async def resettasklist():
 
 
 @client.command(aliases=['tasklist'])
+@pass_errors
 async def listtasks():
     """List the known tasks."""
     value_str = []
@@ -192,6 +204,7 @@ async def listtasks():
 
 
 @client.command()
+@pass_errors
 async def deletestop(stop_str):
     """Delete a stop."""
     stop = taskmap.find_stop(stop_str)
@@ -200,6 +213,7 @@ async def deletestop(stop_str):
 
 
 @client.command()
+@pass_errors
 async def deletetask(task_str):
     """Delete a task."""
     task = tasklist.find_task(task_str)
@@ -208,6 +222,7 @@ async def deletetask(task_str):
 
 
 @client.command()
+@pass_errors
 async def nicknamestop(stop_name, nickname):
     """Add a nickname to a stop."""
     stop = taskmap.find_stop(stop_name)
@@ -216,6 +231,7 @@ async def nicknamestop(stop_name, nickname):
 
 
 @client.command()
+@pass_errors
 async def nicknametask(task_name, nickname):
     """Add a nickname to a task."""
     task = tasklist.find_task(task_name)
@@ -224,6 +240,7 @@ async def nicknametask(task_name, nickname):
 
 
 @client.command()
+@pass_errors
 async def setlocation(lat, long):
     """Set the location of the map for the web view."""
     coordinates = [float(lat), float(long)]
@@ -232,25 +249,21 @@ async def setlocation(lat, long):
 
 
 @client.command()
+@pass_errors
 async def setbounds(lat1, long1, lat2, long2):
     """Set the boundaries of the maps for checking when pokestops are added."""
-    try:
-        coords1 = [float(lat1), float(long1)]
-        coords2 = [float(lat2), float(long2)]
-        taskmap.set_bounds(coords1, coords2)
-        taskmap.save(map_path)
-    except pokemap.PokemapException as e:
-        await client.say(e.message)
+    coords1 = [float(lat1), float(long1)]
+    coords2 = [float(lat2), float(long2)]
+    taskmap.set_bounds(coords1, coords2)
+    taskmap.save(map_path)
 
 
 @client.command()
+@pass_errors
 async def settimezone(tz_str):
     """Set the timezone of the map so it resets itself correctly."""
-    try:
-        taskmap.set_time_zone(tz_str)
-        taskmap.save(map_path)
-    except pokemap.PokemapException as e:
-        await client.say(e.message)
+    taskmap.set_time_zone(tz_str)
+    taskmap.save(map_path)
 
 
 @client.command(pass_context=True)
