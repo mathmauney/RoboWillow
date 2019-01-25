@@ -3,6 +3,7 @@ import asyncio
 import pokemap
 import pickle
 import discord
+import inspect
 from datetime import datetime
 from discord import Game
 from discord.ext.commands import Bot
