@@ -77,15 +77,15 @@ async def bot_embed_respond(message, msg):
 
 def pass_errors(func):
     """Decorator to pass library errors into a discord message"""
-    async def decorator(self, func):
-        async def check_errors(*args, **kwargs):
-            try:
-                await func(*args, **kwargs)
-            except pokemap.PokemapException as e:
-                await client.say(e.message)
-        return check_errors
-        self.__name__ = func.__name__
-        self.__signature__ = inspect.signature(func)
+    async def decorator(*args, **kwargs):
+        try:
+            await func(*args, **kwargs)
+            return
+        except pokemap.PokemapException as e:
+            await client.say(e.message)
+            return
+    decorator.__name__ = func.__name__
+    decorator.__signature__ = inspect.signature(func)
     return decorator
 
 
