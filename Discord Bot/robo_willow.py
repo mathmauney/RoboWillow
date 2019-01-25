@@ -130,6 +130,8 @@ async def settask(*args):
             stop = taskmap.find_stop(stop_name)
             task = tasklist.find_task(task_str)
             stop.set_task(task)
+            if task_str.title() in task.rewards:
+                stop.properties['Icon'] = task_str.title()
             await client.say('Task set.')
             taskmap.save(map_path)
         except pokemap.PokemapException as e:
@@ -229,6 +231,12 @@ async def nicknametask(task_name, nickname):
     taskmap.save_object(task_path)
 
 
+@client.command(pass_context=True)
+async def serverid(context, arg):
+    """Find the server ID."""
+    await client.say(context.message.server.id + ' ' + arg)
+
+
 @client.event
 async def on_message(message):
     """Respond to messages.
@@ -325,6 +333,8 @@ async def on_message(message):
             task_name = message.content
             task = tasklist.find_task(task_name)
             prev_message_stop.set_task(task)
+            if task_name.title() in task.rewards:
+                prev_message_stop.properties['Icon'] = task_name.title()
             taskmap.save(map_path)
             await client.add_reaction(prev_message, '👍')
             await client.add_reaction(message, '👍')
