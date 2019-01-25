@@ -3,7 +3,7 @@ import asyncio
 import pokemap
 import pickle
 import discord
-import datetime
+from datetime import datetime
 from discord import Game
 from discord.ext.commands import Bot
 from config import discord_token
@@ -26,7 +26,7 @@ try:
     reset_bool = taskmap.reset_old()
     if reset_bool:
         taskmap.save(map_path)
-    print('Map successfully loaded')
+    print('Map successfully loaded, map time is: ' + taskmap.now().strftime("%Y.%m.%d.%H%M%S"))
 except FileNotFoundError:
     taskmap = pokemap.new()
     print('No map found at: ' + map_path + '. Creating new map now')
@@ -100,19 +100,13 @@ async def addstop(*args):
         elif n_args > 2:
             lat = float(args[n_args-2])
             long = float(args[n_args-1])
-            if (long > 0) and (lat < 0):
-                temp = lat
-                lat = long
-                long = temp
-            name_args = args[0:n_args-2]
         name = ' '.join(name_args)
         try:
             taskmap.new_stop([long, lat], name)
             taskmap.save(map_path)
             await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
         except pokemap.PokemapException as e:
-            print(e)
-            await client.say('Error in stop creation. Double check formating of command.')
+            await client.say(e.message)
     else:
         await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
 
@@ -166,7 +160,7 @@ async def addtask(reward, quest, shiny=False):
 @client.command()
 async def resettasklist():
     """Backup and reset the tasklist."""
-    backup_name = datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
+    backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
     tasklist.save(backup_name)
     tasklist.clear()
 
@@ -226,7 +220,37 @@ async def nicknametask(task_name, nickname):
     """Add a nickname to a task."""
     task = tasklist.find_task(task_name)
     task.add_nickname(nickname)
-    taskmap.save_object(task_path)
+    tasklist.save(task_path)
+
+
+@client.command()
+async def setlocation(lat, long):
+    """Set the location of the map for the web view."""
+    coordinates = [float(lat), float(long)]
+    taskmap.set_location(coordinates)
+    taskmap.save(map_path)
+
+
+@client.command()
+async def setbounds(lat1, long1, lat2, long2):
+    """Set the boundaries of the maps for checking when pokestops are added."""
+    try:
+        coords1 = [float(lat1), float(long1)]
+        coords2 = [float(lat2), float(long2)]
+        taskmap.set_bounds(coords1, coords2)
+        taskmap.save(map_path)
+    except pokemap.PokemapException as e:
+        await client.say(e.message)
+
+
+@client.command()
+async def settimezone(tz_str):
+    """Set the timezone of the map so it resets itself correctly."""
+    try:
+        taskmap.set_time_zone(tz_str)
+        taskmap.save(map_path)
+    except pokemap.PokemapException as e:
+        await client.say(e.message)
 
 
 @client.event
@@ -317,6 +341,15 @@ async def on_message(message):
                               'help advanced" to get information on commands for advanced users', inline=False)
                 msg.add_field(name='To view the current map', value='Click [here](' + map_URL + ')', inline=False)
                 await bot_embed_respond(message, msg)
+        elif msg.startswith('setup'):
+            msg = discord.Embed(colour=discord.Colour(0x186a0))
+            command_name = 'Initial Setup Commands'
+            command_help = '- First setup the location of your map by using "' + bot_prefix[0] + 'setlocation lat long", with lat and long being the latitude and longitude near the center of your map area.\n'
+            command_help += '- Then define the bounds of your map using "' + bot_prefix[0] + 'setbounds lat1 long1 lat2 long2" where the latitudes and longitudes are from opposite corners of your map boundary (SW and NE recommended). '
+            command_help += 'The extent of your boundary should be less than one degree of latitude and longitude.\n'
+            command_help += '- Lastly set the timezone your map is in (so it resets at midnight correctly) using "' + bot_prefix[0] + 'settimezone timezone_str" where timezone_str is from the list https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones.'
+            msg.add_field(name=command_name, value=command_help, inline=False)
+            await client.send_message(message.channel, embed=msg)
         else:
             await client.process_commands(message)
     elif prev_message_was_stop:
@@ -341,18 +374,30 @@ async def on_message(message):
 
 
 async def list_servers():
-    """List all servers that the bot is in and check for map resets."""
+    """List all servers that the bot is in."""
     await client.wait_until_ready()
     while not client.is_closed:
-        reset_bool = taskmap.reset_old()
-        if reset_bool:
-            taskmap.save(map_path)
         print("Current servers:")
         for server in client.servers:
             print(server.name)
-        print(datetime.datetime.now().strftime("%Y.%m.%d.%H%M%S"))
         await asyncio.sleep(1800)
 
 
+async def check_maps():
+    """Map resets every hour."""
+    await client.wait_until_ready()
+    while not client.is_closed:
+        print('Checking maps at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
+        reset_bool = taskmap.reset_old()
+        if reset_bool:
+            taskmap.save(map_path)
+            print('Reset map at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
+        now = datetime.strftime(datetime.now(), '%M')
+        diff = (datetime.strptime('01', '%M') - datetime.strptime(now, '%M')).total_seconds()
+        if diff < 60:
+            diff += 3600
+        await asyncio.sleep(diff)
+
 client.loop.create_task(list_servers())
+client.loop.create_task(check_maps())
 client.run(discord_token)

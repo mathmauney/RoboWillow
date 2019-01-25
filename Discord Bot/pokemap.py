@@ -3,6 +3,7 @@
 import datetime
 import pygeoj
 import pickle
+import pytz
 
 
 class Task:
@@ -90,13 +91,13 @@ class Stop(pygeoj.Feature):
         self.properties['Task'] = ''
         self.properties['Reward'] = ''
         self.properties['Category'] = ''
-        self.properties['Last Edit'] = int(datetime.datetime.now().strftime("%j"))
+        self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
 
     def set_task(self, task):
         """Add a task to the stop."""
         if self.properties['Task'] == '':
             self.properties['Task'] = task.quest
-            self.properties['Last Edit'] = int(datetime.datetime.now().strftime("%j"))
+            self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
             self.properties['Category'] = task.reward_type
             self.properties['Reward'] = task.reward
             self.properties['Icon'] = task.icon
@@ -149,12 +150,13 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         stops_found = []
         for stop in self:
             if (stop.properties['Stop Name'].title() == stop_name.title()) or (stop_name.title() in stop.properties['Nicknames']) or (stop_name in stop.properties['Nicknames']):
-                if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
+                if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
                     self.reset_all
                 stops_found.append(stop)
         if len(stops_found) == 0:
             raise StopNotFound()
         elif len(stops_found) == 1:
+            stops_found[0]._map = self
             return stops_found[0]
         else:
             temp_num = 1
@@ -166,16 +168,19 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
         """Add a new stop to the map."""
-        self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
-                                  'Last Edit': int(datetime.datetime.now().strftime("%j")), 'Nicknames': []
-                                  },
-                      geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
+        if ((self._data['bounds'][0] < coordinates[1] < self._data['bounds'][2]) and (self._data['bounds'][1] < coordinates[0] < self._data['bounds'][3])) or ((self._data['bounds'][2] < coordinates[1] < self._data['bounds'][0]) and (self._data['bounds'][3] < coordinates[0] < self._data['bounds'][1])):
+            self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
+                                      'Last Edit': int(self.now().strftime("%j")), 'Nicknames': []
+                                      },
+                          geometry={"type": "Point", "coordinates": coordinates, "bbox": [coordinates[0], coordinates[1], coordinates[0], coordinates[1]]})
+        else:
+            raise StopOutsideBoundary()
 
     def reset_old(self):
         """Check for and reset only old stops in the map. This should get deprecated by moving the last edit to the map properties."""
         stops_reset = False
         for stop in self:
-            if stop.properties['Last Edit'] != int(datetime.datetime.now().strftime("%j")):
+            if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
                 stop.reset()
                 stops_reset = True
         return stops_reset
@@ -192,9 +197,38 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 del self[i]
                 break
 
-    def set_reset_time(self, time):     # TODO Figure out how to implement this as a nonfeature property
-        """Set the time (in UTC) that the map should be reset"""
-        pass
+    def set_time_zone(self, tz_str):     # TODO Figure out how to implement this as a nonfeature property
+        """Set the maps time zone."""
+        if tz_str in pytz.all_timezones:
+            self._data['timezone'] = tz_str
+        else:
+            raise InvalidTimezone()
+
+    def now(self):
+        """Return the time in the maps timezone"""
+        if 'timezone' in self._data:
+            return pytz.utc.localize(datetime.datetime.utcnow()).astimezone(pytz.timezone(self._data['timezone']))
+        else:
+            return pytz.utc.localize(datetime.datetime.utcnow())
+
+    def set_location(self, coordinates):
+        """Set the default location of the map"""
+        self._data['loc'] = [coordinates]
+
+    def set_bounds(self, coords1, coords2):
+        """Set the bounds for the internet map and for checking stop locations"""
+        diff0 = abs(coords1[0] - coords2[0])
+        diff1 = abs(coords1[1] - coords2[1])
+        if max(diff0, diff1) > 1:
+            raise BoundsTooLarge()
+        elif 'loc' in self._data:
+            loc_coords = self._data['loc']
+            if ((coords1[0] < loc_coords[0] < coords2[0]) or (coords1[0] > loc_coords[0] > coords2[0])) and ((coords1[1] < loc_coords[1] < coords2[1]) or (coords1[1] > loc_coords[1] > coords2[1])):
+                self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
+            else:
+                raise LocationNotInBounds()
+        else:
+            self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
 
 
 # Custom functions
@@ -272,3 +306,31 @@ class NicknameInUse(PokemapException):
         elif type(task_or_stop) is pygeoj.Feature:
             stop = task_or_stop
             self.message = "This nickname is already associated with the stop: " + stop.properties['Stop Name']
+
+
+class BoundsTooLarge(PokemapException):
+    """Exception for when too much area is contained in the boundary box set for your location"""
+    def __init__(self):
+        """Add message based on context of error."""
+        self.message = "Boundary too large, must be less than one degree of latitude and longitude."
+
+
+class LocationNotInBounds(PokemapException):
+    """Exception for when the map location and bounday don't matchup"""
+    def __init__(self):
+        """Add message based on context of error."""
+        self.message = "Map location out of map boundary."
+
+
+class InvalidTimezone(PokemapException):
+    """Exception for when the timezone string isn't recognized by pytz"""
+    def __init__(self):
+        """Add message based on context of error."""
+        self.message = "Invalid time zone string, choose one from https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones."
+
+
+class StopOutsideBoundary(PokemapException):
+    """Exception for when a stop is added outside of the boundary"""
+    def __init__(self):
+        """Add message based on context of error."""
+        self.message = "This stop is outside of the boundary set in your map. Contact your maintainer if you feel this is an error with the boundary."
