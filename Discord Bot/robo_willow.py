@@ -6,12 +6,12 @@ import discord
 import inspect
 from datetime import datetime
 from discord import Game
-from discord.ext.commands import Bot
+from discord.ext.commands import Bot, has_permissions
 from config import discord_token
 
 # Setup Variables
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
-map_path = '/var/www/html/map.json'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
+map_dir = '/var/www/html/'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
 task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from if the bot is restarted
 map_URL = 'https://mathmauney.no-ip.org'
 bot_game = "with maps at mathmauney.no-ip.org"
@@ -30,6 +30,7 @@ except FileNotFoundError:
     taskmap = pokemap.new()
     print('No map found at: ' + map_path + '. Creating new map now')
 
+maps = {}
 # Import the tasklist object or create new one
 try:
     with open(task_path, 'rb') as input:
@@ -48,6 +49,26 @@ async def on_ready():
     """Take actions on login."""
     await client.change_presence(game=Game(name=bot_game))  # Sets the game presence
     print("Logged in as " + client.user.name)  # Logs sucessful login
+    for server in client.servers:
+        print(server.id)
+        map_path = map_dir + str(server.id) + '.json'
+        try:
+            taskmap = pokemap.load(map_path)
+            reset_bool = taskmap.reset_old()
+            if reset_bool:
+                taskmap.save(map_path)
+            print('Map successfully loaded, map time is: ' + taskmap.now().strftime("%Y.%m.%d.%H%M%S"))
+        except FileNotFoundError:
+            taskmap = pokemap.new()
+            print('No map found at: ' + map_path + '. Creating new map now')
+        taskmap._data['path'] = map_path
+    maps[server.id] = taskmap
+
+
+@client.event
+async def on_server_join(server):
+    """Take actions on server join"""
+    print(server.id)
 
 
 # Bot Command Definitions
@@ -241,6 +262,7 @@ async def nicknametask(task_name, nickname):
 
 
 @client.command()
+@has_permissions(administrator=True)
 @pass_errors
 async def setlocation(lat, long):
     """Set the location of the map for the web view."""
@@ -250,6 +272,7 @@ async def setlocation(lat, long):
 
 
 @client.command()
+@has_permissions(administrator=True)
 @pass_errors
 async def setbounds(lat1, long1, lat2, long2):
     """Set the boundaries of the maps for checking when pokestops are added."""
@@ -260,6 +283,7 @@ async def setbounds(lat1, long1, lat2, long2):
 
 
 @client.command()
+@has_permissions(administrator=True)
 @pass_errors
 async def settimezone(tz_str):
     """Set the timezone of the map so it resets itself correctly."""
@@ -268,9 +292,10 @@ async def settimezone(tz_str):
 
 
 @client.command(pass_context=True)
-async def serverid(context, arg):
+@has_permissions(administrator=True)
+async def serverid(context):
     """Find the server ID."""
-    await client.say(context.message.server.id + ' ' + arg)
+    await client.say(context.message.server.id)
 
 
 @client.event
@@ -390,7 +415,6 @@ async def on_message(message):
             stop_name = message.content
             prev_message_stop = taskmap.find_stop(stop_name)
             prev_message_was_stop = True
-            prev_message = message
         except pokemap.PokemapException:
             prev_message_was_stop = False
 
