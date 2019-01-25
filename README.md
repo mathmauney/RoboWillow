@@ -18,6 +18,8 @@ To run the bot a discord token is needed, which is specified in config.py. To ru
 
 Once the configs have been set for your commmunity, the bot can be run using 'python3 robo_willow.py' and can be invited to your server using the discord developer portal where you got the discord token.
 
+Once the bot has been added correctly, use the setup command to get walked through setting the map up, and the help command to see how to operate the bot.
+
 ## Current Features
 
 ### Research Map
