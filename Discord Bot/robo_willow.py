@@ -16,6 +16,7 @@ task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from
 map_URL = 'http://robowillow.ddns.net'
 bot_game = "with maps at robowillow.net"
 maintainer_handle = '@mathmauney'
+maintainer_id = 200038656021364736
 
 
 # Load In Saved Data
@@ -293,6 +294,18 @@ async def resetall(ctx):
         stop._map = taskmap
         stop.reset()
     taskmap.save()
+
+
+@client.command(pass_context=True)
+@pass_errors
+async def resetmap(ctx, server_id):
+    """Allows bot owner to reset any map remotely"""
+    if ctx.message.author.id == maintainer_id:
+        taskmap = maps[server_id]
+        for stop in taskmap:
+            stop._map = taskmap
+            stop.reset()
+        taskmap.save()
 
 
 @client.command(pass_context=True)
