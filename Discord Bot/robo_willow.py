@@ -13,8 +13,8 @@ from config import discord_token
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
 map_dir = '/var/www/html/maps/'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
 task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from if the bot is restarted
-map_URL = 'https://mathmauney.no-ip.org'
-bot_game = "with maps at mathmauney.no-ip.org"
+map_URL = 'http://robowillow.ddns.net'
+bot_game = "with maps at robowillow.net"
 maintainer_handle = '@mathmauney'
 
 
