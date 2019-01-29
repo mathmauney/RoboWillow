@@ -235,9 +235,10 @@ async def listtasks():
 
 @client.command(pass_context=True)
 @pass_errors
-async def deletestop(ctx, stop_str):
+async def deletestop(ctx, *args):
     """Delete a stop."""
     taskmap = maps[ctx.message.server.id]
+    stop_str = ' '.join(args)
     stop = taskmap.find_stop(stop_str)
     taskmap.remove_stop(stop)
     taskmap.save()
