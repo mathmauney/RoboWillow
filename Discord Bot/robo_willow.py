@@ -344,6 +344,8 @@ async def on_message(message):
     Contains the help commands, and the bots ability to parse language.
 
     """
+    if message.server is not None:
+        taskmap = maps[message.server.id]
     if message.author == client.user:
         return
     elif message.content.startswith(bot_prefix):
@@ -436,7 +438,6 @@ async def on_message(message):
             await client.process_commands(message)
     elif prev_message_was_stop[message.server.id]:
         prev_message_was_stop[message.server.id] = False
-        taskmap = maps[message.server.id]
         try:
             task_name = message.content
             task = tasklist.find_task(task_name)
@@ -449,7 +450,6 @@ async def on_message(message):
         except pokemap.PokemapException as e:
             await client.send_message(message.channel, e.message)
     else:
-        taskmap = maps[message.server.id]
         try:
             stop_name = message.content
             prev_message_stop[message.server.id] = taskmap.find_stop(stop_name)
