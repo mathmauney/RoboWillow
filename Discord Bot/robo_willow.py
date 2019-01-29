@@ -430,6 +430,20 @@ async def on_message(message):
             prev_message[message.server.id] = message
         except pokemap.PokemapException:
             prev_message_was_stop[message.server.id] = False
+            if '\n' in message.content:
+                try:
+                    args = message.content.split('\n', 1)
+                    stop_name = args[0]
+                    task_name = args[1]
+                    stop = taskmap.find_stop(stop_name)
+                    task = tasklist.find_task(task_name)
+                    stop.set_task(task)
+                    if task_name.title() in task.rewards:
+                        stop.properties['Icon'] = task_name.title()
+                    taskmap.save()
+                    await client.add_reaction(message, '👍')
+                except pokemap.PokemapException:
+                    pass
 
 
 async def list_servers():
