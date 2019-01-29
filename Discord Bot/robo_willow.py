@@ -344,7 +344,8 @@ async def on_message(message):
     Contains the help commands, and the bots ability to parse language.
 
     """
-    taskmap = maps[message.server.id]
+    if message.server is not None:
+        taskmap = maps[message.server.id]
     if message.author == client.user:
         return
     elif message.content.startswith(bot_prefix):
