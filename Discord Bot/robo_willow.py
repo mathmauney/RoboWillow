@@ -286,6 +286,18 @@ async def setlocation(ctx, lat, long):
 @client.command(pass_context=True)
 @has_permissions(administrator=True)
 @pass_errors
+async def resetall(ctx):
+    """Set the location of the map for the web view."""
+    taskmap = maps[ctx.message.server.id]
+    for stop in taskmap:
+        stop._map = taskmap
+        stop.reset()
+    taskmap.save()
+
+
+@client.command(pass_context=True)
+@has_permissions(administrator=True)
+@pass_errors
 async def setbounds(ctx, lat1, long1, lat2, long2):
     """Set the boundaries of the maps for checking when pokestops are added."""
     taskmap = maps[ctx.message.server.id]
@@ -379,6 +391,7 @@ async def on_message(message):
                 commands[bot_prefix[0]+'deletestop'] = 'Remove a stop from the local map.'
                 commands[bot_prefix[0]+'resettasklist'] = 'Completely clear the tasklist. Use only if the tasklist has become corrupted,' +\
                     ' otherwise use the deletetask command to remove unwanted tasks one by one.'
+                commands[bot_prefix[0]+'resetall'] = 'Reset all the stops in the map. Use when an event causes research changes (Requires admin).'
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
                 for command, description in commands.items():
                     msg.add_field(name=command, value=description, inline=False)
