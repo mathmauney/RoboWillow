@@ -300,7 +300,7 @@ async def resetall(ctx):
 @pass_errors
 async def resetmap(ctx, server_id):
     """Allows bot owner to reset any map remotely"""
-    if ctx.message.author.id == maintainer_id:
+    if int(ctx.message.author.id) == int(maintainer_id):
         taskmap = maps[server_id]
         for stop in taskmap:
             stop._map = taskmap
