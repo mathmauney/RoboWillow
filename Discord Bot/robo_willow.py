@@ -349,7 +349,8 @@ async def on_message(message):
     if message.author == client.user:
         return
     elif message.content.startswith(bot_prefix):
-        prev_message_was_stop[message.server.id] = False
+        if message.server is not None:
+            prev_message_was_stop[message.server.id] = False
         msg = message.content.strip("".join(list(bot_prefix)))
         if msg.startswith('help'):
             if 'addstop' in message.content.lower():
