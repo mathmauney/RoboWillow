@@ -306,6 +306,8 @@ async def resetmap(ctx, server_id):
             stop._map = taskmap
             stop.reset()
         taskmap.save()
+    else:
+        await client.say("Sorry you can't do that" + ctx.message.author.id)
 
 
 @client.command(pass_context=True)
