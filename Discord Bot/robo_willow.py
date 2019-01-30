@@ -245,7 +245,7 @@ async def deletestop(ctx, *args):
     taskmap.save()
 
 
-@client.command(pass_context=True)
+@client.command()
 @pass_errors
 async def deletetask(task_str):
     """Delete a task."""
