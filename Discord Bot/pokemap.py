@@ -217,6 +217,10 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         """Set the default location of the map"""
         self._data['loc'] = [coordinates]
 
+    def set_maptoken(self, token):
+        """Set the default location of the map"""
+        self._data['maptoken'] = token
+
     def set_bounds(self, coords1, coords2):
         """Set the bounds for the internet map and for checking stop locations"""
         diff0 = abs(coords1[0] - coords2[0])

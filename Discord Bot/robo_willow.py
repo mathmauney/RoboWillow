@@ -311,6 +311,18 @@ async def resetmap(ctx, server_id):
 
 
 @client.command(pass_context=True)
+@pass_errors
+async def maptoken(ctx, server_id, maptoken):
+    """Allows bot owner to reset any map remotely"""
+    if int(ctx.message.author.id) == int(maintainer_id):
+        taskmap = maps[server_id]
+        taskmap.set_maptoken(maptoken)
+        taskmap.save()
+    else:
+        await client.say("Sorry you can't do that" + ctx.message.author.id)
+
+
+@client.command(pass_context=True)
 @has_permissions(administrator=True)
 @pass_errors
 async def setbounds(ctx, lat1, long1, lat2, long2):
