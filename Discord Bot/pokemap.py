@@ -59,7 +59,7 @@ class Tasklist:
 
     def find_task(self, task_str):
         """Find a task in the list and return it."""
-        task_str = task_str.replace('é','e').title()
+        task_str = task_str.replace('é', 'e').title()
         task_not_found = True
         while task_not_found:
             for task in self.tasks:
