@@ -151,6 +151,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
     def find_stop(self, stop_name):
         """Find a stop within the map by its name or nickname."""
         stops_found = []
+        stop_name = stop_name.replace('’', "'")
         for stop in self:
             if (stop.properties['Stop Name'].title() == stop_name.title()) or (stop_name.title() in stop.properties['Nicknames']) or (stop_name in stop.properties['Nicknames']):
                 if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
@@ -171,6 +172,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
         """Add a new stop to the map."""
+        name = name.replace('’', "'")
         if ((self._data['bounds'][0] < coordinates[1] < self._data['bounds'][2]) and (self._data['bounds'][1] < coordinates[0] < self._data['bounds'][3])) or ((self._data['bounds'][2] < coordinates[1] < self._data['bounds'][0]) and (self._data['bounds'][3] < coordinates[0] < self._data['bounds'][1])):
             self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
                                       'Last Edit': int(self.now().strftime("%j")), 'Nicknames': []
