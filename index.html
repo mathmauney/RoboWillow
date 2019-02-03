@@ -33,12 +33,12 @@
 		    GET[decodeURIComponent(param[0])] = decodeURIComponent(param[1] || "");
 		}
 		if (!GET.map) {
-			map_name = 'map'
+			map_name = '393857345135968287'
 		} else {
 			map_name = GET.map
 		}
     var pokemap = $.ajax({
-      url:"https://mathmauney.no-ip.org/" + map_name + '.json',
+      url:"http://robowillow.ddns.net/maps/" + map_name + '.json',
       dataType: "json",
       success: console.log("Pokemap data successfully loaded."),
 	  	error: function (xhr) {
@@ -61,7 +61,7 @@
 				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, Icons made by <a href="https://theartificial.com" title="The Artificial">The Artificial</a>',
 				maxZoom: 18,
 				id: 'mapbox.streets',
-				accessToken: mapBoxToken
+				accessToken: pokemap.responseJSON.maptoken
 			}).addTo(map);
 
 
@@ -70,7 +70,10 @@
 
 			var icons = {
 				'Rare Candy': L.icon({iconUrl: "./img/rare_candy.png", iconSize: [30,30]}),
+				'Silver Pinap': L.icon({iconUrl: "./img/silver_pinap.png", iconSize: [30,30]}),
 				'Bulbasaur': L.icon({iconUrl: "./img/001-bulbasaur.png", iconSize: [30,30]}),
+				'Charmander': L.icon({iconUrl: "./img/004-charmander.png", iconSize: [30,30]}),
+				'Squirtle': L.icon({iconUrl: "./img/007-squirtle.png", iconSize: [30,30]}),
 				'Caterpie': L.icon({iconUrl: "./img/010-caterpie.png", iconSize: [30,30]}),
 				'Sandshrew': L.icon({iconUrl: "./img/027-sandshrew.png", iconSize: [30,30]}),
 				'Clefable': L.icon({iconUrl: "./img/036-clefable.png", iconSize: [30,30]}),
@@ -178,7 +181,7 @@
 			}
 
 
-			var control = L.control.layers(basemapsObj, overlaysObj, { collapsed: false }).addTo(map);
+			var control = L.control.layers(basemapsObj, overlaysObj, { collapsed: true }).addTo(map);
 
 			// Make sure the Layers Control checkboxes are kept in sync with what is on map.
 			// For some reason this control does not sync its checkboxes with the map state by itself, whereas it does with Leaflet 0.7.x?
