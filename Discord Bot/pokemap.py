@@ -18,6 +18,9 @@ class Task:
         if 'Rare' in self.reward:    # Check to see what the reward type is
             self.reward_type = 'Rare Candy'
             self.nicknames.append(quest + ' RC')
+        elif 'Silver' in self.reward:    # Check to see what the reward type is
+            self.reward_type = 'Silver Pinap'
+            self.nicknames.append(quest + ' SP')
         elif 'Stardust' in self.reward:
             self.reward_type = 'Stardust'
         else:
@@ -56,7 +59,7 @@ class Tasklist:
 
     def find_task(self, task_str):
         """Find a task in the list and return it."""
-        task_str = task_str.title()
+        task_str = task_str.replace('é', 'e').title()
         task_not_found = True
         while task_not_found:
             for task in self.tasks:
@@ -148,6 +151,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
     def find_stop(self, stop_name):
         """Find a stop within the map by its name or nickname."""
         stops_found = []
+        stop_name = stop_name.replace('’', "'")
         for stop in self:
             if (stop.properties['Stop Name'].title() == stop_name.title()) or (stop_name.title() in stop.properties['Nicknames']) or (stop_name in stop.properties['Nicknames']):
                 if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
@@ -168,6 +172,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
         """Add a new stop to the map."""
+        name = name.replace('’', "'")
         if ((self._data['bounds'][0] < coordinates[1] < self._data['bounds'][2]) and (self._data['bounds'][1] < coordinates[0] < self._data['bounds'][3])) or ((self._data['bounds'][2] < coordinates[1] < self._data['bounds'][0]) and (self._data['bounds'][3] < coordinates[0] < self._data['bounds'][1])):
             self.add_stop(properties={'marker-size': 'medium', 'marker-symbol': '', 'marker-color': '#808080', 'Stop Name': name, 'Task': '', 'Reward': '',
                                       'Last Edit': int(self.now().strftime("%j")), 'Nicknames': []
@@ -181,6 +186,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         stops_reset = False
         for stop in self:
             if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
+                stop._map = self
                 stop.reset()
                 stops_reset = True
         return stops_reset
@@ -188,6 +194,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
     def reset_all(self):
         """Reset all the stops in the map."""
         for stop in self:
+            stop._map = self
             stop.reset()
 
     def remove_stop(self, stop):
@@ -215,6 +222,10 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         """Set the default location of the map"""
         self._data['loc'] = [coordinates]
 
+    def set_maptoken(self, token):
+        """Set the default location of the map"""
+        self._data['maptoken'] = token
+
     def set_bounds(self, coords1, coords2):
         """Set the bounds for the internet map and for checking stop locations"""
         diff0 = abs(coords1[0] - coords2[0])
@@ -229,6 +240,11 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 raise LocationNotInBounds()
         else:
             self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
+
+    def save(self, filename=None):
+        if filename is None:
+            filename = self._data['path']
+        super().save(filename)
 
 
 # Custom functions
