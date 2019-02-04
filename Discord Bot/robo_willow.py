@@ -302,7 +302,9 @@ async def resetmap(ctx, server_id):
     """Allows bot owner to reset any map remotely"""
     if int(ctx.message.author.id) == int(maintainer_id):
         taskmap = maps[server_id]
-        taskmap.reset_all
+        for stop in taskmap:
+            stop._map = taskmap
+            stop.reset()
         taskmap.save()
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
@@ -315,7 +317,9 @@ async def resetallmaps(ctx):
     if int(ctx.message.author.id) == int(maintainer_id):
         for server_id in maps:
             taskmap = maps[server_id]
-            taskmap.reset_all
+            for stop in taskmap:
+                stop._map = taskmap
+                stop.reset()
             taskmap.save()
         await client.say("Reset map: " + server_id)
     else:
