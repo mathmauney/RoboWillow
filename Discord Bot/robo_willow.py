@@ -321,7 +321,7 @@ async def resetallmaps(ctx):
                 stop._map = taskmap
                 stop.reset()
             taskmap.save()
-        await client.say("Reset map: " + server_id)
+            await client.say("Reset map: " + server_id)
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
 
