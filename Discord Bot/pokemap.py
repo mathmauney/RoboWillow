@@ -193,7 +193,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def reset_all(self):
         """Reset all the stops in the map."""
-        for stop in self:
+        for i, stop in enumerate(self):
             stop._map = self
             stop.reset()
 

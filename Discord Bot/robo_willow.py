@@ -290,9 +290,10 @@ async def setlocation(ctx, lat, long):
 async def resetall(ctx):
     """Set the location of the map for the web view."""
     taskmap = maps[ctx.message.server.id]
-    for stop in taskmap:
-        stop._map = taskmap
-        stop.reset()
+#    for stop in taskmap:
+#        stop._map = taskmap
+#        stop.reset()
+    taskmap.reset_all()
     taskmap.save()
 
 
