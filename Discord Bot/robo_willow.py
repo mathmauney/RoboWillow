@@ -290,9 +290,6 @@ async def setlocation(ctx, lat, long):
 async def resetall(ctx):
     """Set the location of the map for the web view."""
     taskmap = maps[ctx.message.server.id]
-#    for stop in taskmap:
-#        stop._map = taskmap
-#        stop.reset()
     taskmap.reset_all()
     taskmap.save()
 
@@ -303,9 +300,7 @@ async def resetmap(ctx, server_id):
     """Allows bot owner to reset any map remotely"""
     if int(ctx.message.author.id) == int(maintainer_id):
         taskmap = maps[server_id]
-        for stop in taskmap:
-            stop._map = taskmap
-            stop.reset()
+        taskmap.reset_all()
         taskmap.save()
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
