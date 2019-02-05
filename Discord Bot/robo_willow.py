@@ -313,12 +313,16 @@ async def resetmap(ctx, server_id):
 
 @client.command(pass_context=True)
 @pass_errors
-async def maptoken(ctx, server_id, maptoken):
+async def resetallmaps(ctx):
     """Allows bot owner to reset any map remotely"""
     if int(ctx.message.author.id) == int(maintainer_id):
-        taskmap = maps[server_id]
-        taskmap.set_maptoken(maptoken)
-        taskmap.save()
+        for server_id in maps:
+            taskmap = maps[server_id]
+            for stop in taskmap:
+                stop._map = taskmap
+                stop.reset()
+            taskmap.save()
+            await client.say("Reset map: " + server_id)
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
 

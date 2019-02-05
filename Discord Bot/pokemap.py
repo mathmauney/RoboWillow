@@ -95,6 +95,7 @@ class Stop(pygeoj.Feature):
         self.properties['Reward'] = ''
         self.properties['Category'] = ''
         self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
+        self.properties['Icon'] = ''
 
     def set_task(self, task):
         """Add a task to the stop."""
