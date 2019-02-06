@@ -17,10 +17,10 @@ class Task:
         self.nicknames = []
         if 'Rare' in self.reward:    # Check to see what the reward type is
             self.reward_type = 'Rare Candy'
-            self.nicknames.append(quest + ' Rc')
+            self.nicknames.append(quest + ' RC')
         elif 'Silver' in self.reward:    # Check to see what the reward type is
             self.reward_type = 'Silver Pinap'
-            self.nicknames.append(quest + ' Sp')
+            self.nicknames.append(quest + ' SP')
         elif 'Stardust' in self.reward:
             self.reward_type = 'Stardust'
         else:
@@ -63,7 +63,7 @@ class Tasklist:
         task_not_found = True
         while task_not_found:
             for task in self.tasks:
-                if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in task.rewards) or (task_str in task.nicknames):
+                if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in (reward.upper() for reward in task.rewards)) or (task_str in (nickname.upper() for nickname in task.nicknames)):
                     return task
                     task_not_found = False
             break
