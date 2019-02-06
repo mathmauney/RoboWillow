@@ -57,11 +57,8 @@
 			map.setView(collection.loc, 14);
 			map.options.minZoom = 13;
 
-			var basic = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, Icons made by <a href="https://theartificial.com" title="The Artificial">The Artificial</a>',
-				maxZoom: 18,
-				id: 'mapbox.streets',
-				accessToken: pokemap.responseJSON.maptoken
+			var basic = L.tileLayer('https://maps.tilehosting.com/styles/basic/{z}/{x}/{y}.png?key=vrAh6mrsR3TrwZ6KebJF', {
+				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.maptiler.com/copyright/">MapTiler</a>, Icons made by <a href="https://theartificial.com" title="The Artificial">The Artificial</a>',
 			}).addTo(map);
 
 
