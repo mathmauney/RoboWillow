@@ -280,6 +280,10 @@ async def setlocation(ctx, lat, long):
     """Set the location of the map for the web view."""
     taskmap = maps[ctx.message.server.id]
     taskmap.set_location(float(lat), float(long))
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
@@ -326,6 +330,10 @@ async def setbounds(ctx, lat1, long1, lat2, long2):
     coords1 = [float(lat1), float(long1)]
     coords2 = [float(lat2), float(long2)]
     taskmap.set_bounds(coords1, coords2)
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
@@ -335,7 +343,10 @@ async def settimezone(ctx, tz_str):
     """Set the timezone of the map so it resets itself correctly."""
     taskmap = maps[ctx.message.server.id]
     taskmap.set_time_zone(tz_str)
-    taskmap.save()
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
