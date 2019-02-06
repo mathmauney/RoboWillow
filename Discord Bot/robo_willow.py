@@ -279,8 +279,7 @@ async def nicknametask(task_name, nickname):
 async def setlocation(ctx, lat, long):
     """Set the location of the map for the web view."""
     taskmap = maps[ctx.message.server.id]
-    coordinates = [float(lat), float(long)]
-    taskmap.set_location(coordinates)
+    taskmap.set_location(float(lat), float(long))
 
 
 @client.command(pass_context=True)
