@@ -17,10 +17,10 @@ class Task:
         self.nicknames = []
         if 'Rare' in self.reward:    # Check to see what the reward type is
             self.reward_type = 'Rare Candy'
-            self.nicknames.append(quest + ' RC')
+            self.nicknames.append(quest + ' Rc')
         elif 'Silver' in self.reward:    # Check to see what the reward type is
             self.reward_type = 'Silver Pinap'
-            self.nicknames.append(quest + ' SP')
+            self.nicknames.append(quest + ' Sp')
         elif 'Stardust' in self.reward:
             self.reward_type = 'Stardust'
         else:
