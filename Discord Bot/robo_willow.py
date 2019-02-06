@@ -281,7 +281,6 @@ async def setlocation(ctx, lat, long):
     taskmap = maps[ctx.message.server.id]
     coordinates = [float(lat), float(long)]
     taskmap.set_location(coordinates)
-    taskmap.save()
 
 
 @client.command(pass_context=True)
@@ -328,7 +327,6 @@ async def setbounds(ctx, lat1, long1, lat2, long2):
     coords1 = [float(lat1), float(long1)]
     coords2 = [float(lat2), float(long2)]
     taskmap.set_bounds(coords1, coords2)
-    taskmap.save()
 
 
 @client.command(pass_context=True)
