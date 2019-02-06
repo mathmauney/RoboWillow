@@ -194,7 +194,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
 
     def reset_all(self):
         """Reset all the stops in the map."""
-        for stop in self:
+        for i, stop in enumerate(self):
             stop._map = self
             stop.reset()
 
@@ -219,9 +219,9 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         else:
             return pytz.utc.localize(datetime.datetime.utcnow())
 
-    def set_location(self, coordinates):
+    def set_location(self, lat, long):
         """Set the default location of the map"""
-        self._data['loc'] = [coordinates]
+        self._data['loc'] = [lat, long]
 
     def set_maptoken(self, token):
         """Set the default location of the map"""

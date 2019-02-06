@@ -279,9 +279,11 @@ async def nicknametask(task_name, nickname):
 async def setlocation(ctx, lat, long):
     """Set the location of the map for the web view."""
     taskmap = maps[ctx.message.server.id]
-    coordinates = [float(lat), float(long)]
-    taskmap.set_location(coordinates)
-    taskmap.save()
+    taskmap.set_location(float(lat), float(long))
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
@@ -290,9 +292,7 @@ async def setlocation(ctx, lat, long):
 async def resetall(ctx):
     """Set the location of the map for the web view."""
     taskmap = maps[ctx.message.server.id]
-    for stop in taskmap:
-        stop._map = taskmap
-        stop.reset()
+    taskmap.reset_all()
     taskmap.save()
 
 
@@ -302,9 +302,7 @@ async def resetmap(ctx, server_id):
     """Allows bot owner to reset any map remotely"""
     if int(ctx.message.author.id) == int(maintainer_id):
         taskmap = maps[server_id]
-        for stop in taskmap:
-            stop._map = taskmap
-            stop.reset()
+        taskmap.reset_all()
         taskmap.save()
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
@@ -315,13 +313,10 @@ async def resetmap(ctx, server_id):
 async def resetallmaps(ctx):
     """Allows bot owner to reset any map remotely"""
     if int(ctx.message.author.id) == int(maintainer_id):
-        for server_id in maps:
-            taskmap = maps[server_id]
-            for stop in taskmap:
-                stop._map = taskmap
-                stop.reset()
+        for taskmap in maps.values():
+            taskmap.reset_all()
             taskmap.save()
-            await client.say("Reset map: " + server_id)
+            await client.say("Reset map: " + taskmap._data['path'])
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
 
@@ -335,7 +330,10 @@ async def setbounds(ctx, lat1, long1, lat2, long2):
     coords1 = [float(lat1), float(long1)]
     coords2 = [float(lat2), float(long2)]
     taskmap.set_bounds(coords1, coords2)
-    taskmap.save()
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
@@ -345,7 +343,10 @@ async def settimezone(ctx, tz_str):
     """Set the timezone of the map so it resets itself correctly."""
     taskmap = maps[ctx.message.server.id]
     taskmap.set_time_zone(tz_str)
-    taskmap.save()
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
