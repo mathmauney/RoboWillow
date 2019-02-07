@@ -467,6 +467,12 @@ async def on_message(message):
             taskmap.save()
             await client.add_reaction(prev_message[message.server.id], '👍')
             await client.add_reaction(message, '👍')
+        except pokemap.TaskAlreadyAssigned as e:
+            if prev_message_stop[message.server.id].properties['Reward'] == task.reward:
+                await client.add_reaction(prev_message[message.server.id], '👍')
+                await client.add_reaction(message, '👍')
+            else:
+                await client.send_message(message.channel, e.message)
         except pokemap.PokemapException as e:
             await client.send_message(message.channel, e.message)
     else:
@@ -489,8 +495,13 @@ async def on_message(message):
                         stop.properties['Icon'] = task_name.title()
                     taskmap.save()
                     await client.add_reaction(message, '👍')
-                except pokemap.PokemapException:
-                    pass
+                except pokemap.TaskAlreadyAssigned as e:
+                    if stop.properties['Reward'] == task.reward:
+                        await client.add_reaction(message, '👍')
+                    else:
+                        await client.send_message(message.channel, e.message)
+                except pokemap.PokemapException as e:
+                    await client.send_message(message.channel, e.message)
 
 
 async def list_servers():
