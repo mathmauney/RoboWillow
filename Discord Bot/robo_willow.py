@@ -186,7 +186,7 @@ async def resetstop(ctx, *args):
     stop = taskmap.find_stop(stop_name)
     stop.reset()
     taskmap.save()
-    client.say('Removed tasks from stop.')
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command()
@@ -243,6 +243,7 @@ async def deletestop(ctx, *args):
     stop = taskmap.find_stop(stop_str)
     taskmap.remove_stop(stop)
     taskmap.save()
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command()
