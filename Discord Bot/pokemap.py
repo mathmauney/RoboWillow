@@ -61,10 +61,19 @@ class Tasklist:
         """Find a task in the list and return it."""
         task_str = task_str.replace('é', 'e').title()
         task_not_found = True
+        custom_quest = False
+        if ":" in task_str:
+            task_strs = task_str.split(":")
+            task_str = task_strs[0]
+            quest_str = task_strs[1]
+            custom_quest = True
         while task_not_found:
             for task in self.tasks:
                 if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames)):
-                    return task
+                    out_task = task
+                    if custom_quest:
+                        out_task.quest = quest_str.title()
+                    return out_task
                     task_not_found = False
             break
         if task_not_found:
