@@ -14,73 +14,128 @@
 	</style>
 </head>
 <body>
-	 <div id="mapid" style="width: 100%; height: 100%;"></div>	
+	 <div id="mapid" style="width: 100%; height: 100%;"></div>
 
 	<script src="https://unpkg.com/leaflet@1.3.4/dist/leaflet.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script type="text/javascript" src="token.js"></script>
 
 
 	<script>
-	    var pokemap = $.ajax({
-          url:"http://mathmauney.no-ip.org/map.json",
-          dataType: "json",
-          success: console.log("Pokemap data successfully loaded."),
-		  error: function (xhr) {
-            alert(xhr.statusText)
-          }
+		var GET = {};
+		var query = window.location.search.substring(1).split("&");
+		for (var i = 0, max = query.length; i < max; i++)
+		{
+		    if (query[i] === "") // check for trailing & with no param
+		        continue;
 
-        })
+		    var param = query[i].split("=");
+		    GET[decodeURIComponent(param[0])] = decodeURIComponent(param[1] || "");
+		}
+		if (!GET.map) {
+			map_name = '393857345135968287'
+		} else {
+			map_name = GET.map
+		}
+    var pokemap = $.ajax({
+      url:"http://robowillow.ddns.net/maps/" + map_name + '.json',
+      dataType: "json",
+      success: console.log("Pokemap data successfully loaded."),
+	  	error: function (xhr) {
+          alert(xhr.statusText)
+      }
+    })
 		$.when(pokemap).done(function(){
-			var map = L.map('mapid').setView([42.44, -76.48], 14);
-			map.setMaxBounds(map.getBounds());
+			var collection = pokemap.responseJSON;
+			var map = L.map('mapid').setView(collection.loc, 12);
+			bounds = map.getBounds();
+			bounds._northEast.lat = Math.max(pokemap.responseJSON.bbox[1],pokemap.responseJSON.bbox[3]) + 0.01;
+			bounds._northEast.long = Math.max(pokemap.responseJSON.bbox[0],pokemap.responseJSON.bbox[2]) + 0.01;
+			bounds._southWest.lat = Math.min(pokemap.responseJSON.bbox[1],pokemap.responseJSON.bbox[3]) - 0.01;
+			bounds._southWest.long = Math.min(pokemap.responseJSON.bbox[0],pokemap.responseJSON.bbox[2]) - 0.01;
+			map.setMaxBounds(bounds);
+			map.setView(collection.loc, 14);
 			map.options.minZoom = 13;
 
-			var basic = L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, Icons made by <a href="https://theartificial.com" title="The Artificial">The Artificial</a>',
-				maxZoom: 18,
-				id: 'mapbox.streets',
-				accessToken: 'pk.eyJ1IjoibWF0aG1hdW5leSIsImEiOiJjam9icmc0OWYwN2ozM3BsZmV4a2szYm5zIn0.2VbfGiD5zv_Jed0r01fmpg'
+			var basic = L.tileLayer('https://maps.tilehosting.com/styles/basic/{z}/{x}/{y}.png?key=vrAh6mrsR3TrwZ6KebJF', {
+				attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.maptiler.com/copyright/">MapTiler</a>, Icons made by <a href="https://theartificial.com" title="The Artificial">The Artificial</a>',
 			}).addTo(map);
-			
 
-			var collection = pokemap.responseJSON;
 
 			var categories = {},
 				category;
-				
+
 			var icons = {
-				'Gen 1 Starter': L.icon({iconUrl: "./001-bulbasaur.png", iconSize: [30,30]}),
+				'Rare Candy': L.icon({iconUrl: "./img/rare_candy.png", iconSize: [30,30]}),
+				'Silver Pinap': L.icon({iconUrl: "./img/silver_pinap.png", iconSize: [30,30]}),
+				'Bulbasaur': L.icon({iconUrl: "./img/001-bulbasaur.png", iconSize: [30,30]}),
+				'Charmander': L.icon({iconUrl: "./img/004-charmander.png", iconSize: [30,30]}),
+				'Squirtle': L.icon({iconUrl: "./img/007-squirtle.png", iconSize: [30,30]}),
 				'Caterpie': L.icon({iconUrl: "./img/010-caterpie.png", iconSize: [30,30]}),
+				'Pikachu': L.icon({iconUrl: "./img/025-pikachu.png", iconSize: [30,30]}),
+				'Sandshrew': L.icon({iconUrl: "./img/027-sandshrew.png", iconSize: [30,30]}),
 				'Clefable': L.icon({iconUrl: "./img/036-clefable.png", iconSize: [30,30]}),
+				'Vulpix': L.icon({iconUrl: "./img/037-vulpix.png", iconSize: [30,30]}),
 				'Wigglytuff': L.icon({iconUrl: "./img/040-wigglytuff.png", iconSize: [30,30]}),
 				'Golbat': L.icon({iconUrl: "./img/042-golbat.png", iconSize: [30,30]}),
+				'Golduck': L.icon({iconUrl: "./img/055-golduck.png", iconSize: [30,30]}),
 				'Mankey': L.icon({iconUrl: "./img/056-mankey.png", iconSize: [30,30]}),
-				'Poliwag or Vulpix': L.icon({iconUrl: "./img/060-poliwag.png", iconSize: [30,30]}),
+				'Growlithe': L.icon({iconUrl: "./img/058-growlithe.png", iconSize: [30,30]}),
+				'Poliwag': L.icon({iconUrl: "./img/060-poliwag.png", iconSize: [30,30]}),
 				'Machop': L.icon({iconUrl: "./img/066-machop.png", iconSize: [30,30]}),
+				'Tentacruel': L.icon({iconUrl: "./img/073-tentacruel.png", iconSize: [30,30]}),
+				'Magnemite': L.icon({iconUrl: "./img/081-magnemite.png", iconSize: [30,30]}),
 				'Gastly': L.icon({iconUrl: "./img/092-gastly.png", iconSize: [30,30]}),
 				'Onix': L.icon({iconUrl: "./img/095-onix.png", iconSize: [30,30]}),
+				'Drowzee': L.icon({iconUrl: "./img/096-drowzee.png", iconSize: [30,30]}),
 				'Voltorb': L.icon({iconUrl: "./img/100-voltorb.png", iconSize: [30,30]}),
 				'Exeggcute': L.icon({iconUrl: "./img/102-exeggcute.png", iconSize: [30,30]}),
+				'Cubone': L.icon({iconUrl: "./img/104-cubone.png", iconSize: [30,30]}),
+				'Starmie': L.icon({iconUrl: "./img/121-starmie.png", iconSize: [30,30]}),
 				'Chansey': L.icon({iconUrl: "./img/113-chansey.png", iconSize: [30,30]}),
 				'Jynx': L.icon({iconUrl: "./img/124-jynx.png", iconSize: [30,30]}),
 				'Electabuzz': L.icon({iconUrl: "./img/125-electabuzz.png", iconSize: [30,30]}),
 				'Magmar': L.icon({iconUrl: "./img/126-magmar.png", iconSize: [30,30]}),
 				'Pinsir': L.icon({iconUrl: "./img/127-pinsir.png", iconSize: [30,30]}),
 				'Magikarp': L.icon({iconUrl: "./img/129-magikarp.png", iconSize: [30,30]}),
+				'Lapras': L.icon({iconUrl: "./img/131-lapras.png", iconSize: [30,30]}),
 				'Eevee': L.icon({iconUrl: "./img/133-eevee.png", iconSize: [30,30]}),
+				'Porygon': L.icon({iconUrl: "./img/137-porygon.png", iconSize: [30,30]}),
+				'Omanyte': L.icon({iconUrl: "./img/138-omanyte.png", iconSize: [30,30]}),
+				'Kabuto': L.icon({iconUrl: "./img/140-kabuto.png", iconSize: [30,30]}),
+				'Aerodactyl': L.icon({iconUrl: "./img/142-aerodactyl.png", iconSize: [30,30]}),
 				'Dratini': L.icon({iconUrl: "./img/147-dratini.png", iconSize: [30,30]}),
+				'Lanturn': L.icon({iconUrl: "./img/171-lanturn.png", iconSize: [30,30]}),
+				'Sunkern': L.icon({iconUrl: "./img/191-sunkern.png", iconSize: [30,30]}),
+				'Misdreavus': L.icon({iconUrl: "./img/200-misdreavus.png", iconSize: [30,30]}),
 				'Pineco': L.icon({iconUrl: "./img/204-pineco.png", iconSize: [30,30]}),
+				'Snubbull': L.icon({iconUrl: "./img/209-snubbull.png", iconSize: [30,30]}),
+				'Houndour': L.icon({iconUrl: "./img/228-houndour.png", iconSize: [30,30]}),
 				'Larvitar': L.icon({iconUrl: "./img/246-larvitar.png", iconSize: [30,30]}),
 				'Nincada': L.icon({iconUrl: "./img/290-nincada.png", iconSize: [30,30]}),
-				'Spinda': L.icon({iconUrl: "./img/327-spinda-7.png", iconSize: [30,30]}),
+				'Nosepass': L.icon({iconUrl: "./img/299-nosepass.png", iconSize: [30,30]}),
+				'Manectric': L.icon({iconUrl: "./img/310-manectric.png", iconSize: [30,30]}),
+				'Numel': L.icon({iconUrl: "./img/322-numel.png", iconSize: [30,30]}),
+				'Spinda': L.icon({iconUrl: "./img/327-spinda-6.png", iconSize: [30,30]}),
+				'Trapinch': L.icon({iconUrl: "./img/328-trapinch.png", iconSize: [30,30]}),
+				'Lileep': L.icon({iconUrl: "./img/345-lileep.png", iconSize: [30,30]}),
+				'Anorith': L.icon({iconUrl: "./img/347-anorith.png", iconSize: [30,30]}),
+				'Feebas': L.icon({iconUrl: "./img/349-feebas.png", iconSize: [30,30]}),
+				'Bidoof': L.icon({iconUrl: "./img/399-bidoof.png", iconSize: [30,30]}),
 			}
-			
+
 			function onEachFeature(feature, layer) {
 				// does this feature have a property named popupContent?
 				if (feature.properties && feature.properties.Reward) {
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +"</div>");
-					layer.setIcon(icons[feature.properties.Reward]);
-					category = feature.properties.Reward;
+					if (feature.properties.Category == 'Encounter') {
+						layer.setIcon(icons[feature.properties.Icon]);
+						category = feature.properties.Reward;
+					} else {
+						layer.setIcon(icons[feature.properties.Category]);
+						category = feature.properties.Category;
+					}
+
 				} else {
 					category = 'Unreported';
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>");
@@ -88,9 +143,9 @@
 				if (typeof categories[category] === "undefined") {
 					categories[category] = [];
 				}
-				categories[category].push(layer);				
-			}	
-				
+				categories[category].push(layer);
+			}
+
 			var allPoints = L.geoJson(collection, {
 				onEachFeature: onEachFeature
 			});
@@ -101,14 +156,18 @@
 				categoryName,
 				categoryArray,
 				categoryLG;
-				
-			categoryName = 'Unreported'	
+
+			categoryName = 'Unreported'
 			categoryArray = categories[categoryName];
-			categoryLG = L.layerGroup(categoryArray).addTo(map);
+			if (Object.keys(categories).length == 1){
+				categoryLG = L.layerGroup(categoryArray).addTo(map);
+			} else {
+			categoryLG = L.layerGroup(categoryArray);
+			}
 			categoryLG.categoryName = categoryName;
 			overlaysObj[categoryName] = categoryLG;
-				
-				
+
+
 			for (x in Object.keys(categories).sort()) {
 				categoryName = Object.keys(categories).sort()[x]
 				if (categoryName != 'Unreported'){
@@ -120,11 +179,11 @@
 			}
 
 
-			var control = L.control.layers(basemapsObj, overlaysObj, { collapsed: false }).addTo(map);
+			var control = L.control.layers(basemapsObj, overlaysObj, { collapsed: true }).addTo(map);
 
 			// Make sure the Layers Control checkboxes are kept in sync with what is on map.
 			// For some reason this control does not sync its checkboxes with the map state by itself, whereas it does with Leaflet 0.7.x?
-			
+
 		});
 	</script>
 </body>
