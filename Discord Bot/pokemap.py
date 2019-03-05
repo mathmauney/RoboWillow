@@ -23,6 +23,8 @@ class Task:
             self.nicknames.append(quest + ' SP')
         elif 'Stardust' in self.reward:
             self.reward_type = 'Stardust'
+        elif 'Tm' in self.reward:
+            self.reward_type = 'TM'
         else:
             self.reward_type = 'Encounter'
         if ' Or ' in self.reward:  # Try to parse the name into rewards
