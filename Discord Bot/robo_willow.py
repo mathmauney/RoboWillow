@@ -61,7 +61,7 @@ async def on_ready():
 
 @client.event
 async def on_server_join(server):
-    """Take actions on server join"""
+    """Take actions on server join."""
     print(server.id)
     map_path = map_dir + str(server.id) + '.json'
     try:
@@ -103,7 +103,7 @@ async def bot_embed_respond(message, msg):
 
 
 def pass_errors(func):
-    """Decorator to pass library errors into a discord message"""
+    """Pass library errors into a discord message."""
     async def decorator(*args, **kwargs):
         try:
             await func(*args, **kwargs)
@@ -186,7 +186,7 @@ async def resetstop(ctx, *args):
     stop = taskmap.find_stop(stop_name)
     stop.reset()
     taskmap.save()
-    client.say('Removed tasks from stop.')
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command()
@@ -243,6 +243,7 @@ async def deletestop(ctx, *args):
     stop = taskmap.find_stop(stop_str)
     taskmap.remove_stop(stop)
     taskmap.save()
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command()
@@ -299,7 +300,7 @@ async def resetall(ctx):
 @client.command(pass_context=True)
 @pass_errors
 async def resetmap(ctx, server_id):
-    """Allows bot owner to reset any map remotely"""
+    """Allow bot owner to reset any map remotely."""
     if int(ctx.message.author.id) == int(maintainer_id):
         taskmap = maps[server_id]
         taskmap.reset_all()
@@ -311,7 +312,7 @@ async def resetmap(ctx, server_id):
 @client.command(pass_context=True)
 @pass_errors
 async def resetallmaps(ctx):
-    """Allows bot owner to reset any map remotely"""
+    """Allow bot owner to reset any map remotely."""
     if int(ctx.message.author.id) == int(maintainer_id):
         for taskmap in maps.values():
             taskmap.reset_all()
