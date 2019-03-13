@@ -71,10 +71,11 @@ class Tasklist:
             for task in self.tasks:
                 if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames)):
                     out_task = task
+                    task_not_found = False
                     if custom_quest:
                         out_task.quest = quest_str.title()
                     return out_task
-                    task_not_found = False
+
             break
         if task_not_found:
             raise TaskNotFound()
