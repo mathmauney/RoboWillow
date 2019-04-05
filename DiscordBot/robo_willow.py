@@ -141,6 +141,7 @@ async def addstop(ctx, *args):
         elif n_args > 2:
             lat = float(args[n_args-2])
             long = float(args[n_args-1])
+            name_args = args[0:n_args-2]
         name = ' '.join(name_args)
         try:
             taskmap.new_stop([long, lat], name)
