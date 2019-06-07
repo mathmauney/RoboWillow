@@ -148,7 +148,7 @@ async def addstop(ctx, *args):
             taskmap.save()
             await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
         except pokemap.PokemapException as e:
-            await cflient.say(e.message)
+            await client.say(e.message)
     else:
         await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
 
@@ -432,6 +432,15 @@ async def on_message(message):
                 for command, description in commands.items():
                     msg.add_field(name=command, value=description, inline=False)
                 await bot_embed_respond(message, msg)
+            elif 'setup' in message.content.lower():
+                msg = discord.Embed(colour=discord.Colour(0x186a0))
+                command_name = 'Initial Setup Commands'
+                command_help = '- First setup the location of your map by using "' + bot_prefix[0] + 'setlocation lat long", with lat and long being the latitude and longitude near the center of your map area.\n'
+                command_help += '- Then define the bounds of your map using "' + bot_prefix[0] + 'setbounds lat1 long1 lat2 long2" where the latitudes and longitudes are from opposite corners of your map boundary (SW and NE recommended). '
+                command_help += 'The extent of your boundary should be less than one degree of latitude and longitude.\n'
+                command_help += '- Lastly set the timezone your map is in (so it resets at midnight correctly) using "' + bot_prefix[0] + 'settimezone timezone_str" where timezone_str is from the list https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones.'
+                msg.add_field(name=command_name, value=command_help, inline=False)
+                await client.send_message(message.channel, embed=msg)
             else:
                 commands = {}
                 commands[bot_prefix[0]+'addstop'] = 'Add a new stop to the map.'
