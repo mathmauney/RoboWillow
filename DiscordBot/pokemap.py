@@ -4,6 +4,7 @@ import datetime
 import pygeoj
 import pickle
 import pytz
+import copy
 
 
 class Task:
@@ -75,9 +76,9 @@ class Tasklist:
                     out_task = task
                     task_not_found = False
                     if custom_quest:
+                        out_task = copy.copy(task)
                         out_task.quest = quest_str.title()
                     return out_task
-
             break
         if task_not_found:
             raise TaskNotFound()
