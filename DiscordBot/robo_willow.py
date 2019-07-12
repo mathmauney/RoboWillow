@@ -152,14 +152,14 @@ async def addstop(ctx, *args):
         long = float(args[n_args-1])
         name_args = args[0:n_args-2]
         name = ' '.join(name_args)
+    else:
+        await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
     try:
         taskmap.new_stop([long, lat], name)
         taskmap.save()
         await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
     except pokemap.PokemapException as e:
         await client.say(e.message)
-    else:
-        await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
 
 
 @client.command(pass_context=True)
