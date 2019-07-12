@@ -8,6 +8,7 @@ from datetime import datetime
 from discord import Game
 from discord.ext.commands import Bot, has_permissions
 from config import discord_token
+import urllib.parse as urlparse
 
 # Setup Variables
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
@@ -126,9 +127,13 @@ async def addstop(ctx, *args):
     """
     taskmap = maps[ctx.message.server.id]
     n_args = len(args)
-    if n_args >= 2:  # Checks to see if enough arguements have been given
-        if args[-1].startswith('https:'):  # Checks if the lat/long has been given as an ingress intel URL
+    if args[-1].startswith('https:'):  # Checks if the lat/long has been given as an ingress intel URL
+        url_str = args[-1]
+        parsed = urlparse.urlparse(url_str)
+        query_parsed = urlparse.parse_qs(url_str)
+        if 'ingress' in parsed[1]:   # Check if ingress url
             name_args = args[0:n_args-1]
+            name = ' '.join(name_args)
             ingress_url = args[-1]
             pll_location = ingress_url.find('pll')  # Finds the part of the url that describes the portal location
             if pll_location != -1:
@@ -137,18 +142,22 @@ async def addstop(ctx, *args):
                 long = float(ingress_url[comma_location+1:])
             else:  # If no portal location data was found in the URL
                 await client.say('')
-                return
-        elif n_args > 2:
-            lat = float(args[n_args-2])
-            long = float(args[n_args-1])
-            name_args = args[0:n_args-2]
+            return
+        elif 'apple' in parsed[1]:  # Check if apple maps url
+            name = query_parsed['q'][0]
+            lat = float(query_parsed['ll'][0].split(',')[0])
+            long = float(query_parsed['ll'][0].split(',')[1])
+    elif n_args > 2:
+        lat = float(args[n_args-2])
+        long = float(args[n_args-1])
+        name_args = args[0:n_args-2]
         name = ' '.join(name_args)
-        try:
-            taskmap.new_stop([long, lat], name)
-            taskmap.save()
-            await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
-        except pokemap.PokemapException as e:
-            await client.say(e.message)
+    try:
+        taskmap.new_stop([long, lat], name)
+        taskmap.save()
+        await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
+    except pokemap.PokemapException as e:
+        await client.say(e.message)
     else:
         await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
 
