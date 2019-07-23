@@ -118,9 +118,13 @@ class Stop(pygeoj.Feature):
         if self.properties['Task'] == '':
             self.properties['Task'] = task.quest
             self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
-            self.properties['Category'] = task.reward_type
+            if self.propties['Category'] == 'Shadow':
+                self.properties['Old_Category'] = task.reward_type
+                self.properties['Old_Icon'] = task.icon
+            else:
+                self.properties['Category'] = task.reward_type
+                self.properties['Icon'] = task.icon
             self.properties['Reward'] = task.reward
-            self.properties['Icon'] = task.icon
         else:
             raise TaskAlreadyAssigned(self, task)
 
