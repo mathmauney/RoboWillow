@@ -515,7 +515,7 @@ async def on_message(message):
             prev_message_stop[message.server.id] = taskmap.find_stop(stop_name)
             prev_message_was_stop[message.server.id] = True
             prev_message[message.server.id] = message
-        except pokemap.PokemapException:
+        except pokemap.StopNotFound:
             prev_message_was_stop[message.server.id] = False
             if '\n' in message.content:
                 try:

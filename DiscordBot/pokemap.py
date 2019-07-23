@@ -152,7 +152,6 @@ class Stop(pygeoj.Feature):
         self.task = None
         self.reset_shadow()
 
-
     def add_nickname(self, nickname):
         """Add a nickname to a stop."""
         if 'Nicknames' not in self.properties:
