@@ -147,6 +147,12 @@ class Stop(pygeoj.Feature):
         else:
             self.properties['Icon'] = self.task.icon
 
+    def add_new_attributes(self):
+        """Add new attributes that a stop may be missing for updates in the middle of a day."""
+        self.task = None
+        self.reset_shadow()
+
+
     def add_nickname(self, nickname):
         """Add a nickname to a stop."""
         if 'Nicknames' not in self.properties:
@@ -237,7 +243,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                         if delta.total_seconds > 1800:
                             stop.reset_shadow()
                 except AttributeError:
-                    stop.reset_shadow()
+                    stop.add_new_attributes()
         return stops_reset
 
     def reset_all(self):
