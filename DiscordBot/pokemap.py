@@ -230,9 +230,13 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 stop._map = self
                 stop.reset()
                 stops_reset = True
-            elif stop.is_shadow:
-                delta = datetime.datetime.now() - stop.shadow_time
-                if delta.total_seconds > 1800:
+            else:
+                try:
+                    if stop.is_shadow:
+                        delta = datetime.datetime.now() - stop.shadow_time
+                        if delta.total_seconds > 1800:
+                            stop.reset_shadow()
+                except AttributeError:
                     stop.reset_shadow()
         return stops_reset
 
