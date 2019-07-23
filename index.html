@@ -579,6 +579,7 @@
 					}
 				} else if (feature.properties && feature.properties.Icon){
 					category = feature.properties.Category;
+					layer.setIcon(icons[feature.properties.Category]);
 				} else {
 					category = 'Unreported';
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>");
