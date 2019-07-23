@@ -102,9 +102,9 @@ class Tasklist:
 class Stop(pygeoj.Feature):
     """Extension of the pygeoj feature class that includes more methods that are useful for pokestops."""
 
-    def __init__(self):
+    def __init__(self, *args):
         """Extend the initialization to have some traking properties."""
-        super.__init__()
+        super.__init__(*args)
         self.task = None
         self.is_shadow = False
         self.shadow_time = None
