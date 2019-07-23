@@ -104,7 +104,7 @@ class Stop(pygeoj.Feature):
 
     def __init__(self, *args):
         """Extend the initialization to have some traking properties."""
-        super.__init__(*args)
+        super().__init__(*args)
         self.task = None
         self.is_shadow = False
         self.shadow_time = None
