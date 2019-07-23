@@ -570,9 +570,9 @@ async def check_maps():
                 taskmap.save()
                 print('Reset map at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
         now = datetime.strftime(datetime.now(), '%M')
-        diff = (datetime.strptime('01', '%M') - datetime.strptime(now, '%M')).total_seconds()
+        diff = (datetime.strptime('01', '%M') - datetime.strptime(now, '%M')).total_seconds() % 300  # want to reset every 5 min
         if diff < 60:
-            diff += 900
+            diff += 300
         await asyncio.sleep(diff)
 
 client.loop.create_task(list_servers())
