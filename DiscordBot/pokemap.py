@@ -118,7 +118,7 @@ class Stop(pygeoj.Feature):
         if self.properties['Task'] == '':
             self.properties['Task'] = task.quest
             self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
-            if self.propties['Category'] == 'Shadow':
+            if self.properties['Category'] == 'Shadow':
                 self.properties['Old_Category'] = task.reward_type
                 self.properties['Old_Icon'] = task.icon
             else:
