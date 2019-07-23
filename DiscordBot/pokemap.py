@@ -133,6 +133,7 @@ class Stop(pygeoj.Feature):
         self.shadow_time = datetime.datetime.now()
         self.properties['Shadow Time'] = self.shadow_time.strftime("%X")
         self.properties['Category'] = 'Shadow'
+        self.properties['Icon'] = 'Shadow'
         if pokemon is not None:
             self.properties['Shadow Pokemon'] = pokemon
 
