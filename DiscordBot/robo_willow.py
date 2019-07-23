@@ -559,7 +559,7 @@ async def list_servers():
 
 
 async def check_maps():
-    """Map checks every fifteen minutes."""
+    """Map checks every few minutes."""
     await client.wait_until_ready()
     while not client.is_closed:
         print('Checking maps at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
