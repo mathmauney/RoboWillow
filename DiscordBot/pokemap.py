@@ -235,7 +235,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             else:
                 if stop.properties['Category'] == 'Shadow':
                     delta = (int(self.now().strftime("%X").replace(':', '')) - stop.properties["Shadow Time"])
-                    if (delta > 30) or (delta < 0):
+                    if (delta > 3000) or (delta < 0):
                         stop.reset_shadow()
                         stops_reset = True
         return stops_reset
