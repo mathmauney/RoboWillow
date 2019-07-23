@@ -102,13 +102,6 @@ class Tasklist:
 class Stop(pygeoj.Feature):
     """Extension of the pygeoj feature class that includes more methods that are useful for pokestops."""
 
-    def __init__(self, *args):
-        """Extend the initialization to have some traking properties."""
-        super().__init__(*args)
-        self.task = None
-        self.is_shadow = False
-        self.shadow_time = None
-
     def reset(self):
         """Remove the task associated with the stop."""
         self.task = None
@@ -117,15 +110,12 @@ class Stop(pygeoj.Feature):
         self.properties['Category'] = ''
         self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
         self.properties['Icon'] = ''
-        self.is_shadow = False
         self.properties['Shadow Pokemon'] = ''
-        self.shadow_time = None
         self.properties['Shadow Time'] = ''
 
     def set_task(self, task):
         """Add a task to the stop."""
         if self.properties['Task'] == '':
-            self.task = task
             self.properties['Task'] = task.quest
             self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
             self.properties['Category'] = task.reward_type
@@ -136,9 +126,8 @@ class Stop(pygeoj.Feature):
 
     def set_shadow(self, pokemon=None):
         """Mark a stop as subject to a rocket raid."""
-        self.is_shadow = True
         self.shadow_time = datetime.datetime.now()
-        self.properties['Shadow Time'] = self.shadow_time.strftime("%X")
+        self.properties['Shadow Time'] = int(self._map.now().strftime("%M"))
         self.properties['Old_Category'] = self.properties['Category']
         self.properties['Old_Icon'] = self.properties['Icon']
         self.properties['Category'] = 'Shadow'
@@ -245,9 +234,9 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 stops_reset = True
             else:
                 try:
-                    if stop.is_shadow:
-                        delta = datetime.datetime.now() - stop.shadow_time
-                        if delta.total_seconds > 18:
+                    if stop.properties['Category'] == 'Shadow':
+                        delta = int(self._map.now().strftime("%M")) - stop.properties["Shadow Time"]
+                        if (delta > 30) or (delta < 0):
                             stop.reset_shadow()
                 except AttributeError:
                     stop.add_new_attributes()

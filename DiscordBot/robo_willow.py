@@ -559,7 +559,7 @@ async def list_servers():
 
 
 async def check_maps():
-    """Map resets every hour."""
+    """Map checks every fifteen minutes."""
     await client.wait_until_ready()
     while not client.is_closed:
         print('Checking maps at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
@@ -572,7 +572,7 @@ async def check_maps():
         now = datetime.strftime(datetime.now(), '%M')
         diff = (datetime.strptime('01', '%M') - datetime.strptime(now, '%M')).total_seconds()
         if diff < 60:
-            diff += 3600
+            diff += 900
         await asyncio.sleep(diff)
 
 client.loop.create_task(list_servers())
