@@ -522,11 +522,21 @@ async def on_message(message):
                     args = message.content.split('\n', 1)
                     stop_name = args[0]
                     task_name = args[1]
-                    stop = taskmap.find_stop(stop_name)
-                    task = tasklist.find_task(task_name)
-                    stop.set_task(task)
-                    if task_name.title() in task.rewards:
-                        stop.properties['Icon'] = task_name.title()
+                    if 'shadow' in task_name:
+                        pokemon = task_name.split()[-1]
+                        if 'shadow' not in pokemon:
+                            if 'gone' in message.content.lower():
+                                prev_message_stop[message.server.id].reset_shadow()
+                            else:
+                                prev_message_stop[message.server.id].set_shadow(pokemon)
+                        else:
+                            prev_message_stop[message.server.id].set_shadow()
+                    else:
+                        stop = taskmap.find_stop(stop_name)
+                        task = tasklist.find_task(task_name)
+                        stop.set_task(task)
+                        if task_name.title() in task.rewards:
+                            stop.properties['Icon'] = task_name.title()
                     taskmap.save()
                     await client.add_reaction(message, '👍')
                 except pokemap.TaskAlreadyAssigned:
