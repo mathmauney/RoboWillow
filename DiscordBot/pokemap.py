@@ -127,7 +127,7 @@ class Stop(pygeoj.Feature):
     def set_shadow(self, pokemon=None):
         """Mark a stop as subject to a rocket raid."""
         self.shadow_time = datetime.datetime.now()
-        self.properties['Shadow Time'] = int(self._map.now().strftime("%M"))
+        self.properties['Shadow Time'] = int(self._map.now().strftime("%X").replace(':', ''))
         self.properties['Old_Category'] = self.properties['Category']
         self.properties['Old_Icon'] = self.properties['Icon']
         self.properties['Category'] = 'Shadow'
@@ -234,7 +234,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 stops_reset = True
             else:
                 if stop.properties['Category'] == 'Shadow':
-                    delta = (int(self.now().strftime("%M")) - stop.properties["Shadow Time"]) % 60
+                    delta = (int(self.now().strftime("%X").replace(':', '')) - stop.properties["Shadow Time"]) % 60
                     if delta > 30:
                         stop.reset_shadow()
                         stops_reset = True
