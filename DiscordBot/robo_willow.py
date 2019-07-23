@@ -14,7 +14,7 @@ import urllib.parse as urlparse
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
 map_dir = '/var/www/html/maps/'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
 task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from if the bot is restarted
-map_URL = 'http://robowillow.ddns.net'
+map_url = 'http://robowillow.ddns.net'
 bot_game = "with maps at robowillow.net"
 maintainer_handle = '@mathmauney'
 maintainer_id = 200038656021364736
@@ -28,8 +28,8 @@ prev_message_stop = {}
 prev_message = {}
 # Import the tasklist object or create new one
 try:
-    with open(task_path, 'rb') as input:
-        tasklist = pickle.load(input)
+    with open(task_path, 'rb') as file_input:
+        tasklist = pickle.load(file_input)
 except FileNotFoundError:
     tasklist = pokemap.Tasklist()
 
@@ -463,7 +463,7 @@ async def on_message(message):
                     msg.add_field(name=command, value=description, inline=False)
                 msg.add_field(name='For more info', value='Use "' + bot_prefix[0] + 'help command" for more info on a command, or use "' + bot_prefix[0] +
                               'help advanced" to get information on commands for advanced users', inline=False)
-                msg.add_field(name='To view the current map', value='Click [here](' + map_URL + '/?map=' + str(message.server.id) + ')', inline=False)
+                msg.add_field(name='To view the current map', value='Click [here](' + map_url + '/?map=' + str(message.server.id) + ')', inline=False)
                 await bot_embed_respond(message, msg)
         elif msg.startswith('setup'):
             msg = discord.Embed(colour=discord.Colour(0x186a0))
@@ -478,23 +478,37 @@ async def on_message(message):
             await client.process_commands(message)
     elif prev_message_was_stop[message.server.id]:
         prev_message_was_stop[message.server.id] = False
-        try:
-            task_name = message.content
-            task = tasklist.find_task(task_name)
-            prev_message_stop[message.server.id].set_task(task)
-            if task_name.title() in task.rewards:
-                prev_message_stop[message.server.id].properties['Icon'] = task_name.title()
-            taskmap.save()
-            await client.add_reaction(prev_message[message.server.id], '👍')
-            await client.add_reaction(message, '👍')
-        except pokemap.TaskAlreadyAssigned as e:
-            if prev_message_stop[message.server.id].properties['Reward'] == task.reward:
+        if 'shadow' in message.lower():
+            pokemon = message.split()[-1]
+            try:
+                if 'shadow' not in pokemon:
+                    if 'gone' in message.lower():
+                        prev_message_stop[message.server.id].reset_shadow()
+                    else:
+                        prev_message_stop[message.server.id].set_shadow(pokemon)
+                else:
+                    prev_message_stop[message.server.id].set_shadow()
+                taskmap.save()
                 await client.add_reaction(prev_message[message.server.id], '👍')
                 await client.add_reaction(message, '👍')
-            else:
+            except pokemap.PokemapException as e:
                 await client.send_message(message.channel, e.message)
-        except pokemap.PokemapException as e:
-            await client.send_message(message.channel, e.message)
+        else:
+            try:
+                task_name = message.content
+                task = tasklist.find_task(task_name)
+                prev_message_stop[message.server.id].set_task(task)
+                if task_name.title() in task.rewards:
+                    prev_message_stop[message.server.id].properties['Icon'] = task_name.title()
+                taskmap.save()
+                await client.add_reaction(prev_message[message.server.id], '👍')
+                await client.add_reaction(message, '👍')
+            except pokemap.TaskAlreadyAssigned:
+                if prev_message_stop[message.server.id].properties['Reward'] == task.reward:
+                    await client.add_reaction(prev_message[message.server.id], '👍')
+                    await client.add_reaction(message, '👍')
+            except pokemap.PokemapException as e:
+                await client.send_message(message.channel, e.message)
     else:
         try:
             stop_name = message.content
