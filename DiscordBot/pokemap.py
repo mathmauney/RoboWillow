@@ -139,6 +139,8 @@ class Stop(pygeoj.Feature):
         self.is_shadow = True
         self.shadow_time = datetime.datetime.now()
         self.properties['Shadow Time'] = self.shadow_time.strftime("%X")
+        self.properties['Old_Category'] = self.properties['Category']
+        self.properties['Old_Icon'] = self.properties['Icon']
         self.properties['Category'] = 'Shadow'
         self.properties['Icon'] = 'Shadow'
         if pokemon is not None:
@@ -150,12 +152,8 @@ class Stop(pygeoj.Feature):
         self.properties['Shadow Pokemon'] = ''
         self.shadow_time = None
         self.properties['Shadow Time'] = ''
-        if self.task is None:
-            self.properties['Category'] = ''
-            self.properties['Icon'] = ''
-        else:
-            self.properties['Category'] = self.task.reward_type
-            self.properties['Icon'] = self.task.icon
+        self.properties['Category'] = self.properties['Old_Category']
+        self.properties['Icon'] = self.properties['Old_Icon']
 
     def add_new_attributes(self):
         """Add new attributes that a stop may be missing for updates in the middle of a day."""
