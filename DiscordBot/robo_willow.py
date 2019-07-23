@@ -478,11 +478,11 @@ async def on_message(message):
             await client.process_commands(message)
     elif prev_message_was_stop[message.server.id]:
         prev_message_was_stop[message.server.id] = False
-        if 'shadow' in message.lower():
-            pokemon = message.split()[-1]
+        if 'shadow' in message.content.lower():
+            pokemon = message.content.split()[-1]
             try:
                 if 'shadow' not in pokemon:
-                    if 'gone' in message.lower():
+                    if 'gone' in message.content.lower():
                         prev_message_stop[message.server.id].reset_shadow()
                     else:
                         prev_message_stop[message.server.id].set_shadow(pokemon)
