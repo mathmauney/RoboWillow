@@ -374,15 +374,14 @@ async def on_message(message):
     Contains the help commands, and the bots ability to parse language.
 
     """
+    for role in message.role_mentions:
+        role_str = '<@&' + str(role.id) + '>'
+        message.content = message.content.replace(role_str, role.name)
     if message.server is not None:
         taskmap = maps[message.server.id]
     if message.author == client.user:
         return
     elif message.content.startswith(bot_prefix):
-        for role in message.role_mentions:
-            role_str = '<@&' + str(role.id) + '>'
-            message.content = message.content.replace(role_str, role.name)
-            print(message.content)
         if message.server is not None:
             prev_message_was_stop[message.server.id] = False
         msg = message.content.strip("".join(list(bot_prefix)))
