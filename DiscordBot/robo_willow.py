@@ -382,6 +382,7 @@ async def on_message(message):
         for role in message.role_mentions:
             role_str = '<@&' + str(role.id) + '>'
             message.content = message.content.replace(role_str, role.name)
+            print(message.content)
         if message.server is not None:
             prev_message_was_stop[message.server.id] = False
         msg = message.content.strip("".join(list(bot_prefix)))
