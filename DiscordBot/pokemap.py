@@ -131,7 +131,8 @@ class Stop(pygeoj.Feature):
     def set_shadow(self, pokemon=None):
         """Mark a stop as subject to a rocket raid."""
         self.shadow_time = datetime.datetime.now()
-        self.properties['Shadow Time'] = int(self._map.now().strftime("%X").replace(':', ''))
+        if self.properties['Shadow Time'] == '':
+            self.properties['Shadow Time'] = int(self._map.now().strftime("%X").replace(':', ''))
         self.properties['Old_Category'] = self.properties['Category']
         self.properties['Old_Icon'] = self.properties['Icon']
         self.properties['Category'] = 'Shadow'
