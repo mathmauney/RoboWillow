@@ -8,12 +8,13 @@ from datetime import datetime
 from discord import Game
 from discord.ext.commands import Bot, has_permissions
 from config import discord_token
+import urllib.parse as urlparse
 
 # Setup Variables
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
 map_dir = '/var/www/html/maps/'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
 task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from if the bot is restarted
-map_URL = 'http://robowillow.ddns.net'
+map_url = 'http://robowillow.ddns.net'
 bot_game = "with maps at robowillow.net"
 maintainer_handle = '@mathmauney'
 maintainer_id = 200038656021364736
@@ -27,8 +28,8 @@ prev_message_stop = {}
 prev_message = {}
 # Import the tasklist object or create new one
 try:
-    with open(task_path, 'rb') as input:
-        tasklist = pickle.load(input)
+    with open(task_path, 'rb') as file_input:
+        tasklist = pickle.load(file_input)
 except FileNotFoundError:
     tasklist = pokemap.Tasklist()
 
@@ -61,7 +62,7 @@ async def on_ready():
 
 @client.event
 async def on_server_join(server):
-    """Take actions on server join"""
+    """Take actions on server join."""
     print(server.id)
     map_path = map_dir + str(server.id) + '.json'
     try:
@@ -103,7 +104,7 @@ async def bot_embed_respond(message, msg):
 
 
 def pass_errors(func):
-    """Decorator to pass library errors into a discord message"""
+    """Pass library errors into a discord message."""
     async def decorator(*args, **kwargs):
         try:
             await func(*args, **kwargs)
@@ -126,9 +127,13 @@ async def addstop(ctx, *args):
     """
     taskmap = maps[ctx.message.server.id]
     n_args = len(args)
-    if n_args >= 2:  # Checks to see if enough arguements have been given
-        if args[-1].startswith('https:'):  # Checks if the lat/long has been given as an ingress intel URL
+    if args[-1].startswith('https:'):  # Checks if the lat/long has been given as an ingress intel URL
+        url_str = args[-1]
+        parsed = urlparse.urlparse(url_str)
+        query_parsed = urlparse.parse_qs(url_str)
+        if 'ingress' in parsed[1]:   # Check if ingress url
             name_args = args[0:n_args-1]
+            name = ' '.join(name_args)
             ingress_url = args[-1]
             pll_location = ingress_url.find('pll')  # Finds the part of the url that describes the portal location
             if pll_location != -1:
@@ -137,19 +142,24 @@ async def addstop(ctx, *args):
                 long = float(ingress_url[comma_location+1:])
             else:  # If no portal location data was found in the URL
                 await client.say('')
-                return
-        elif n_args > 2:
-            lat = float(args[n_args-2])
-            long = float(args[n_args-1])
+            return
+        elif 'apple' in parsed[1]:  # Check if apple maps url
+            name = query_parsed['q'][0]
+            lat = float(query_parsed['ll'][0].split(',')[0])
+            long = float(query_parsed['ll'][0].split(',')[1])
+    elif n_args > 2:
+        lat = float(args[n_args-2])
+        long = float(args[n_args-1])
+        name_args = args[0:n_args-2]
         name = ' '.join(name_args)
-        try:
-            taskmap.new_stop([long, lat], name)
-            taskmap.save()
-            await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
-        except pokemap.PokemapException as e:
-            await client.say(e.message)
     else:
         await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
+    try:
+        taskmap.new_stop([long, lat], name)
+        taskmap.save()
+        await client.say('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
+    except pokemap.PokemapException as e:
+        await client.say(e.message)
 
 
 @client.command(pass_context=True)
@@ -186,7 +196,7 @@ async def resetstop(ctx, *args):
     stop = taskmap.find_stop(stop_name)
     stop.reset()
     taskmap.save()
-    client.say('Removed tasks from stop.')
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command()
@@ -243,6 +253,7 @@ async def deletestop(ctx, *args):
     stop = taskmap.find_stop(stop_str)
     taskmap.remove_stop(stop)
     taskmap.save()
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command()
@@ -279,9 +290,11 @@ async def nicknametask(task_name, nickname):
 async def setlocation(ctx, lat, long):
     """Set the location of the map for the web view."""
     taskmap = maps[ctx.message.server.id]
-    coordinates = [float(lat), float(long)]
-    taskmap.set_location(coordinates)
-    taskmap.save()
+    taskmap.set_location(float(lat), float(long))
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
@@ -290,19 +303,17 @@ async def setlocation(ctx, lat, long):
 async def resetall(ctx):
     """Set the location of the map for the web view."""
     taskmap = maps[ctx.message.server.id]
-    for stop in taskmap:
-        stop._map = taskmap
-        stop.reset()
+    taskmap.reset_all()
     taskmap.save()
 
 
 @client.command(pass_context=True)
 @pass_errors
 async def resetmap(ctx, server_id):
-    """Allows bot owner to reset any map remotely"""
+    """Allow bot owner to reset any map remotely."""
     if int(ctx.message.author.id) == int(maintainer_id):
         taskmap = maps[server_id]
-        taskmap.reset_all
+        taskmap.reset_all()
         taskmap.save()
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
@@ -311,12 +322,12 @@ async def resetmap(ctx, server_id):
 @client.command(pass_context=True)
 @pass_errors
 async def resetallmaps(ctx):
-    """Allows bot owner to reset any map remotely"""
+    """Allow bot owner to reset any map remotely."""
     if int(ctx.message.author.id) == int(maintainer_id):
-        for server_id in maps:
-            taskmap = maps[server_id]
-            taskmap.reset_all
+        for taskmap in maps.values():
+            taskmap.reset_all()
             taskmap.save()
+            await client.say("Reset map: " + taskmap._data['path'])
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
 
@@ -330,7 +341,10 @@ async def setbounds(ctx, lat1, long1, lat2, long2):
     coords1 = [float(lat1), float(long1)]
     coords2 = [float(lat2), float(long2)]
     taskmap.set_bounds(coords1, coords2)
-    taskmap.save()
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
@@ -340,7 +354,10 @@ async def settimezone(ctx, tz_str):
     """Set the timezone of the map so it resets itself correctly."""
     taskmap = maps[ctx.message.server.id]
     taskmap.set_time_zone(tz_str)
-    taskmap.save()
+    try:
+        taskmap.save()
+    except ValueError:
+        pass
 
 
 @client.command(pass_context=True)
@@ -357,6 +374,9 @@ async def on_message(message):
     Contains the help commands, and the bots ability to parse language.
 
     """
+    for role in message.role_mentions:
+        role_str = '<@&' + str(role.id) + '>'
+        message.content = message.content.replace(role_str, role.name)
     if message.server is not None:
         taskmap = maps[message.server.id]
     if message.author == client.user:
@@ -370,8 +390,8 @@ async def on_message(message):
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
                 command_name = 'addstop'
                 command_help = """This command is used to add a new stop to the map, and can be used in two different ways.\n
-                The first is to specify the longitude and latitude like so '!addstop test 42.46 -76.51'
-                The second is to give an ingress intel url like so '!addstop test https://intel.ingress.com/intel?ll=42.447358,-76.48151&z=18&pll=42.46,-76.51'
+                The first is to specify the longitude and latitude like so '""" + bot_prefix[0] + """addstop test 42.46 -76.51'
+                The second is to give an ingress intel url like so '""" + bot_prefix[0] + """addstop test https://intel.ingress.com/intel?ll=42.447358,-76.48151&z=18&pll=42.46,-76.51'
 
                 A site like [this](geojson.io) can be used to find the latitude and longitude manually
                 While the [Ingress Intel Map](https://intel.ingress.com/intel) can be used to generate the url by clicking on a portal then clicking the Link button at the top right of the page."""
@@ -382,7 +402,7 @@ async def on_message(message):
                 command_name = 'addtask'
                 command_help = """This command lets you add a new task to the tasklist after research changes. If you do so please notify """ + maintainer_handle + """ so they can make sure new tasks show up correctly on the map.
 
-                The correct syntax for the command is !addtask reward quest shiny*
+                The correct syntax for the command is """ + bot_prefix[0] + """addtask reward quest shiny*
                 Values should be put in quotations if they are more than single words (shiny is optional).
                 shiny should be either 'True' or 'False'
                 """
@@ -399,7 +419,7 @@ async def on_message(message):
                 command_name = 'resetstop'
                 command_help = """This command removes any tasks associated with a stop. Use if a stop was misreported
 
-                The correct syntax for the command is !resetstop stop_name"""
+                The correct syntax for the command is """ + bot_prefix[0] + """resetstop stop_name"""
                 msg.add_field(name=command_name, value=command_help, inline=False)
                 await client.send_message(message.channel, embed=msg)
             elif 'settask' in message.content.lower():
@@ -407,7 +427,7 @@ async def on_message(message):
                 command_name = 'settask'
                 command_help = """This command assigns a task to a stop.
 
-                The correct syntax for the command is !settask reward stop_name
+                The correct syntax for the command is """ + bot_prefix[0] + """settask reward stop_name
                 If the reward is more than 1 word it should be enclosed with quotations marks
 
                 Tasks can also be assigned by saying the name of a stop then the name of a task (in different messages). If this is successful the bot should give a thumbs up to both messages."""
@@ -424,6 +444,15 @@ async def on_message(message):
                 for command, description in commands.items():
                     msg.add_field(name=command, value=description, inline=False)
                 await bot_embed_respond(message, msg)
+            elif 'setup' in message.content.lower():
+                msg = discord.Embed(colour=discord.Colour(0x186a0))
+                command_name = 'Initial Setup Commands'
+                command_help = '- First setup the location of your map by using "' + bot_prefix[0] + 'setlocation lat long", with lat and long being the latitude and longitude near the center of your map area.\n'
+                command_help += '- Then define the bounds of your map using "' + bot_prefix[0] + 'setbounds lat1 long1 lat2 long2" where the latitudes and longitudes are from opposite corners of your map boundary (SW and NE recommended). '
+                command_help += 'The extent of your boundary should be less than one degree of latitude and longitude.\n'
+                command_help += '- Lastly set the timezone your map is in (so it resets at midnight correctly) using "' + bot_prefix[0] + 'settimezone timezone_str" where timezone_str is from the list https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones.'
+                msg.add_field(name=command_name, value=command_help, inline=False)
+                await client.send_message(message.channel, embed=msg)
             else:
                 commands = {}
                 commands[bot_prefix[0]+'addstop'] = 'Add a new stop to the map.'
@@ -437,7 +466,7 @@ async def on_message(message):
                     msg.add_field(name=command, value=description, inline=False)
                 msg.add_field(name='For more info', value='Use "' + bot_prefix[0] + 'help command" for more info on a command, or use "' + bot_prefix[0] +
                               'help advanced" to get information on commands for advanced users', inline=False)
-                msg.add_field(name='To view the current map', value='Click [here](' + map_URL + '/?map=' + str(message.server.id) + ')', inline=False)
+                msg.add_field(name='To view the current map', value='Click [here](' + map_url + '/?map=' + str(message.server.id) + ')', inline=False)
                 await bot_embed_respond(message, msg)
         elif msg.startswith('setup'):
             msg = discord.Embed(colour=discord.Colour(0x186a0))
@@ -452,24 +481,44 @@ async def on_message(message):
             await client.process_commands(message)
     elif prev_message_was_stop[message.server.id]:
         prev_message_was_stop[message.server.id] = False
-        try:
-            task_name = message.content
-            task = tasklist.find_task(task_name)
-            prev_message_stop[message.server.id].set_task(task)
-            if task_name.title() in task.rewards:
-                prev_message_stop[message.server.id].properties['Icon'] = task_name.title()
-            taskmap.save()
-            await client.add_reaction(prev_message[message.server.id], '👍')
-            await client.add_reaction(message, '👍')
-        except pokemap.PokemapException as e:
-            await client.send_message(message.channel, e.message)
+        if 'shadow' in message.content.lower():
+            pokemon = message.content.split()[-1]
+            try:
+                if 'shadow' not in pokemon:
+                    if 'gone' in message.content.lower():
+                        prev_message_stop[message.server.id].reset_shadow()
+                    else:
+                        prev_message_stop[message.server.id].set_shadow(pokemon)
+                else:
+                    prev_message_stop[message.server.id].set_shadow()
+                taskmap.save()
+                await client.add_reaction(prev_message[message.server.id], '👍')
+                await client.add_reaction(message, '👍')
+            except pokemap.PokemapException as e:
+                await client.send_message(message.channel, e.message)
+        else:
+            try:
+                task_name = message.content
+                task = tasklist.find_task(task_name)
+                prev_message_stop[message.server.id].set_task(task)
+                if task_name.title() in task.rewards:
+                    prev_message_stop[message.server.id].properties['Icon'] = task_name.title()
+                taskmap.save()
+                await client.add_reaction(prev_message[message.server.id], '👍')
+                await client.add_reaction(message, '👍')
+            except pokemap.TaskAlreadyAssigned:
+                if prev_message_stop[message.server.id].properties['Reward'] == task.reward:
+                    await client.add_reaction(prev_message[message.server.id], '👍')
+                    await client.add_reaction(message, '👍')
+            except pokemap.PokemapException as e:
+                await client.send_message(message.channel, e.message)
     else:
         try:
             stop_name = message.content
             prev_message_stop[message.server.id] = taskmap.find_stop(stop_name)
             prev_message_was_stop[message.server.id] = True
             prev_message[message.server.id] = message
-        except pokemap.PokemapException:
+        except pokemap.StopNotFound:
             prev_message_was_stop[message.server.id] = False
             if '\n' in message.content:
                 try:
@@ -477,12 +526,27 @@ async def on_message(message):
                     stop_name = args[0]
                     task_name = args[1]
                     stop = taskmap.find_stop(stop_name)
-                    task = tasklist.find_task(task_name)
-                    stop.set_task(task)
-                    if task_name.title() in task.rewards:
-                        stop.properties['Icon'] = task_name.title()
+                    if 'shadow' in task_name:
+                        pokemon = task_name.split()[-1]
+                        if 'shadow' not in pokemon:
+                            if 'gone' in message.content.lower():
+                                stop.reset_shadow()
+                            else:
+                                stop.set_shadow(pokemon)
+                        else:
+                            stop.set_shadow()
+                    else:
+                        task = tasklist.find_task(task_name)
+                        stop.set_task(task)
+                        if task_name.title() in task.rewards:
+                            stop.properties['Icon'] = task_name.title()
                     taskmap.save()
                     await client.add_reaction(message, '👍')
+                except pokemap.TaskAlreadyAssigned:
+                    if stop.properties['Reward'] == task.reward:
+                        await client.add_reaction(message, '👍')
+                    else:
+                        pass
                 except pokemap.PokemapException:
                     pass
 
@@ -498,7 +562,7 @@ async def list_servers():
 
 
 async def check_maps():
-    """Map resets every hour."""
+    """Map checks every few minutes."""
     await client.wait_until_ready()
     while not client.is_closed:
         print('Checking maps at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
@@ -509,9 +573,9 @@ async def check_maps():
                 taskmap.save()
                 print('Reset map at: ' + datetime.now().strftime("%Y.%m.%d.%H%M%S"))
         now = datetime.strftime(datetime.now(), '%M')
-        diff = (datetime.strptime('01', '%M') - datetime.strptime(now, '%M')).total_seconds()
+        diff = (datetime.strptime('01', '%M') - datetime.strptime(now, '%M')).total_seconds() % 300  # want to reset every 5 min
         if diff < 60:
-            diff += 3600
+            diff += 300
         await asyncio.sleep(diff)
 
 client.loop.create_task(list_servers())
