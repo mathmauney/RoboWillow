@@ -578,7 +578,7 @@
 						category = feature.properties.Category;
 					}
 				} else if (feature.properties && feature.properties.Reward && (feature.properties.Category == 'Shadow')) {
-					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +".<br />Team Rocket is currently attacking this stop. Defeat them to gain " + feature.properties['Shadow Pokemon'] + ".</div>");
+					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +".<br /><br />Team Rocket is currently attacking this stop. Defeat them to gain " + feature.properties['Shadow Pokemon'] + ".</div>");
 					layer.setIcon(icons[feature.properties.Category]);
 					category = feature.properties.Category;
 				} else if (feature.properties && feature.properties.Category == 'Shadow'){
