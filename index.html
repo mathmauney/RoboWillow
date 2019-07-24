@@ -568,8 +568,8 @@
 
 			function onEachFeature(feature, layer) {
 				// does this feature have a property named popupContent?
-				if (feature.properties && feature.properties.Reward) {
-					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +"</div>");
+				if (feature.properties && feature.properties.Reward && (feature.properties.Category != 'Shadow')) {
+					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +".</div>");
 					if (feature.properties.Category == 'Encounter') {
 						layer.setIcon(icons[feature.properties.Icon]);
 						category = feature.properties.Reward;
@@ -577,7 +577,12 @@
 						layer.setIcon(icons[feature.properties.Category]);
 						category = feature.properties.Category;
 					}
-				} else if (feature.properties && feature.properties.Icon){
+				} else if (feature.properties && feature.properties.Reward && (feature.properties.Category == 'Shadow')) {
+					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +"<br />Team Rocket is currently attacking this stop. Defeat them to gain "+feature.properties['Shadow Pokemon']".</div>");
+					layer.setIcon(icons[feature.properties.Category]);
+					category = feature.properties.Category;
+				} else if (feature.properties && feature.properties.Category == 'Shadow'){
+					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>Team Rocket is currently attacking this stop. Defeat them to gain "+feature.properties['Shadow Pokemon']".</div>");
 					category = feature.properties.Category;
 					layer.setIcon(icons[feature.properties.Category]);
 				} else {

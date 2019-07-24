@@ -138,7 +138,9 @@ class Stop(pygeoj.Feature):
         self.properties['Category'] = 'Shadow'
         self.properties['Icon'] = 'Shadow'
         if pokemon is not None:
-            self.properties['Shadow Pokemon'] = pokemon
+            self.properties['Shadow Pokemon'] = 'a shadow ' + pokemon
+        else:
+            self.properties['Shadow Pokemon'] = 'an unknown shadow pokemon'
 
     def reset_shadow(self):
         """Remove rocket raid from the stop."""
