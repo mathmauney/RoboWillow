@@ -112,6 +112,8 @@ class Stop(pygeoj.Feature):
         self.properties['Icon'] = ''
         self.properties['Shadow Pokemon'] = ''
         self.properties['Shadow Time'] = ''
+        self.properties['Old_Category'] = ''
+        self.properties['Old_Icon'] = ''
 
     def set_task(self, task):
         """Add a task to the stop."""
@@ -133,14 +135,15 @@ class Stop(pygeoj.Feature):
         self.shadow_time = datetime.datetime.now()
         if self.properties['Shadow Time'] == '':
             self.properties['Shadow Time'] = int(self._map.now().strftime("%X").replace(':', ''))
-        self.properties['Old_Category'] = self.properties['Category']
-        self.properties['Old_Icon'] = self.properties['Icon']
+            self.properties['Old_Category'] = self.properties['Category']
+            self.properties['Old_Icon'] = self.properties['Icon']
         self.properties['Category'] = 'Shadow'
-        self.properties['Icon'] = 'Shadow'
         if pokemon is not None:
             self.properties['Shadow Pokemon'] = 'a shadow ' + pokemon
+            self.properties['Icon'] = 'Shadow'
         else:
             self.properties['Shadow Pokemon'] = 'an unknown shadow pokemon'
+            self.properties['Icon'] = pokemon.upper()
 
     def reset_shadow(self):
         """Remove rocket raid from the stop."""
