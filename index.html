@@ -65,6 +65,20 @@
 			var categories = {},
 				category;
 
+			var pokeIcon = L.icon.extend({
+				options: {
+					iconSize: [30,30]
+				}
+			})
+
+			var shadowIcon = L.icon.extend({
+				options: {
+					iconSize: [30,30]
+					shadowSize: [30,30]
+					shadowUrl: "./img/shadowbackground.png"
+				}
+			})
+
 			var icons = {
 				'Rare Candy': L.icon({iconUrl: "./img/rare_candy.png", iconSize: [30,30]}),
 				'Shadow' : L.icon({iconUrl: "./img/rocket.png", iconSize: [30,30]}),
@@ -579,12 +593,12 @@
 					}
 				} else if (feature.properties && feature.properties.Reward && (feature.properties.Category == 'Shadow')) {
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +".<br /><br />Team Rocket is currently attacking this stop. Defeat them to gain " + feature.properties['Shadow Pokemon'] + ".</div>");
-					layer.setIcon(icons[feature.properties.Icon]);
+					layer.setIcon(shadowIcon({iconUrl: "./img/"+feature.properties.IcontoLowerCase()+".png"}));
 					category = feature.properties.Category;
 				} else if (feature.properties && feature.properties.Category == 'Shadow'){
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>Team Rocket is currently attacking this stop. Defeat them to gain " + feature.properties['Shadow Pokemon'] + ".</div>");
 					category = feature.properties.Category;
-					layer.setIcon(icons[feature.properties.Icon]);
+					layer.setIcon(shadowIcon({iconUrl: "./img/"+feature.properties.IcontoLowerCase()+".png"}));
 				} else {
 					category = 'Unreported';
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>");
