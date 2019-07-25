@@ -479,12 +479,12 @@ async def on_message(message):
             await client.send_message(message.channel, embed=msg)
         else:
             await client.process_commands(message)
-    elif prev_message_was_stop[message.server.id]:
+    elif prev_message_was_stop[message.server.id] and prev_message.author == message.author:
         prev_message_was_stop[message.server.id] = False
         if 'shadow' in message.content.lower():
             pokemon = message.content.split()[-1]
             try:
-                if 'shadow' not in pokemon:
+                if 'shadow' not in pokemon.lower():
                     if 'gone' in message.content.lower():
                         prev_message_stop[message.server.id].reset_shadow()
                     else:
@@ -526,7 +526,7 @@ async def on_message(message):
                     stop_name = args[0]
                     task_name = args[1]
                     stop = taskmap.find_stop(stop_name)
-                    if 'shadow' in task_name:
+                    if 'shadow' in task_name.lower():
                         pokemon = task_name.split()[-1]
                         if 'shadow' not in pokemon:
                             if 'gone' in message.content.lower():
