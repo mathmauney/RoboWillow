@@ -479,7 +479,7 @@ async def on_message(message):
             await client.send_message(message.channel, embed=msg)
         else:
             await client.process_commands(message)
-    elif prev_message_was_stop[message.server.id] and prev_message.author == message.author:
+    elif prev_message_was_stop[message.server.id] and prev_message[message.server.id].author == message.author:
         prev_message_was_stop[message.server.id] = False
         if 'shadow' in message.content.lower():
             pokemon = message.content.split()[-1]
