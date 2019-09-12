@@ -4,6 +4,7 @@ import datetime
 import pygeoj
 import pickle
 import pytz
+import copy
 
 
 class Task:
@@ -75,9 +76,9 @@ class Tasklist:
                     out_task = task
                     task_not_found = False
                     if custom_quest:
+                        out_task = copy.copy(task)
                         out_task.quest = quest_str.title()
                     return out_task
-
             break
         if task_not_found:
             raise TaskNotFound()
@@ -103,41 +104,80 @@ class Stop(pygeoj.Feature):
 
     def reset(self):
         """Remove the task associated with the stop."""
+        self.task = None
         self.properties['Task'] = ''
         self.properties['Reward'] = ''
         self.properties['Category'] = ''
         self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
         self.properties['Icon'] = ''
+        self.properties['Shadow Pokemon'] = ''
+        self.properties['Shadow Time'] = ''
+        self.properties['Old_Category'] = ''
+        self.properties['Old_Icon'] = ''
 
     def set_task(self, task):
         """Add a task to the stop."""
         if self.properties['Task'] == '':
             self.properties['Task'] = task.quest
             self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
-            self.properties['Category'] = task.reward_type
+            if self.properties['Category'] == 'Shadow':
+                self.properties['Old_Category'] = task.reward_type
+                self.properties['Old_Icon'] = task.icon
+            else:
+                self.properties['Category'] = task.reward_type
+                self.properties['Icon'] = task.icon
             self.properties['Reward'] = task.reward
-            self.properties['Icon'] = task.icon
         else:
             raise TaskAlreadyAssigned(self, task)
 
+    def set_shadow(self, pokemon=None):
+        """Mark a stop as subject to a rocket raid."""
+        self.shadow_time = datetime.datetime.now()
+        if self.properties['Shadow Time'] == '':
+            self.properties['Shadow Time'] = int(self._map.now().strftime("%X").replace(':', ''))
+            self.properties['Old_Category'] = self.properties['Category']
+            self.properties['Old_Icon'] = self.properties['Icon']
+        self.properties['Category'] = 'Shadow'
+        if pokemon is not None:
+            self.properties['Shadow Pokemon'] = 'a shadow ' + pokemon
+            self.properties['Icon'] = pokemon.upper()
+        else:
+            self.properties['Shadow Pokemon'] = 'an unknown shadow pokemon'
+            self.properties['Icon'] = 'Shadow'
+
+    def reset_shadow(self):
+        """Remove rocket raid from the stop."""
+        self.is_shadow = False
+        self.properties['Shadow Pokemon'] = ''
+        self.shadow_time = None
+        self.properties['Shadow Time'] = ''
+        self.properties['Category'] = self.properties['Old_Category']
+        self.properties['Icon'] = self.properties['Old_Icon']
+
+    def add_new_attributes(self):
+        """Add new attributes that a stop may be missing for updates in the middle of a day."""
+        self.task = None
+        self.reset_shadow()
+
     def add_nickname(self, nickname):
-            """Add a nickname to a stop."""
-            if 'Nicknames' not in self.properties:
-                self.properties['Nicknames'] = []
-            if (len(self.properties['Nicknames']) == 1 and self.properties['Nicknames'][0].startswith('Temp')):
-                self.properties['Nicknames'][0] = nickname.title()
-            else:
-                self.properties['Nicknames'].append(nickname.title())
+        """Add a nickname to a stop."""
+        if 'Nicknames' not in self.properties:
+            self.properties['Nicknames'] = []
+        if (len(self.properties['Nicknames']) == 1 and self.properties['Nicknames'][0].startswith('Temp')):
+            self.properties['Nicknames'][0] = nickname.title()
+        else:
+            self.properties['Nicknames'].append(nickname.title())
 
 
 class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a default one that checks for proper long/lat formating
     """Class for the research map. Hopefully this will allow for multiple servers with seperate maps to be stored easily at once."""
+
     def __getitem__(self, index):
-        """Get a feature based on its index, like geojfile[7]"""
+        """Get a feature based on its index, like geojfile[7]."""
         return Stop(self._data["features"][index])
 
     def __iter__(self):
-        """Iterates through and yields each feature in the file."""
+        """Iterate through and yields each feature in the file."""
         for featuredict in self._data["features"]:
             yield Stop(featuredict)
 
@@ -202,6 +242,12 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 stop._map = self
                 stop.reset()
                 stops_reset = True
+            else:
+                if stop.properties['Category'] == 'Shadow':
+                    delta = (int(self.now().strftime("%X").replace(':', '')) - stop.properties["Shadow Time"])
+                    if (delta > 3000) or (delta < 0):
+                        stop.reset_shadow()
+                        stops_reset = True
         return stops_reset
 
     def reset_all(self):
@@ -225,22 +271,22 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             raise InvalidTimezone()
 
     def now(self):
-        """Return the time in the maps timezone"""
+        """Return the time in the maps timezone."""
         if 'timezone' in self._data:
             return pytz.utc.localize(datetime.datetime.utcnow()).astimezone(pytz.timezone(self._data['timezone']))
         else:
             return pytz.utc.localize(datetime.datetime.utcnow())
 
     def set_location(self, lat, long):
-        """Set the default location of the map"""
+        """Set the default location of the map."""
         self._data['loc'] = [lat, long]
 
     def set_maptoken(self, token):
-        """Set the default location of the map"""
+        """Set the default location of the map."""
         self._data['maptoken'] = token
 
     def set_bounds(self, coords1, coords2):
-        """Set the bounds for the internet map and for checking stop locations"""
+        """Set the bounds for the internet map and for checking stop locations."""
         diff0 = abs(coords1[0] - coords2[0])
         diff1 = abs(coords1[1] - coords2[1])
         if max(diff0, diff1) > 1:
@@ -255,6 +301,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             self._data['bounds'] = [coords1[0], coords1[1], coords2[0], coords2[1]]
 
     def save(self, filename=None):
+        """Save the map."""
         if filename is None:
             filename = self._data['path']
         super().save(filename)
@@ -338,28 +385,32 @@ class NicknameInUse(PokemapException):
 
 
 class BoundsTooLarge(PokemapException):
-    """Exception for when too much area is contained in the boundary box set for your location"""
+    """Exception for when too much area is contained in the boundary box set for your location."""
+
     def __init__(self):
         """Add message based on context of error."""
         self.message = "Boundary too large, must be less than one degree of latitude and longitude."
 
 
 class LocationNotInBounds(PokemapException):
-    """Exception for when the map location and bounday don't matchup"""
+    """Exception for when the map location and bounday don't matchup."""
+
     def __init__(self):
         """Add message based on context of error."""
         self.message = "Map location out of map boundary."
 
 
 class InvalidTimezone(PokemapException):
-    """Exception for when the timezone string isn't recognized by pytz"""
+    """Exception for when the timezone string isn't recognized by pytz."""
+
     def __init__(self):
         """Add message based on context of error."""
         self.message = "Invalid time zone string, choose one from https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones."
 
 
 class StopOutsideBoundary(PokemapException):
-    """Exception for when a stop is added outside of the boundary"""
+    """Exception for when a stop is added outside of the boundary."""
+
     def __init__(self):
         """Add message based on context of error."""
         self.message = "This stop is outside of the boundary set in your map. Contact your maintainer if you feel this is an error with the boundary."
