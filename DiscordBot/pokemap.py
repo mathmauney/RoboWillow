@@ -42,7 +42,7 @@ class Task:
             self.nicknames.append(name)
 
     def set_icon(self, icon):
-        """Choose which reward to use as the icon"""
+        """Choose which reward to use as the icon."""
         icon = icon.title()
         if icon in self.rewards:
             self.icon = icon
@@ -56,7 +56,7 @@ class Tasklist:
         self.tasks = []
 
     def add_task(self, task):
-        """Add a task to the tasklist"""
+        """Add a task to the tasklist."""
         self.tasks.append(task)
 
     def find_task(self, task_str):
@@ -71,7 +71,7 @@ class Tasklist:
             custom_quest = True
         while task_not_found:
             for task in self.tasks:
-                if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames)):
+                if (task_str == task.reward.title()) or (task_str == task.quest.replace('é', 'e').title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames)):
                     out_task = task
                     task_not_found = False
                     if custom_quest:
