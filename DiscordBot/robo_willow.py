@@ -365,6 +365,7 @@ async def settimezone(ctx, tz_str):
 async def want(ctx, *roles):
     """Set a given pokemon sighting role to a user."""
     all_pokemon = True
+    bad = ''
     for role in roles:
         role = role.strip(',')
         print(role)
@@ -380,11 +381,12 @@ async def want(ctx, *roles):
                 role_obj = discord.utils.get(ctx.message.server.roles, name=role.lower())
             await client.add_roles(user, role_obj)
         else:
+            bad += ' ' + role
             all_pokemon = False
     if all_pokemon:
         await client.add_reaction(ctx.message, '👍')
     else:
-        await client.say('Not all requests matched known pokemon. Known have been added.')
+        await client.say('Not all requests matched known pokemon. Unable to match:' + bad)
 
 
 @client.command(pass_context=True)
