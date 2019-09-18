@@ -327,7 +327,7 @@ def match_pokemon(name):
     with open('pokemon.txt') as file:
         line = file.readline().strip('\n')
         while line:
-            if fuzz.ratio(name.title(), line) > 85:
+            if fuzz.ratio(name.title(), line) > 80:
                 return line
             line = file.readline().strip('\n')
     return None
