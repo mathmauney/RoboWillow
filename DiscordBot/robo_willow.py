@@ -362,20 +362,29 @@ async def settimezone(ctx, tz_str):
 
 @client.command(pass_context=True)
 @pass_errors
-async def want(ctx, role):
+async def want(ctx, *roles):
     """Set a given pokemon sighting role to a user."""
-    is_pokemon = False
-    with open('pokemon.txt') as file:
-        if role.title() + '\n' in file.read():
-            is_pokemon = True
-    if is_pokemon:
-        user = ctx.message.author
-        role_obj = discord.utils.get(ctx.message.server.roles, name=role.lower())
-        if role_obj is None:
-            await client.create_role(ctx.message.server, name=role.lower())
+    all_pokemon = True
+    for role in roles:
+        role = role.strip(',')
+        print(role)
+        is_pokemon = False
+        with open('pokemon.txt') as file:
+            if role.title() + '\n' in file.read():
+                is_pokemon = True
+        if is_pokemon:
+            user = ctx.message.author
             role_obj = discord.utils.get(ctx.message.server.roles, name=role.lower())
-        await client.add_roles(user, role_obj)
+            if role_obj is None:
+                await client.create_role(ctx.message.server, name=role.lower(), mentionable=True)
+                role_obj = discord.utils.get(ctx.message.server.roles, name=role.lower())
+            await client.add_roles(user, role_obj)
+        else:
+            all_pokemon = False
+    if all_pokemon:
         await client.add_reaction(ctx.message, '👍')
+    else:
+        await client.say('Not all requests matched known pokemon. Known have been added.')
 
 
 @client.command(pass_context=True)
