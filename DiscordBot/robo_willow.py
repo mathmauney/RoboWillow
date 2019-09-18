@@ -389,26 +389,28 @@ async def want(ctx, *roles):
 
 @client.command(pass_context=True)
 @pass_errors
-async def unwant(ctx, role):
+async def unwant(ctx, *roles):
     """Remove sighting role(s) from a user."""
-    if role.lower() == 'all':
-        roles = ctx.message.author.roles
-        for role in roles:
-            with open('pokemon.txt') as file:
-                if role.name.title() in file.read():
-                    user = ctx.message.author
-                    await client.remove_roles(user, role)
-        await client.add_reaction(ctx.message, '👍')
-    else:
-        is_pokemon = False
-        with open('pokemon.txt') as file:
-            if role.title() + '\n' in file.read():  # Make sure the whole line is matched
-                is_pokemon = True
-        if is_pokemon:
-            user = ctx.message.author
-            role_obj = discord.utils.get(user.server.roles, name=role.lower())
-            await client.remove_roles(user, role_obj)
+    for role in roles:
+        if role.lower() == 'all':
+            roles = ctx.message.author.roles
+            for role in roles:
+                with open('pokemon.txt') as file:
+                    if role.name.title() in file.read():
+                        user = ctx.message.author
+                        await client.remove_roles(user, role)
             await client.add_reaction(ctx.message, '👍')
+            return
+        else:
+            is_pokemon = False
+            with open('pokemon.txt') as file:
+                if role.title() + '\n' in file.read():  # Make sure the whole line is matched
+                    is_pokemon = True
+            if is_pokemon:
+                user = ctx.message.author
+                role_obj = discord.utils.get(user.server.roles, name=role.lower())
+                await client.remove_roles(user, role_obj)
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command(pass_context=True)
