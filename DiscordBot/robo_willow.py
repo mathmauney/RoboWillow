@@ -403,6 +403,38 @@ async def unwant(ctx, role):
 
 
 @client.command(pass_context=True)
+@pass_errors
+async def listwants(ctx):
+    """List all pokemon sighting roles a user has."""
+    roles = ctx.message.author.roles
+    pokemon = []
+    embed_str = []
+    str_num = 0
+    embed_str.append('')
+
+    with open('pokemon.txt') as file:
+        line = file.readline()
+        while line:
+            for role in roles:
+                if role.name.title() in line:
+                    pokemon.append(role.name.title())
+            line = file.readline()
+    if pokemon == []:
+        await client.say('No want roles found.')
+    else:
+        for mon in pokemon:
+            to_add = mon + '\n'
+            if (len(embed_str[str_num]) + len(to_add) > 1000):
+                str_num += 1
+                embed_str.append('')
+            embed_str[str_num] += to_add
+        for i in range(len(embed_str)):
+            msg = discord.Embed(colour=discord.Colour(0x186a0))
+            msg.add_field(name='You are looking for:', value=embed_str[i], inline=False)
+            await client.say(embed=msg)
+
+
+@client.command(pass_context=True)
 @has_permissions(administrator=True)
 async def serverid(context):
     """Find the server ID."""
