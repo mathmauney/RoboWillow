@@ -366,15 +366,15 @@ async def want(ctx, role):
     """Set a given pokemon sighting role to a user."""
     is_pokemon = False
     with open('pokemon.txt') as file:
-        if role.title() in file.read():
+        if role.title() + '\n' in file.read():
             is_pokemon = True
     if is_pokemon:
         user = ctx.message.author
-        role = discord.utils.get(user.server.roles, name=role.title())
-        if role is None:
-            await client.create_role(user.server, name=role.title())
-            role = discord.utils.get(user.server.roles, name=role.title())
-        await client.add_roles(user, role)
+        role_obj = discord.utils.get(ctx.message.server.roles, name=role.title())
+        if role_obj is None:
+            await client.create_role(ctx.message.server, name=role.title())
+            role_obj = discord.utils.get(ctx.message.server.roles, name=role.title())
+        await client.add_roles(user, role_obj)
         await client.add_reaction(ctx.message, '👍')
 
 
@@ -383,11 +383,12 @@ async def want(ctx, role):
 async def unwant(ctx, role):
     """Remove sighting role(s) from a user."""
     if role.lower() == 'all':
-        roles = []  # TODO get all user roles
+        roles = ctx.message.author.roles
         for role in roles:
-            with open('pokmeon.txt') as file:
-                if role.title() in file.read():
-                    pass    # TODO remove that role
+            with open('pokemon.txt') as file:
+                if role.name.title() in file.read():
+                    user = ctx.message.author
+                    await client.remove_roles(user, role)
         await client.add_reaction(ctx.message, '👍')
     else:
         is_pokemon = False
@@ -396,8 +397,8 @@ async def unwant(ctx, role):
                 is_pokemon = True
         if is_pokemon:
             user = ctx.message.author
-            role = discord.utils.get(user.server.roles, name=role.title())
-            await client.add_roles(user, role)
+            role_obj = discord.utils.get(user.server.roles, name=role.title())
+            await client.remove_roles(user, role_obj)
             await client.add_reaction(ctx.message, '👍')
 
 
