@@ -368,7 +368,6 @@ async def want(ctx, *roles):
     bad = ''
     for role in roles:
         role = role.strip(',')
-        print(role)
         is_pokemon = False
         with open('pokemon.txt') as file:
             if role.title() + '\n' in file.read():
@@ -394,6 +393,7 @@ async def want(ctx, *roles):
 async def unwant(ctx, *roles):
     """Remove sighting role(s) from a user."""
     for role in roles:
+        role = role.strip(',')
         if role.lower() == 'all':
             roles = ctx.message.author.roles
             for role in roles:
