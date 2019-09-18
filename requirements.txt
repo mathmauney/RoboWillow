@@ -5,3 +5,5 @@ asyncio
 pickle
 pytz
 inspect
+fuzzywuzzy
+python-Levenshtein

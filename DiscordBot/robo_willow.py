@@ -367,17 +367,13 @@ async def want(ctx, *roles):
     all_pokemon = True
     bad = ''
     for role in roles:
-        role = role.strip(',')
-        is_pokemon = False
-        with open('pokemon.txt') as file:
-            if role.title() + '\n' in file.read():
-                is_pokemon = True
-        if is_pokemon:
+        match = pokemap.match_pokemon(role)
+        if match is not None:
             user = ctx.message.author
-            role_obj = discord.utils.get(ctx.message.server.roles, name=role.lower())
+            role_obj = discord.utils.get(ctx.message.server.roles, name=match.lower())
             if role_obj is None:
-                await client.create_role(ctx.message.server, name=role.lower(), mentionable=True)
-                role_obj = discord.utils.get(ctx.message.server.roles, name=role.lower())
+                await client.create_role(ctx.message.server, name=match.lower(), mentionable=True)
+                role_obj = discord.utils.get(ctx.message.server.roles, name=match.lower())
             await client.add_roles(user, role_obj)
         else:
             bad += ' ' + role
@@ -392,28 +388,30 @@ async def want(ctx, *roles):
 @pass_errors
 async def unwant(ctx, *roles):
     """Remove sighting role(s) from a user."""
+    bad = ''
     for role in roles:
         role = role.strip(',')
         if role.lower() == 'all':
+            user = ctx.message.author
             roles = ctx.message.author.roles
             for role in roles:
-                with open('pokemon.txt') as file:
-                    if role.name.title() in file.read():
-                        user = ctx.message.author
-                        await client.remove_roles(user, role)
+                match = pokemap.match_pokemon(role)
+                if match is not None:
+                    await client.remove_roles(user, role)
             await client.add_reaction(ctx.message, '👍')
             return
         else:
-            is_pokemon = False
-            with open('pokemon.txt') as file:
-                if role.title() + '\n' in file.read():  # Make sure the whole line is matched
-                    is_pokemon = True
-            if is_pokemon:
+            match = pokemap.match_pokemon(role)
+            if match is not None:
                 user = ctx.message.author
-                role_obj = discord.utils.get(user.server.roles, name=role.lower())
+                role_obj = discord.utils.get(user.server.roles, name=match.lower())
                 await client.remove_roles(user, role_obj)
-    await client.add_reaction(ctx.message, '👍')
-
+            else:
+                bad += ' ' + role
+    if bad == '':
+        await client.add_reaction(ctx.message, '👍')
+    else:
+        await client.say('Not all requests matched known pokemon. Unable to match:' + bad)
 
 @client.command(pass_context=True)
 @pass_errors
