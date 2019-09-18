@@ -132,14 +132,14 @@ async def addstop(ctx, *args):
         parsed = urlparse.urlparse(url_str)
         query_parsed = urlparse.parse_qs(url_str)
         if 'ingress' in parsed[1]:   # Check if ingress url
-            name_args = args[0:n_args-1]
+            name_args = args[0:n_args - 1]
             name = ' '.join(name_args)
             ingress_url = args[-1]
             pll_location = ingress_url.find('pll')  # Finds the part of the url that describes the portal location
             if pll_location != -1:
                 comma_location = ingress_url.find(',', pll_location)  # Finds the comma in the portal location and then splits into lat and long
-                lat = float(ingress_url[pll_location+4:comma_location])
-                long = float(ingress_url[comma_location+1:])
+                lat = float(ingress_url[pll_location + 4:comma_location])
+                long = float(ingress_url[comma_location + 1:])
             else:  # If no portal location data was found in the URL
                 await client.say('')
             return
@@ -148,12 +148,12 @@ async def addstop(ctx, *args):
             lat = float(query_parsed['ll'][0].split(',')[0])
             long = float(query_parsed['ll'][0].split(',')[1])
     elif n_args > 2:
-        lat = float(args[n_args-2])
-        long = float(args[n_args-1])
-        name_args = args[0:n_args-2]
+        lat = float(args[n_args - 2])
+        long = float(args[n_args - 1])
+        name_args = args[0:n_args - 2]
         name = ' '.join(name_args)
     else:
-        await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "'+bot_prefix[0]+'help addstop" command for detailed instructions')
+        await client.say('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "' + bot_prefix[0] + 'help addstop" command for detailed instructions')
     try:
         taskmap.new_stop([long, lat], name)
         taskmap.save()
@@ -234,7 +234,7 @@ async def listtasks():
             if tasks.reward_type == 'Rare Candy':
                 to_add += ' 🍬'
             to_add += '\n'
-            if (len(value_str[str_num])+len(to_add) > 1000):
+            if (len(value_str[str_num]) + len(to_add) > 1000):
                 str_num += 1
                 value_str.append('')
             value_str[str_num] += to_add
@@ -359,9 +359,11 @@ async def settimezone(ctx, tz_str):
     except ValueError:
         pass
 
+
 @client.command(pass_context=True)
 @pass_errors
 async def want(ctx, role):
+    """Set a given pokemon sighting role to a user."""
     is_pokemon = False
     with open('pokemon.txt') as file:
         if role.title() in file.read():
@@ -379,15 +381,24 @@ async def want(ctx, role):
 @client.command(pass_context=True)
 @pass_errors
 async def unwant(ctx, role):
-    is_pokemon = False
-    with open('pokemon.txt') as file:
-        if role.title() in file.read():
-            is_pokemon = True
-    if is_pokemon:
-        user = ctx.message.author
-        role = discord.utils.get(user.server.roles, name=role.title())
-        await client.add_roles(user, role)
+    """Remove sighting role(s) from a user."""
+    if role.lower() == 'all':
+        roles = []  # TODO get all user roles
+        for role in roles:
+            with open('pokmeon.txt') as file:
+                if role.title() in file.read():
+                    pass    # TODO remove that role
         await client.add_reaction(ctx.message, '👍')
+    else:
+        is_pokemon = False
+        with open('pokemon.txt') as file:
+            if role.title() + '\n' in file.read():  # Make sure the whole line is matched
+                is_pokemon = True
+        if is_pokemon:
+            user = ctx.message.author
+            role = discord.utils.get(user.server.roles, name=role.title())
+            await client.add_roles(user, role)
+            await client.add_reaction(ctx.message, '👍')
 
 
 @client.command(pass_context=True)
@@ -465,11 +476,11 @@ async def on_message(message):
                 await client.send_message(message.channel, embed=msg)
             elif 'advanced' in message.content.lower():
                 commands = {}
-                commands[bot_prefix[0]+'deletetask'] = 'Remove a task from the list.'
-                commands[bot_prefix[0]+'deletestop'] = 'Remove a stop from the local map.'
-                commands[bot_prefix[0]+'resettasklist'] = 'Completely clear the tasklist. Use only if the tasklist has become corrupted,' +\
+                commands[bot_prefix[0] + 'deletetask'] = 'Remove a task from the list.'
+                commands[bot_prefix[0] + 'deletestop'] = 'Remove a stop from the local map.'
+                commands[bot_prefix[0] + 'resettasklist'] = 'Completely clear the tasklist. Use only if the tasklist has become corrupted,' +\
                     ' otherwise use the deletetask command to remove unwanted tasks one by one.'
-                commands[bot_prefix[0]+'resetall'] = 'Reset all the stops in the map. Use when an event causes research changes (Requires admin).'
+                commands[bot_prefix[0] + 'resetall'] = 'Reset all the stops in the map. Use when an event causes research changes (Requires admin).'
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
                 for command, description in commands.items():
                     msg.add_field(name=command, value=description, inline=False)
@@ -485,17 +496,16 @@ async def on_message(message):
                 await client.send_message(message.channel, embed=msg)
             else:
                 commands = {}
-                commands[bot_prefix[0]+'addstop'] = 'Add a new stop to the map.'
-                commands[bot_prefix[0]+'addtask'] = 'Define a new task and reward set.'
-                commands[bot_prefix[0]+'listtasks'] = 'Lists all tasks the bot currently knows along with their rewards.'
-                commands[bot_prefix[0]+'resetstop'] = 'Removes any task associated with a given stop. Use if a stop was misreported'
-                commands[bot_prefix[0]+'settask'] = 'Assign a task to a stop.'
+                commands[bot_prefix[0] + 'addstop'] = 'Add a new stop to the map.'
+                commands[bot_prefix[0] + 'addtask'] = 'Define a new task and reward set.'
+                commands[bot_prefix[0] + 'listtasks'] = 'Lists all tasks the bot currently knows along with their rewards.'
+                commands[bot_prefix[0] + 'resetstop'] = 'Removes any task associated with a given stop. Use if a stop was misreported'
+                commands[bot_prefix[0] + 'settask'] = 'Assign a task to a stop.'
 
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
                 for command, description in commands.items():
                     msg.add_field(name=command, value=description, inline=False)
-                msg.add_field(name='For more info', value='Use "' + bot_prefix[0] + 'help command" for more info on a command, or use "' + bot_prefix[0] +
-                              'help advanced" to get information on commands for advanced users', inline=False)
+                msg.add_field(name='For more info', value='Use "' + bot_prefix[0] + 'help command" for more info on a command, or use "' + bot_prefix[0] + 'help advanced" to get information on commands for advanced users', inline=False)
                 msg.add_field(name='To view the current map', value='Click [here](' + map_url + '/?map=' + str(message.server.id) + ')', inline=False)
                 await bot_embed_respond(message, msg)
         elif msg.startswith('setup'):
