@@ -359,6 +359,36 @@ async def settimezone(ctx, tz_str):
     except ValueError:
         pass
 
+@client.command(pass_context=True)
+@pass_errors
+async def want(ctx, role):
+    is_pokemon = False
+    with open('pokemon.txt') as file:
+        if role.title() in file.read():
+            is_pokemon = True
+    if is_pokemon:
+        user = ctx.message.author
+        role = discord.utils.get(user.server.roles, name=role.title())
+        if role is None:
+            await client.create_role(user.server, name=role.title())
+            role = discord.utils.get(user.server.roles, name=role.title())
+        await client.add_roles(user, role)
+        await client.add_reaction(ctx.message, '👍')
+
+
+@client.command(pass_context=True)
+@pass_errors
+async def unwant(ctx, role):
+    is_pokemon = False
+    with open('pokemon.txt') as file:
+        if role.title() in file.read():
+            is_pokemon = True
+    if is_pokemon:
+        user = ctx.message.author
+        role = discord.utils.get(user.server.roles, name=role.title())
+        await client.add_roles(user, role)
+        await client.add_reaction(ctx.message, '👍')
+
 
 @client.command(pass_context=True)
 @has_permissions(administrator=True)
