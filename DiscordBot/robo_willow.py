@@ -370,10 +370,10 @@ async def want(ctx, role):
             is_pokemon = True
     if is_pokemon:
         user = ctx.message.author
-        role_obj = discord.utils.get(ctx.message.server.roles, name=role.title())
+        role_obj = discord.utils.get(ctx.message.server.roles, name=role.lower())
         if role_obj is None:
-            await client.create_role(ctx.message.server, name=role.title())
-            role_obj = discord.utils.get(ctx.message.server.roles, name=role.title())
+            await client.create_role(ctx.message.server, name=role.lower())
+            role_obj = discord.utils.get(ctx.message.server.roles, name=role.lower())
         await client.add_roles(user, role_obj)
         await client.add_reaction(ctx.message, '👍')
 
@@ -397,7 +397,7 @@ async def unwant(ctx, role):
                 is_pokemon = True
         if is_pokemon:
             user = ctx.message.author
-            role_obj = discord.utils.get(user.server.roles, name=role.title())
+            role_obj = discord.utils.get(user.server.roles, name=role.lower())
             await client.remove_roles(user, role_obj)
             await client.add_reaction(ctx.message, '👍')
 
