@@ -413,6 +413,7 @@ async def unwant(ctx, *roles):
     else:
         await client.say('Not all requests matched known pokemon. Unable to match:' + bad)
 
+
 @client.command(pass_context=True)
 @pass_errors
 async def listwants(ctx):
