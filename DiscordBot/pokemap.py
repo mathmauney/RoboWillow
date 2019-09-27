@@ -223,6 +223,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 elif ratio == 100:
                     raise StopNotFound()
             if best_stop is not None:
+                best_stop._map = self
                 return best_stop
             else:
                 raise StopNotFound()
