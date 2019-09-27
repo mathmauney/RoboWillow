@@ -462,6 +462,8 @@ async def on_message(message):
     Contains the help commands, and the bots ability to parse language.
 
     """
+    message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
+    message.content = message.content.replace(u"\u201D", '"')
     for role in message.role_mentions:
         role_str = '<@&' + str(role.id) + '>'
         message.content = message.content.replace(role_str, role.name)
