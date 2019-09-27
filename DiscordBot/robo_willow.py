@@ -273,6 +273,7 @@ async def nicknamestop(ctx, stop_name, nickname):
     stop = taskmap.find_stop(stop_name)
     stop.add_nickname(nickname)
     taskmap.save()
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command()
@@ -282,6 +283,7 @@ async def nicknametask(task_name, nickname):
     task = tasklist.find_task(task_name)
     task.add_nickname(nickname)
     tasklist.save(task_path)
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command(pass_context=True)
