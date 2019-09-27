@@ -211,8 +211,20 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
                     self.reset_all
                 stops_found.append(stop)
-        if len(stops_found) == 0:
-            raise StopNotFound()
+        if len(stops_found) == 0 and len(stop_name) > 5:
+            best_ratio = 0
+            best_stop = None
+            for stop in self:
+                ratio = fuzz.partial_ratio(stop.properties['Stop Name'].title(), stop_name.title())
+                if ratio > 80 and ratio > best_ratio:
+                    best_ratio = ratio
+                    best_stop = stop
+                elif ratio == 100:
+                    raise StopNotFound()
+            if best_stop is not None:
+                return best_stop
+            else:
+                raise StopNotFound()
         elif len(stops_found) == 1:
             stops_found[0]._map = self
             return stops_found[0]
