@@ -5,6 +5,7 @@ import pygeoj
 import pickle
 import pytz
 import copy
+from fuzzywuzzy import fuzz
 
 
 class Task:
@@ -316,6 +317,20 @@ def load(filepath=None, data=None, **kwargs):
 def new():
     """Modification of pygeoj.new to work with the ResearchMap class."""
     return ResearchMap()
+
+
+def match_pokemon(name):
+    """Find the closest pokemon to a string."""
+    with open('pokemon.txt') as file:
+        if name.title() + '\n' in file.read():
+            return name
+    with open('pokemon.txt') as file:
+        line = file.readline().strip('\n')
+        while line:
+            if fuzz.ratio(name.title(), line) > 80:
+                return line
+            line = file.readline().strip('\n')
+    return None
 
 
 # Custom Exceptions
