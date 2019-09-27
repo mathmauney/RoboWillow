@@ -141,8 +141,8 @@ async def addstop(ctx, *args):
                 lat = float(ingress_url[pll_location + 4:comma_location])
                 long = float(ingress_url[comma_location + 1:])
             else:  # If no portal location data was found in the URL
-                await client.say('')
-            return
+                await client.say('No portal location data in URL.')
+                return
         elif 'apple' in parsed[1]:  # Check if apple maps url
             name = query_parsed['q'][0]
             lat = float(query_parsed['ll'][0].split(',')[0])
