@@ -207,6 +207,8 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         """Find a stop within the map by its name or nickname."""
         stops_found = []
         stop_name = stop_name.replace('’', "'")
+        if '\n' in stop_name:
+            raise StopNotFound
         for stop in self:
             if (stop.properties['Stop Name'].title() == stop_name.title()) or (stop_name.title() in stop.properties['Nicknames']) or (stop_name in stop.properties['Nicknames']):
                 if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
