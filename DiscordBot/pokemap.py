@@ -211,7 +211,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
                     self.reset_all
                 stops_found.append(stop)
-        if len(stops_found) == 0 and len(stop_name) > 5:
+        if len(stops_found) == 0:
             best_ratio = 0
             best_stop = None
             for stop in self:
@@ -256,11 +256,14 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 stop.reset()
                 stops_reset = True
             else:
-                if stop.properties['Category'] == 'Shadow':
-                    delta = (int(self.now().strftime("%X").replace(':', '')) - stop.properties["Shadow Time"])
-                    if (delta > 3000) or (delta < 0):
-                        stop.reset_shadow()
-                        stops_reset = True
+                try:
+                    if stop.properties['Category'] == 'Shadow':
+                        delta = (int(self.now().strftime("%X").replace(':', '')) - stop.properties["Shadow Time"])
+                        if (delta > 3000) or (delta < 0):
+                            stop.reset_shadow()
+                            stops_reset = True
+                except KeyError:
+                    stop.reset()
         return stops_reset
 
     def reset_all(self):
