@@ -603,10 +603,11 @@ async def on_message(message):
                 await client.send_message(message.channel, e.message)
     else:
         try:
-            stop_name = message.content
-            prev_message_stop[message.server.id] = taskmap.find_stop(stop_name)
-            prev_message_was_stop[message.server.id] = True
-            prev_message[message.server.id] = message
+            if '\n' not in message.content:
+                stop_name = message.content
+                prev_message_stop[message.server.id] = taskmap.find_stop(stop_name)
+                prev_message_was_stop[message.server.id] = True
+                prev_message[message.server.id] = message
         except pokemap.StopNotFound:
             prev_message_was_stop[message.server.id] = False
             if '\n' in message.content:
