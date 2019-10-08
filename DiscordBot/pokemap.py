@@ -369,7 +369,7 @@ def fetch_tasklist():
     tasklist = Tasklist()
 
     for raw_task in raw_tasks:
-        shiny = 'False'
+        shiny = False
         name = None
         quest = raw_task[0].strip('.')
         if ':' in quest:
@@ -381,7 +381,7 @@ def fetch_tasklist():
             else:
                 name += ' or ' + img_name
             if 'shiny' in img_elem.getparent().attrib['class']:
-                shiny = 'True'
+                shiny = True
         if name == 'Bulbasaur or Charmander or Squirtle':
             name = 'Gen 1 Starter'
         tasklist.add_task(Task(name, quest, shiny))
