@@ -7,3 +7,5 @@ pytz
 inspect
 fuzzywuzzy
 python-Levenshtein
+lxml
+cssselect
