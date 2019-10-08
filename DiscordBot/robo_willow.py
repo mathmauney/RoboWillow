@@ -360,6 +360,7 @@ async def setbounds(ctx, lat1, long1, lat2, long2):
     taskmap.set_bounds(coords1, coords2)
     try:
         taskmap.save()
+        await client.add_reaction(ctx.message, '👍')
     except ValueError:
         pass
 
@@ -373,6 +374,7 @@ async def settimezone(ctx, tz_str):
     taskmap.set_time_zone(tz_str)
     try:
         taskmap.save()
+        await client.add_reaction(ctx.message, '👍')
     except ValueError:
         pass
 
