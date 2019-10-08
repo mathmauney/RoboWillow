@@ -178,7 +178,7 @@ async def settask(ctx, *args):
             stop.set_task(task)
             if task_str.title() in task.rewards:
                 stop.properties['Icon'] = task_str.title()
-            await client.say('Task set.')
+            await client.add_reaction(ctx.message, '👍')
             taskmap.save()
         except pokemap.PokemapException as e:
             await client.say(e.message)
@@ -199,22 +199,34 @@ async def resetstop(ctx, *args):
     await client.add_reaction(ctx.message, '👍')
 
 
-@client.command()
+@client.command(pass_context=True)
 @pass_errors
-async def addtask(reward, quest, shiny=False):
+async def addtask(ctx, reward, quest, shiny=False):
     """Add a task to a stop."""
     tasklist.add_task(pokemap.Task(reward, quest, shiny))
     tasklist.save(task_path)
-    client.say('Task Added')
+    await client.add_reaction(ctx.message, '👍')
 
 
-@client.command()
+@client.command(pass_context=True)
 @pass_errors
-async def resettasklist():
+async def resettasklist(ctx):
     """Backup and reset the tasklist."""
     backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
     tasklist.save(backup_name)
     tasklist.clear()
+    await client.add_reaction(ctx.message, '👍')
+
+@client.command(pass_context=True)
+@pass_errors
+async def pulltasklist(ctx):
+    """Pull tasks from TheSilphRoad."""
+    global tasklist
+    backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
+    tasklist.save(backup_name)
+    tasklist = pokemap.fetch_tasklist()
+    tasklist.save(task_path)
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command(aliases=['tasklist'])
@@ -256,13 +268,14 @@ async def deletestop(ctx, *args):
     await client.add_reaction(ctx.message, '👍')
 
 
-@client.command()
+@client.command(pass_context=True)
 @pass_errors
-async def deletetask(task_str):
+async def deletetask(ctx, task_str):
     """Delete a task."""
     task = tasklist.find_task(task_str)
     tasklist.remove_task(task)
     tasklist.save(task_path)
+    await client.add_reaction(ctx.message, '👍')
 
 
 @client.command(pass_context=True)
@@ -295,6 +308,7 @@ async def setlocation(ctx, lat, long):
     taskmap.set_location(float(lat), float(long))
     try:
         taskmap.save()
+        await client.add_reaction(ctx.message, '👍')
     except ValueError:
         pass
 
@@ -317,6 +331,7 @@ async def resetmap(ctx, server_id):
         taskmap = maps[server_id]
         taskmap.reset_all()
         taskmap.save()
+        await client.add_reaction(ctx.message, '👍')
     else:
         await client.say("Sorry you can't do that" + ctx.message.author.id)
 

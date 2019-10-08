@@ -6,3 +6,4 @@ map.json
 *test*
 config.py
 __pycache__
+*.pkl

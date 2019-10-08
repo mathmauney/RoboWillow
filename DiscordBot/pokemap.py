@@ -1,5 +1,6 @@
 """This module implements the functions and classes for making maps of research tasks in pokemon go."""
-
+from lxml import html
+from urllib.request import urlopen
 import datetime
 import pygeoj
 import pickle
@@ -339,19 +340,52 @@ def new():
     return ResearchMap()
 
 
-def match_pokemon(name):
-    """Find the closest pokemon to a string."""
-    with open('pokemon.txt') as file:
-        if name.title() + '\n' in file.read():
-            return name
-    with open('pokemon.txt') as file:
-        line = file.readline().strip('\n')
-        while line:
-            if fuzz.ratio(name.title(), line) > 80:
-                return line
+def match_pokemon(input):
+    """Find the closest pokemon to a string or by number."""
+    if isinstance(input, str):
+        name = input
+        with open('pokemon.txt') as file:
+            if name.title() + '\n' in file.read():
+                return name
+        with open('pokemon.txt') as file:
             line = file.readline().strip('\n')
-    return None
+            while line:
+                if fuzz.ratio(name.title(), line) > 80:
+                    return line
+                line = file.readline().strip('\n')
+        return None
+    if isinstance(input, int):
+        num = input
+        with open('pokemon.txt') as file:
+            for i, line in enumerate(file):
+                if i + 1 == num:
+                    return line.strip('\n')
 
+
+def fetch_tasklist():
+    page = urlopen("https://thesilphroad.com/research-tasks")
+    doc = html.parse(page)
+    raw_tasks = [[pkmn[0].text, pkmn.cssselect('img')] for pkmn in doc.xpath("//div[@class='task  pkmn ']")]
+    tasklist = Tasklist()
+
+    for raw_task in raw_tasks:
+        shiny = 'False'
+        name = None
+        quest = raw_task[0].strip('.')
+        if ':' in quest:
+            quest = quest.split(':')[-1].strip()
+        for img_elem in raw_task[1]:
+            img_name = match_pokemon(int(img_elem.attrib['src'].split('/')[-1].strip('.png')))
+            if name is None:
+                name = img_name
+            else:
+                name += ' or ' + img_name
+            if 'shiny' in img_elem.getparent().attrib['class']:
+                shiny = 'True'
+        if name == 'Bulbasaur or Charmander or Squirtle':
+            name = 'Gen 1 Starter'
+        tasklist.add_task(Task(name, quest, shiny))
+    return tasklist
 
 # Custom Exceptions
 class PokemapException(Exception):
