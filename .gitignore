@@ -4,3 +4,5 @@ Discord\ Bot/test.py
 Discord\ Bot/config.py
 map.json
 *test*
+config.py
+__pycache__

@@ -5,6 +5,7 @@ import pygeoj
 import pickle
 import pytz
 import copy
+from fuzzywuzzy import fuzz
 
 
 class Task:
@@ -72,7 +73,7 @@ class Tasklist:
             custom_quest = True
         while task_not_found:
             for task in self.tasks:
-                if (task_str == task.reward.title()) or (task_str == task.quest.title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames)):
+                if (task_str == task.reward.title()) or (task_str == task.quest.replace('é', 'e').title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames)):
                     out_task = task
                     task_not_found = False
                     if custom_quest:
@@ -112,6 +113,8 @@ class Stop(pygeoj.Feature):
         self.properties['Icon'] = ''
         self.properties['Shadow Pokemon'] = ''
         self.properties['Shadow Time'] = ''
+        self.properties['Old_Category'] = ''
+        self.properties['Old_Icon'] = ''
 
     def set_task(self, task):
         """Add a task to the stop."""
@@ -133,14 +136,15 @@ class Stop(pygeoj.Feature):
         self.shadow_time = datetime.datetime.now()
         if self.properties['Shadow Time'] == '':
             self.properties['Shadow Time'] = int(self._map.now().strftime("%X").replace(':', ''))
-        self.properties['Old_Category'] = self.properties['Category']
-        self.properties['Old_Icon'] = self.properties['Icon']
+            self.properties['Old_Category'] = self.properties['Category']
+            self.properties['Old_Icon'] = self.properties['Icon']
         self.properties['Category'] = 'Shadow'
-        self.properties['Icon'] = 'Shadow'
         if pokemon is not None:
             self.properties['Shadow Pokemon'] = 'a shadow ' + pokemon
+            self.properties['Icon'] = pokemon.upper()
         else:
             self.properties['Shadow Pokemon'] = 'an unknown shadow pokemon'
+            self.properties['Icon'] = 'Shadow'
 
     def reset_shadow(self):
         """Remove rocket raid from the stop."""
@@ -196,19 +200,35 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             feat = obj.copy()
         else:
             feat = Stop(geometry=geometry, properties=properties).__geo_interface__
+            feat._map = self
         self._data["features"].append(feat)
 
     def find_stop(self, stop_name):
         """Find a stop within the map by its name or nickname."""
         stops_found = []
         stop_name = stop_name.replace('’', "'")
+        if '\n' in stop_name:
+            raise StopNotFound
         for stop in self:
             if (stop.properties['Stop Name'].title() == stop_name.title()) or (stop_name.title() in stop.properties['Nicknames']) or (stop_name in stop.properties['Nicknames']):
                 if stop.properties['Last Edit'] != int(self.now().strftime("%j")):
                     self.reset_all
                 stops_found.append(stop)
         if len(stops_found) == 0:
-            raise StopNotFound()
+            best_ratio = 0
+            best_stop = None
+            for stop in self:
+                ratio = fuzz.partial_ratio(stop.properties['Stop Name'].title(), stop_name.title())
+                if ratio > 80 and ratio > best_ratio:
+                    best_ratio = ratio
+                    best_stop = stop
+                elif ratio == 100:
+                    raise StopNotFound()
+            if best_stop is not None:
+                best_stop._map = self
+                return best_stop
+            else:
+                raise StopNotFound()
         elif len(stops_found) == 1:
             stops_found[0]._map = self
             return stops_found[0]
@@ -240,11 +260,15 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 stop.reset()
                 stops_reset = True
             else:
-                if stop.properties['Category'] == 'Shadow':
-                    delta = (int(self.now().strftime("%X").replace(':', '')) - stop.properties["Shadow Time"])
-                    if (delta > 3000) or (delta < 0):
-                        stop.reset_shadow()
-                        stops_reset = True
+                try:
+                    if stop.properties['Category'] == 'Shadow':
+                        delta = (int(self.now().strftime("%X").replace(':', '')) - stop.properties["Shadow Time"])
+                        if (delta > 3000) or (delta < 0):
+                            stop.reset_shadow()
+                            stops_reset = True
+                except KeyError:
+                    stop._map = self
+                    stop.reset()
         return stops_reset
 
     def reset_all(self):
@@ -313,6 +337,20 @@ def load(filepath=None, data=None, **kwargs):
 def new():
     """Modification of pygeoj.new to work with the ResearchMap class."""
     return ResearchMap()
+
+
+def match_pokemon(name):
+    """Find the closest pokemon to a string."""
+    with open('pokemon.txt') as file:
+        if name.title() + '\n' in file.read():
+            return name
+    with open('pokemon.txt') as file:
+        line = file.readline().strip('\n')
+        while line:
+            if fuzz.ratio(name.title(), line) > 80:
+                return line
+            line = file.readline().strip('\n')
+    return None
 
 
 # Custom Exceptions

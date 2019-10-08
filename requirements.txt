@@ -1,7 +1,9 @@
-discord
+discord==0.16.12
 pygeoj
 datetime
 asyncio
 pickle
 pytz
 inspect
+fuzzywuzzy
+python-Levenshtein
