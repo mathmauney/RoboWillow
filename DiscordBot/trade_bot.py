@@ -58,7 +58,7 @@ async def bot_embed_respond(message, msg):
 
 async def process_matches(message, offer):
     """Check for matches on an offer and notify both parties if there are matches."""
-    # matches = parse_matches(offer)
+    matches = tf.parse_matches(offer)
     sender = message.author
     matches = [(['Squirtle', 'Charmander'], ['Bulbasaur', 'Pikachu', 'Raichu'], 200038656021364736)]
     embed_componenets = []
@@ -128,6 +128,80 @@ async def addoffer(ctx, offer_name):
         await client.add_reaction(ctx.message, '👍')
     else:
         await bot_respond(ctx.message, "Offer group already exists.")
+
+
+@client.command(pass_context=True, aliases=['deletewants'])
+async def deletewant(ctx, offer_name, *pokemon):
+    user = tf.get_user(ctx.message.author.id)
+    if user is None:
+        user = tf.add_new_user(ctx.message.author.id)
+    offer = tf.find_offer(user, offer_name)
+    if offer is None:
+        await bot_respond(ctx.message, "Offer group not found.")
+        return
+    cleaned_delete = []
+    costume = None
+    shiny = False
+    for (i, poke) in enumerate(pokemon):
+        poke = poke.strip(',')
+        if poke.title() == 'Shiny':
+            shiny = True
+        else:
+            matched_poke = pokemap.match_pokemon(poke)
+            if costume is not None and matched_poke is not None:
+                matched_costume = pokemap.match_costume(matched_poke, costume)
+                if matched_costume is not None:
+                    matched_poke = matched_costume
+            if matched_poke is not None:
+                if shiny is True:
+                    cleaned_delete.append('Shiny ' + matched_poke)
+                    shiny = False
+                else:
+                    cleaned_delete.append(matched_poke)
+            else:
+                if costume is None:
+                    costume = poke
+                else:
+                    costume = costume + ' ' + poke
+    tf.remove_wants(offer, cleaned_delete)
+    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_delete))
+
+
+@client.command(pass_context=True, aliases=['deletehaves'])
+async def deletehave(ctx, offer_name, *pokemon):
+    user = tf.get_user(ctx.message.author.id)
+    if user is None:
+        user = tf.add_new_user(ctx.message.author.id)
+    offer = tf.find_offer(user, offer_name)
+    if offer is None:
+        await bot_respond(ctx.message, "Offer group not found.")
+        return
+    cleaned_delete = []
+    costume = None
+    shiny = False
+    for (i, poke) in enumerate(pokemon):
+        poke = poke.strip(',')
+        if poke.title() == 'Shiny':
+            shiny = True
+        else:
+            matched_poke = pokemap.match_pokemon(poke)
+            if costume is not None and matched_poke is not None:
+                matched_costume = pokemap.match_costume(matched_poke, costume)
+                if matched_costume is not None:
+                    matched_poke = matched_costume
+            if matched_poke is not None:
+                if shiny is True:
+                    cleaned_delete.append('Shiny ' + matched_poke)
+                    shiny = False
+                else:
+                    cleaned_delete.append(matched_poke)
+            else:
+                if costume is None:
+                    costume = poke
+                else:
+                    costume = costume + ' ' + poke
+    tf.remove_haves(offer, cleaned_delete)
+    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_delete))
 
 
 @client.command(pass_context=True, aliases=['addwants'])
@@ -204,6 +278,22 @@ async def addhave(ctx, offer_name, *pokemon):
     tf.add_wants(offer, cleaned_haves)
     await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_haves))
     await process_matches(offer)
+
+
+@client.command(pass_context=True)
+async def view(ctx, offer_name):
+    user = tf.get_user(ctx.message.author.id)
+    if user is None:
+        user = tf.add_new_user(ctx.message.author.id)
+    (wants, haves) = tf.get_offer_contents(tf.find_offer(user, offer_name))
+    have_str = ', '.join(haves)
+    want_str = ', '.join(wants)
+    embed = discord.Embed(colour=discord.Colour(0x186a0))
+    embed.add_field(name='You Have', value=have_str, inline=False)
+    print(have_str)
+    embed.add_field(name='You Want', value=want_str, inline=False)
+    print(want_str)
+    await bot_embed_respond(ctx.message, embed)
 
 
 @client.command(pass_context=True)
