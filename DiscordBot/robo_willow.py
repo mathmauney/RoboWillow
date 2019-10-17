@@ -223,6 +223,7 @@ async def resettasklist(ctx):
     tasklist.clear()
     await client.add_reaction(ctx.message, '👍')
 
+
 @client.command(pass_context=True)
 @pass_errors
 async def pulltasklist(ctx):

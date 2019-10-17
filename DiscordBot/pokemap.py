@@ -340,10 +340,10 @@ def new():
     return ResearchMap()
 
 
-def match_pokemon(input):
+def match_pokemon(input_):
     """Find the closest pokemon to a string or by number."""
-    if isinstance(input, str):
-        name = input
+    if isinstance(input_, str):
+        name = input_
         with open('pokemon.txt') as file:
             if name.title() + '\n' in file.read():
                 return name.title()
@@ -354,8 +354,8 @@ def match_pokemon(input):
                     return line
                 line = file.readline().strip('\n')
         return None
-    if isinstance(input, int):
-        num = input
+    if isinstance(input_, int):
+        num = input_
         with open('pokemon.txt') as file:
             for i, line in enumerate(file):
                 if i + 1 == num:
@@ -403,6 +403,7 @@ def fetch_tasklist():
             name = 'Gen 1 Starter'
         tasklist.add_task(Task(name, quest, shiny))
     return tasklist
+
 
 # Custom Exceptions
 class PokemapException(Exception):
