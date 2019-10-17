@@ -84,19 +84,35 @@ def find_offer(user, offer_name):
     return offer
 
 
-def add_have(offer, pokemon):
+def add_haves(offer, pokemon):
     if isinstance(pokemon, str):
-        update_dict = {'$addToSet': {'haves': {'$each': pokemon}}}
+        update_dict = {'$addToSet': {'haves': pokemon}}
     if isinstance(pokemon, list):
         update_dict = {'$addToSet': {'haves': {'$each': pokemon}}}
     offers.update(offer, update_dict)
 
 
-def add_want(offer, pokemon):
+def add_wants(offer, pokemon):
     if isinstance(pokemon, str):
         update_dict = {'$addToSet': {'wants': pokemon}}
     if isinstance(pokemon, list):
         update_dict = {'$addToSet': {'wants': {'$each': pokemon}}}
+    offers.update(offer, update_dict)
+
+
+def remove_haves(offer, pokemon):
+    if isinstance(pokemon, str):
+        update_dict = {'$pull': {'haves': pokemon}}
+    if isinstance(pokemon, list):
+        update_dict = {'$pullAll': {'haves': pokemon}}
+    offers.update(offer, update_dict)
+
+
+def remove_wants(offer, pokemon):
+    if isinstance(pokemon, str):
+        update_dict = {'$pull': {'wants': pokemon}}
+    if isinstance(pokemon, list):
+        update_dict = {'$pullAll': {'wants': pokemon}}
     offers.update(offer, update_dict)
 
 
@@ -117,3 +133,14 @@ def find_matches(offer):
                            {'communities': {'$in': _communities}}]}
     matches = offers.find(search_dict)
     return matches
+
+def parse_matches(offer):
+    matches = find_matches(offer)
+    offer_dict = offers.find_one(offer)
+    parsed = []
+    for match in matches:
+        discord_id = users.find_one(match['user'])['discord_id']
+        matching_wants = [pokemon for pokemon in offer_dict['wants'] if pokemon in match['haves']]
+        matching_haves = [pokemon for pokemon in offer_dict['haves'] if pokemon in match['wants']]
+        parsed.append((matching_wants, matching_haves, discord_id))
+    return parsed
