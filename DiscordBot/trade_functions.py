@@ -7,23 +7,25 @@ users = trade_db['users']
 offers = trade_db['offers']
 
 
-def add_new_user(discord_id, pogo_name):
-    check = {'$or': [{"name": pogo_name},
-                     {"discord_id": discord_id}]}
+def add_new_user(discord_id):
+    if not isinstance(discord_id, int):
+        discord_id = int(discord_id)
+    check = {"discord_id": discord_id}
     user = users.find_one(check)
     if user is None:
-        user_dict = {"name": pogo_name,
+        user_dict = {"name": '',
                      "discord_id": discord_id,
                      "offers": [],
                      "communities": [],
                      "friends": []}
         users.insert_one(user_dict)
+        return get_user(discord_id)
     else:
         raise KeyError("User already exists")
 
 
 def add_community(user, community_id):
-    update_dict = {'$addToSet': {'communities': community_id}}
+    update_dict = {'$addToSet': {'communities': int(community_id)}}
     users.update(user, update_dict)
     user_offer_ids = users.find_one(user)['offers']
     user_offers = offers.find({'_id': {'$in': user_offer_ids}})
@@ -48,7 +50,9 @@ def add_friend(user1, user2):
         offers.update(user_offer2, update_dict2)
 
 
-def find_user(discord_id):
+def get_user(discord_id):
+    if not isinstance(discord_id, int):
+        discord_id = int(discord_id)
     find_dict = {'discord_id': discord_id}
     return_dict = {}
     user = users.find_one(find_dict, return_dict)
@@ -57,7 +61,7 @@ def find_user(discord_id):
 
 def add_offer(user, offer_name):
     if isinstance(user, int):
-        user = find_user(user)
+        user = get_user(user)
     user_dict = users.find_one(user)
     user_communities = user_dict['communities']
     user_friends = user_dict['friends']
@@ -76,7 +80,7 @@ def add_offer(user, offer_name):
 
 def find_offer(user, offer_name):
     if isinstance(user, int):
-        user = find_user(user)
+        user = get_user(user)
     find_dict = {'offer_name': offer_name,
                  'user': user}
     return_dict = {}
@@ -133,6 +137,7 @@ def find_matches(offer):
                            {'communities': {'$in': _communities}}]}
     matches = offers.find(search_dict)
     return matches
+
 
 def parse_matches(offer):
     matches = find_matches(offer)
