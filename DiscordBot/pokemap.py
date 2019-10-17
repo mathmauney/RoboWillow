@@ -203,6 +203,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             stop = Stop(geometry=geometry, properties=properties)
             feat = stop.__geo_interface__
             stop._map = self
+            stop.reset()
         self._data["features"].append(feat)
 
     def find_stop(self, stop_name):
