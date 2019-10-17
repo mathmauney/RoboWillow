@@ -9,3 +9,4 @@ fuzzywuzzy
 python-Levenshtein
 lxml
 cssselect
+pymongo
