@@ -24,6 +24,8 @@ client = Bot(command_prefix=bot_prefix)
 
 prev_matches = {}
 # ------------------------------------------------------------------------------------------------------------------------------- #
+
+
 async def bot_respond(message, response):
     """Send a simple response.
 
@@ -37,6 +39,7 @@ async def bot_respond(message, response):
             await client.send_message(message.channel, response)
     except discord.errors.Forbidden:
         await client.send_message(message.author, "You seem to have tried to send a command in a channel I can't talk in. Try again in the appropriate channel")
+
 
 async def bot_embed_respond(message, msg):
     """Send an embed as a response.
@@ -92,7 +95,6 @@ async def process_matches(message, offer):
         await bot_embed_respond(message, embed)
 
 
-
 @client.command(pass_context=True)
 async def morematches(ctx, page):
     embed_strs = prev_matches.get(ctx.message.author.id, None)
@@ -126,6 +128,7 @@ async def addoffer(ctx, offer_name):
         await client.add_reaction(ctx.message, '👍')
     else:
         await bot_respond(ctx.message, "Offer group already exists.")
+
 
 @client.command(pass_context=True, aliases=['addwants'])
 async def addwant(ctx, offer_name, *pokemon):
@@ -202,6 +205,7 @@ async def addhave(ctx, offer_name, *pokemon):
     await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_haves))
     await process_matches(offer)
 
+
 @client.command(pass_context=True)
 async def test(ctx):
     offer_name = '  test2'
@@ -211,13 +215,13 @@ async def test(ctx):
     offer = tf.find_offer(user, offer_name)
     await process_matches(ctx.message, offer)
 
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
         return
     if message.content.startswith(bot_prefix):
         await client.process_commands(message)
-
 
 
 # ------------------------------------------------------------------------------------------------------------------------------- #
