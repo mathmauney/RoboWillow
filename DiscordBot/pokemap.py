@@ -346,7 +346,7 @@ def match_pokemon(input):
         name = input
         with open('pokemon.txt') as file:
             if name.title() + '\n' in file.read():
-                return name
+                return name.title()
         with open('pokemon.txt') as file:
             line = file.readline().strip('\n')
             while line:
@@ -360,6 +360,23 @@ def match_pokemon(input):
             for i, line in enumerate(file):
                 if i + 1 == num:
                     return line.strip('\n')
+
+
+def match_costume(pokemon, descriptor):
+    """Try to find a matching costumed pokemon."""
+    input_ = descriptor.title() + ' ' + pokemon.title()
+    input_hat = descriptor.title() + ' Hat ' + pokemon.title()
+    current_best = (None, 90)
+    with open('costumes.txt') as file:
+        line = file.readline().strip('\n')
+        while line:
+            ratio = fuzz.partial_ratio(input_, line)
+            ratio2 = fuzz.partial_ratio(input_hat, line)
+            if max(ratio, ratio2) > current_best[1]:
+                line = line.split(',')[0]
+                current_best = (line, max(ratio, ratio2))
+            line = file.readline().strip('\n')
+    return current_best[0]
 
 
 def fetch_tasklist():

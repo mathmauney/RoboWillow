@@ -101,7 +101,10 @@ async def bot_embed_respond(message, msg):
     If the bot can't say what it wants it sends the user a PM indicating that they tried to use a command in the wrong channel.
     """
     try:
-        await client.send_message(message.channel, embed=msg)
+        if message.server is None:
+            await client.send_message(message.author, embed=msg)
+        else:
+            await client.send_message(message.channel, embed=msg)
     except discord.errors.Forbidden:
         await client.send_message(message.author, "You seem to have tried to send a command in a channel I can't talk in. Try again in the appropriate channel")
 
