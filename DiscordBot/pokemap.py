@@ -367,7 +367,7 @@ def match_pokemon(input):
 def fetch_tasklist():
     page = urlopen("https://thesilphroad.com/research-tasks")
     doc = html.parse(page)
-    raw_tasks = [[pkmn[0].text, pkmn.cssselect('img')] for pkmn in doc.xpath("//div[@class='task unconfirmed pkmn ' or @class='task confirmed pkmn ']")]
+    raw_tasks = [[pkmn[0].text, pkmn.cssselect('img')] for pkmn in doc.xpath("//div[@class='task unconfirmed pkmn ' or @class='task pkmn long'] or @class='task pkmn ']")]
     tasklist = Tasklist()
 
     for raw_task in raw_tasks:
