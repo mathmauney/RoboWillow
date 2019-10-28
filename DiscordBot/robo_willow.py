@@ -14,6 +14,7 @@ import urllib.parse as urlparse
 bot_prefix = ("?")   # Tells bot which prefix(or prefixes) to look for. Multiple prefixes can be specified in a tuple, however all help messages will use the first item for examples
 map_dir = '/var/www/html/maps/'  # Path the saved map, in geojson format. http://geojson.io/ can be used to create basic maps, or the bot can do it interactively
 task_path = 'tasklist.pkl'   # Location to save the tasklist to and load it from if the bot is restarted
+prefix_path = 'prefix.pkl'
 map_url = 'http://robowillow.ddns.net'
 bot_game = "with maps at robowillow.net"
 maintainer_handle = '@mathmauney'
@@ -26,12 +27,19 @@ maps = {}
 prev_message_was_stop = {}
 prev_message_stop = {}
 prev_message = {}
+
 # Import the tasklist object or create new one
 try:
     with open(task_path, 'rb') as file_input:
         tasklist = pickle.load(file_input)
 except FileNotFoundError:
     tasklist = pokemap.Tasklist()
+
+try:
+    with open(prefix_path, 'rb') as file_input:
+        custom_prefixes = pickle.load(file_input)
+except FileNotFoundError:
+    custom_prefixes = {}
 
 # Startup Bot Instance
 client = Bot(command_prefix=bot_prefix)
@@ -197,6 +205,15 @@ async def resetstop(ctx, *args):
     stop.reset()
     taskmap.save()
     await client.add_reaction(ctx.message, '👍')
+
+
+@client.command(pass_context=True)
+@pass_errors
+async def set_prefix(ctx, prefix):
+    """Set a custom prefix for a server."""
+    custom_prefixes[ctx.message.server.id] = prefix
+    with open(prefix_path, 'wb') as output:
+        pickle.dump(custom_prefixes, output, pickle.HIGHEST_PROTOCOL)
 
 
 @client.command(pass_context=True)
@@ -481,6 +498,10 @@ async def on_message(message):
     """
     message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
     message.content = message.content.replace(u"\u201D", '"')
+    try:
+        custom_prefix = custom_prefixes[message.server.id]
+    except KeyError:
+        custom_prefix = bot_prefix
     for role in message.role_mentions:
         role_str = '<@&' + str(role.id) + '>'
         message.content = message.content.replace(role_str, role.name)
@@ -488,10 +509,10 @@ async def on_message(message):
         taskmap = maps[message.server.id]
     if message.author == client.user:
         return
-    elif message.content.startswith(bot_prefix):
+    elif (message.content.startswith(bot_prefix) or message.content.startswith(custom_prefix)):
         if message.server is not None:
             prev_message_was_stop[message.server.id] = False
-        msg = message.content.strip("".join(list(bot_prefix)))
+        msg = message.content.strip("".join(list(bot_prefix))).strip(custom_prefix)
         if msg.startswith('help'):
             if 'addstop' in message.content.lower():
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
