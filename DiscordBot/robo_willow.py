@@ -214,7 +214,7 @@ async def setprefix(ctx, prefix):
     custom_prefixes[ctx.message.server.id] = prefix
     with open(prefix_path, 'wb') as output:
         pickle.dump(custom_prefixes, output, pickle.HIGHEST_PROTOCOL)
-
+    await client.add_reaction(ctx.message, '👍')
 
 @client.command(pass_context=True)
 @pass_errors
@@ -233,6 +233,7 @@ async def resettasklist(ctx):
     tasklist.save(backup_name)
     tasklist.clear()
     await client.add_reaction(ctx.message, '👍')
+
 
 @client.command(pass_context=True)
 @pass_errors
@@ -494,7 +495,6 @@ async def on_message(message):
     """Respond to messages.
 
     Contains the help commands, and the bots ability to parse language.
-
     """
     message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
     message.content = message.content.replace(u"\u201D", '"')
