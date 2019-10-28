@@ -209,7 +209,7 @@ async def resetstop(ctx, *args):
 
 @client.command(pass_context=True)
 @pass_errors
-async def set_prefix(ctx, prefix):
+async def setprefix(ctx, prefix):
     """Set a custom prefix for a server."""
     custom_prefixes[ctx.message.server.id] = prefix
     with open(prefix_path, 'wb') as output:
