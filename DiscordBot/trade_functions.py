@@ -25,12 +25,13 @@ def add_user(discord_id):
 
 
 def add_community(user, community_id):
-    update_dict = {'$addToSet': {'communities': int(community_id)}}
-    users.update(user, update_dict)
-    user_offer_ids = users.find_one(user)['offers']
-    user_offers = offers.find({'_id': {'$in': user_offer_ids}})
-    for user_offer in user_offers:
-        offers.update(user_offer, update_dict)
+    if community_id not in users.find_one(user)['communities']:
+        update_dict = {'$addToSet': {'communities': int(community_id)}}
+        users.update(user, update_dict)
+        user_offer_ids = users.find_one(user)['offers']
+        user_offers = offers.find({'_id': {'$in': user_offer_ids}})
+        for user_offer in user_offers:
+            offers.update(user_offer, update_dict)
 
 
 def add_friend(user1, user2):
@@ -59,20 +60,28 @@ def get_user(discord_id):
     return user
 
 
+def delete_user(discord_id):
+    user = get_user(discord_id)
+    for offer in users.find_one(user)['offers']:
+        offers.delete_one({'_id': offer})
+    users.delete_one(user)
+
+
 def add_offer(user, offer_name):
     if isinstance(user, int):
         user = get_user(user)
     user_dict = users.find_one(user)
     user_communities = user_dict['communities']
     user_friends = user_dict['friends']
-    offer_dict = {"offer_name": offer_name,
+    offer_dict = {"offer_name": offer_name.lower(),
                   "user": user,
                   "haves": [],
                   "wants": [],
                   "communities": user_communities,
                   "friends": user_friends,
                   "friends_only": False,
-                  "value": 0}
+                  "value": 0,
+                  "notified": []}
     result = offers.insert_one(offer_dict)
     update_dict = {'$addToSet': {'offers': result.inserted_id}}
     users.update(user, update_dict)
@@ -81,11 +90,23 @@ def add_offer(user, offer_name):
 def find_offer(user, offer_name):
     if isinstance(user, int):
         user = get_user(user)
-    find_dict = {'offer_name': offer_name,
+    find_dict = {'offer_name': offer_name.lower(),
                  'user': user}
     return_dict = {}
     offer = offers.find_one(find_dict, return_dict)
     return offer
+
+
+def find_offers(user):
+    if isinstance(user, int):
+        user = get_user(user)
+    offer_names = []
+    offer_list = users.find_one(user)['offers']
+    for offer in offer_list:
+        offer_dict = offers.find_one({'_id': offer})
+        if offer_dict is not None:
+            offer_names.append(offer_dict['offer_name'])
+    return offer_names
 
 
 def add_haves(offer, pokemon):
@@ -147,5 +168,18 @@ def parse_matches(offer):
         discord_id = users.find_one(match['user'])['discord_id']
         matching_wants = [pokemon for pokemon in offer_dict['wants'] if pokemon in match['haves']]
         matching_haves = [pokemon for pokemon in offer_dict['haves'] if pokemon in match['wants']]
-        parsed.append((matching_wants, matching_haves, discord_id))
+        parsed.append((matching_wants, matching_haves, discord_id, match['_id']))
     return parsed
+
+
+def set_notified(offer, user_id):
+    update_dict = {'$addToSet': {'notified': user_id}}
+    offers.update(offer, update_dict)
+
+
+def delete_offer(offer):
+    offer_dict = offers.find_one(offer)
+    user = offer_dict['user']
+    offers.delete_one(offer)
+    update_dict = {'$pull': {'offers': offer_dict['_id']}}
+    users.update(user, update_dict)
