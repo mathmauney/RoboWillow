@@ -244,6 +244,7 @@ async def addwant(ctx, offer_name, *pokemon):
     cleaned_list = []
     costume = None
     shiny = False
+    alolan = False
     for (i, poke) in enumerate(pokemon):
         poke = poke.strip(',')
         if poke.title() == 'Shiny':
