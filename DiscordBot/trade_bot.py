@@ -112,7 +112,7 @@ async def tradehere(ctx):
     """Find the server ID."""
     user = tf.get_user(ctx.message.author.id)
     if user is None:
-        user = tf.add_new_user(ctx.message.author.id)
+        user = tf.add_user(ctx.message.author.id)
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
         await client.send_message(ctx.message.author, "Adding you to community: " + str(ctx.message.server.id))
@@ -122,7 +122,7 @@ async def tradehere(ctx):
 async def addoffer(ctx, offer_name):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
-        user = tf.add_new_user(ctx.message.author.id)
+        user = tf.add_user(ctx.message.author.id)
     if tf.find_offer(user, offer_name) is None:
         tf.add_offer(user, offer_name)
         await client.add_reaction(ctx.message, '👍')
@@ -134,7 +134,7 @@ async def addoffer(ctx, offer_name):
 async def deletewant(ctx, offer_name, *pokemon):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
-        user = tf.add_new_user(ctx.message.author.id)
+        user = tf.add_user(ctx.message.author.id)
     offer = tf.find_offer(user, offer_name)
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
@@ -171,7 +171,7 @@ async def deletewant(ctx, offer_name, *pokemon):
 async def deletehave(ctx, offer_name, *pokemon):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
-        user = tf.add_new_user(ctx.message.author.id)
+        user = tf.add_user(ctx.message.author.id)
     offer = tf.find_offer(user, offer_name)
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
@@ -208,7 +208,7 @@ async def deletehave(ctx, offer_name, *pokemon):
 async def addwant(ctx, offer_name, *pokemon):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
-        user = tf.add_new_user(ctx.message.author.id)
+        user = tf.add_user(ctx.message.author.id)
     offer = tf.find_offer(user, offer_name)
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
@@ -246,7 +246,7 @@ async def addwant(ctx, offer_name, *pokemon):
 async def addhave(ctx, offer_name, *pokemon):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
-        user = tf.add_new_user(ctx.message.author.id)
+        user = tf.add_user(ctx.message.author.id)
     offer = tf.find_offer(user, offer_name)
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
@@ -284,7 +284,7 @@ async def addhave(ctx, offer_name, *pokemon):
 async def view(ctx, offer_name):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
-        user = tf.add_new_user(ctx.message.author.id)
+        user = tf.add_user(ctx.message.author.id)
     (wants, haves) = tf.get_offer_contents(tf.find_offer(user, offer_name))
     have_str = ', '.join(haves)
     want_str = ', '.join(wants)
@@ -301,7 +301,7 @@ async def test(ctx):
     offer_name = '  test2'
     user = tf.get_user(ctx.message.author.id)
     if user is None:
-        user = tf.add_new_user(ctx.message.author.id)
+        user = tf.add_user(ctx.message.author.id)
     offer = tf.find_offer(user, offer_name)
     await process_matches(ctx.message, offer)
 

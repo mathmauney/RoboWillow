@@ -7,7 +7,7 @@ users = trade_db['users']
 offers = trade_db['offers']
 
 
-def add_new_user(discord_id):
+def add_user(discord_id):
     if not isinstance(discord_id, int):
         discord_id = int(discord_id)
     check = {"discord_id": discord_id}
