@@ -163,32 +163,9 @@ async def deletewant(ctx, offer_name, *pokemon):
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    cleaned_delete = []
-    costume = None
-    shiny = False
-    for (i, poke) in enumerate(pokemon):
-        poke = poke.strip(',')
-        if poke.title() == 'Shiny':
-            shiny = True
-        else:
-            matched_poke = pokemap.match_pokemon(poke)
-            if costume is not None and matched_poke is not None:
-                matched_costume = pokemap.match_costume(matched_poke, costume)
-                if matched_costume is not None:
-                    matched_poke = matched_costume
-            if matched_poke is not None:
-                if shiny is True:
-                    cleaned_delete.append('Shiny ' + matched_poke)
-                    shiny = False
-                else:
-                    cleaned_delete.append(matched_poke)
-            else:
-                if costume is None:
-                    costume = poke
-                else:
-                    costume = costume + ' ' + poke
-    tf.remove_wants(offer, cleaned_delete)
-    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_delete))
+    cleaned_list = tf.clean_pokemon_list(pokemon)
+    tf.remove_wants(offer, cleaned_list)
+    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
 
 
 @client.command(pass_context=True, aliases=['deletehaves'])
@@ -202,32 +179,9 @@ async def deletehave(ctx, offer_name, *pokemon):
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    cleaned_delete = []
-    costume = None
-    shiny = False
-    for (i, poke) in enumerate(pokemon):
-        poke = poke.strip(',')
-        if poke.title() == 'Shiny':
-            shiny = True
-        else:
-            matched_poke = pokemap.match_pokemon(poke)
-            if costume is not None and matched_poke is not None:
-                matched_costume = pokemap.match_costume(matched_poke, costume)
-                if matched_costume is not None:
-                    matched_poke = matched_costume
-            if matched_poke is not None:
-                if shiny is True:
-                    cleaned_delete.append('Shiny ' + matched_poke)
-                    shiny = False
-                else:
-                    cleaned_delete.append(matched_poke)
-            else:
-                if costume is None:
-                    costume = poke
-                else:
-                    costume = costume + ' ' + poke
-    tf.remove_haves(offer, cleaned_delete)
-    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_delete))
+    cleaned_list = tf.clean_pokemon_list(pokemon)
+    tf.remove_haves(offer, cleaned_list)
+    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
 
 
 @client.command(pass_context=True, aliases=['addwants'])
@@ -241,44 +195,7 @@ async def addwant(ctx, offer_name, *pokemon):
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    cleaned_list = []
-    costume = None
-    shiny = False
-    alolan = False
-    for (i, poke) in enumerate(pokemon):
-        poke = poke.strip(',')
-        if poke.title() == 'Shiny':
-            shiny = True
-        elif poke.title() == 'Alolan':
-            alolan = True
-        else:
-            matched_poke = pokemap.match_pokemon(poke)
-            if costume is not None and matched_poke is not None:
-                matched_costume = pokemap.match_costume(matched_poke, costume)
-                if matched_costume is not None:
-                    matched_poke = matched_costume
-            if matched_poke is not None:
-                if shiny is True and alolan is True:
-                    cleaned_list.append('Shiny Alolan ' + matched_poke)
-                    shiny = False
-                    alolan = False
-                    costume = None
-                elif shiny is True:
-                    cleaned_list.append('Shiny ' + matched_poke)
-                    shiny = False
-                    costume = None
-                elif alolan is True:
-                    cleaned_list.append('Alolan ' + matched_poke)
-                    alolan = False
-                    costume = None
-                else:
-                    cleaned_list.append(matched_poke)
-                    costume = None
-            else:
-                if costume is None:
-                    costume = poke
-                else:
-                    costume = costume + ' ' + poke
+    cleaned_list = tf.clean_pokemon_list(pokemon)
     tf.add_wants(offer, cleaned_list)
     await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
     await process_matches(ctx.message, offer)
@@ -295,49 +212,79 @@ async def addhave(ctx, offer_name, *pokemon):
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    cleaned_list = []
-    costume = None
-    shiny = False
-    for (i, poke) in enumerate(pokemon):
-        poke = poke.strip(',')
-        if poke.title() == 'Shiny':
-            shiny = True
-        elif poke.title() == 'Alolan':
-            alolan = True
-        else:
-            matched_poke = pokemap.match_pokemon(poke)
-            if costume is not None and matched_poke is not None:
-                matched_costume = pokemap.match_costume(matched_poke, costume)
-                if matched_costume is not None:
-                    matched_poke = matched_costume
-            if matched_poke is not None:
-                if shiny is True and alolan is True:
-                    cleaned_list.append('Shiny Alolan ' + matched_poke)
-                    shiny = False
-                    alolan = False
-                    costume = None
-                elif shiny is True:
-                    cleaned_list.append('Shiny ' + matched_poke)
-                    shiny = False
-                    costume = None
-                elif alolan is True:
-                    cleaned_list.append('Alolan ' + matched_poke)
-                    alolan = False
-                    costume = None
-                else:
-                    cleaned_list.append(matched_poke)
-                    costume = None
-            else:
-                if costume is None:
-                    costume = poke
-                else:
-                    costume = costume + ' ' + poke
+    cleaned_list = tf.clean_pokemon_list(pokemon)
     tf.add_haves(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_haves))
+    await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
     await process_matches(ctx.message, offer)
 
 
-@client.command(pass_context=True)
+@client.command(pass_context=True, aliases=['deleteshinywants'])
+async def deleteshinywant(ctx, offer_name, *pokemon):
+    user = tf.get_user(ctx.message.author.id)
+    if user is None:
+        user = tf.add_user(ctx.message.author.id)
+    if ctx.message.server is not None:
+        tf.add_community(user, ctx.message.server.id)
+    offer = tf.find_offer(user, offer_name)
+    if offer is None:
+        await bot_respond(ctx.message, "Offer group not found.")
+        return
+    cleaned_list = tf.clean_pokemon_list(pokemon, True)
+    tf.remove_wants(offer, cleaned_list)
+    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
+
+
+@client.command(pass_context=True, aliases=['deleteshinyhaves'])
+async def deleteshinyhave(ctx, offer_name, *pokemon):
+    user = tf.get_user(ctx.message.author.id)
+    if user is None:
+        user = tf.add_user(ctx.message.author.id)
+    if ctx.message.server is not None:
+        tf.add_community(user, ctx.message.server.id)
+    offer = tf.find_offer(user, offer_name)
+    if offer is None:
+        await bot_respond(ctx.message, "Offer group not found.")
+        return
+    cleaned_list = tf.clean_pokemon_list(pokemon, True)
+    tf.remove_haves(offer, cleaned_list)
+    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
+
+
+@client.command(pass_context=True, aliases=['addshinywants'])
+async def addshinywant(ctx, offer_name, *pokemon):
+    user = tf.get_user(ctx.message.author.id)
+    if user is None:
+        user = tf.add_user(ctx.message.author.id)
+    if ctx.message.server is not None:
+        tf.add_community(user, ctx.message.server.id)
+    offer = tf.find_offer(user, offer_name)
+    if offer is None:
+        await bot_respond(ctx.message, "Offer group not found.")
+        return
+    cleaned_list = tf.clean_pokemon_list(pokemon, True)
+    tf.add_wants(offer, cleaned_list)
+    await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
+    await process_matches(ctx.message, offer)
+
+
+@client.command(pass_context=True, aliases=['addshinyhaves'])
+async def addshinyhave(ctx, offer_name, *pokemon):
+    user = tf.get_user(ctx.message.author.id)
+    if user is None:
+        user = tf.add_user(ctx.message.author.id)
+    if ctx.message.server is not None:
+        tf.add_community(user, ctx.message.server.id)
+    offer = tf.find_offer(user, offer_name)
+    if offer is None:
+        await bot_respond(ctx.message, "Offer group not found.")
+        return
+    cleaned_list = tf.clean_pokemon_list(pokemon, True)
+    tf.add_haves(offer, cleaned_list)
+    await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
+    await process_matches(ctx.message, offer)
+
+
+@client.command(pass_context=True, aliases=['viewoffer'])
 async def view(ctx, offer_name):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
@@ -377,7 +324,7 @@ async def check(ctx, offer_name):
     await process_matches(ctx.message, offer)
 
 
-@client.command(pass_context=True)
+@client.command(pass_context=True, aliases=['viewoffers'])
 async def listoffers(ctx):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
@@ -392,6 +339,7 @@ async def listoffers(ctx):
         embed = discord.Embed(colour=discord.Colour(0x186a0))
         embed.add_field(name='Offer Names', value=offer_str, inline=False)
         await bot_embed_respond(ctx.message, embed)
+
 
 @client.event
 async def on_message(message):

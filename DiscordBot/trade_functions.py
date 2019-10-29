@@ -1,4 +1,6 @@
 import pymongo
+import pokemap
+import urllib.parse as urlparse
 
 host = "mongodb://mathmauney.no-ip.org:27017/"
 my_client = pymongo.MongoClient(host)
@@ -183,3 +185,125 @@ def delete_offer(offer):
     offers.delete_one(offer)
     update_dict = {'$pull': {'offers': offer_dict['_id']}}
     users.update(user, update_dict)
+
+
+def clean_pokemon_list(pokemon_list, all_shinies=False):
+    if 'leekduck' in pokemon_list[0]:
+        url_str = pokemon_list[0]
+        cleaned_list = parse_leekduck(url_str)
+        return cleaned_list
+    cleaned_list = []
+    numbered_pokemon = ['Unown', 'Spinda']
+    form = None
+    shiny = False
+    alolan = False
+    prev_space = False
+    for (i, poke) in enumerate(pokemon_list):
+        poke = poke.strip(',')
+        if poke.title() == 'Shiny':
+            shiny = True
+        elif poke.title() == 'Alolan':
+            alolan = True
+        elif poke.title() == 'Shinies':
+            all_shinies = True
+        else:
+            matched_poke = pokemap.match_pokemon(poke)
+            if all_shinies is True:
+                shiny = True
+            if matched_poke is None and prev_space is False:
+                with open('pokemonwithspaces.txt') as file:
+                    if poke.title() in file.read():
+                        prev_space = True
+                        print('Found spacey boi')
+                        new_poke = pokemon_list[i-1] + ' ' + poke
+                        print('Trying to match %s' % new_poke)
+                        matched_poke = pokemap.match_pokemon(new_poke)
+                        if matched_poke is None:
+                            new_poke = poke + ' ' + pokemon_list[i+1]
+                            print('Trying to match %s' % new_poke)
+                            matched_poke = pokemap.match_pokemon(new_poke)
+            else:
+                prev_space = False
+            if form is not None and matched_poke is not None:
+                matched_form = pokemap.match_form(matched_poke, form)
+                if matched_form is not None:
+                    matched_poke = matched_form
+            if matched_poke is not None:
+                if matched_poke in numbered_pokemon:
+                    if '-' in poke:
+                        modifier = poke.split('-')[1]
+                        if len(modifier) == 1:
+                            matched_poke = matched_poke + '-' + modifier.title()
+                    else:
+                        try:
+                            if len(pokemon_list[i+1]) == 1:
+                                matched_poke = matched_poke + '-' + pokemon_list[i+1].title()
+                                prev_space = True
+                        except IndexError:
+                            pass
+                elif matched_poke == 'Giratina':
+                    if '-' in poke:
+                        modifier = poke.split('-')[1].title()
+                        if modifier.startswith('O'):
+                            matched_poke = 'Origin Forme Giratina'
+                        elif modifier.startswith('A'):
+                            matched_poke = 'Altered Forme Giratina'
+                if shiny is True and alolan is True:
+                    cleaned_list.append('Shiny Alolan ' + matched_poke)
+                    shiny = False
+                    alolan = False
+                    form = None
+                elif shiny is True:
+                    cleaned_list.append('Shiny ' + matched_poke)
+                    shiny = False
+                    form = None
+                elif alolan is True:
+                    cleaned_list.append('Alolan ' + matched_poke)
+                    alolan = False
+                    form = None
+                else:
+                    cleaned_list.append(matched_poke)
+                    form = None
+            else:
+                if form is None:
+                    form = poke
+                else:
+                    form = form + ' ' + poke
+    return cleaned_list
+
+def parse_leekduck(url_str):
+    parsed = urlparse.urlparse(url_str)
+    query_parsed = urlparse.parse_qs(url_str)
+    return_list = []
+    if 'leekduck' not in parsed[1]:
+        raise InvalidUrl
+        return
+    pokemon_list = query_parsed['https://leekduck.com/shiny/?dex'][0].split('-')
+    for pokemon in pokemon_list:
+        if '_' in pokemon:
+            if pokemon.split('_')[1] == '61':
+                poke_str = 'Alolan ' + pokemap.match_pokemon(int(pokemon.split('_')[0]))
+            else:
+                poke_str = pokemap.match_form(pokemon)
+        elif 'Fall' in pokemon:
+            poke_str = pokemap.match_form(pokemon)
+        else:
+            poke_str = pokemap.match_pokemon(int(pokemon))
+        return_list.append('Shiny ' + poke_str)
+    return return_list
+
+
+
+class TradeException(Exception):
+    """Base class for the module so all module exceptions can be caught together if needed."""
+
+    def __init__(self):
+        """Add default message."""
+        self.message = 'No error message set, contact maintainer'
+
+class InvalidUrl(TradeException):
+    """Exception for when stop not found with the given search string."""
+
+    def __init__(self):
+        """Add message based on context of error."""
+        self.message = "Unexpected URL type."

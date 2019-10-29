@@ -345,14 +345,22 @@ def match_pokemon(input_):
     if isinstance(input_, str):
         name = input_
         with open('pokemon.txt') as file:
-            if name.title() + '\n' in file.read():
+            if name.title == 'Bulbasaur':
                 return name.title()
+            elif '\n' + name.title() + '\n' in file.read():
+                return name.title()
+        current_best = (None, 90)
         with open('pokemon.txt') as file:
             line = file.readline().strip('\n')
             while line:
-                if fuzz.ratio(name.title(), line) > 80:
-                    return line
+                ratio = fuzz.partial_ratio(name.title(), line)
+                if ratio > current_best[1]:
+                    current_best = (line, ratio)
+                elif ratio == current_best[1]:
+                    current_best = (None, ratio)
                 line = file.readline().strip('\n')
+            if current_best[0] is not None:
+                return current_best[0]
         return None
     if isinstance(input_, int):
         num = input_
@@ -362,19 +370,27 @@ def match_pokemon(input_):
                     return line.strip('\n')
 
 
-def match_costume(pokemon, descriptor):
-    """Try to find a matching costumed pokemon."""
-    input_ = descriptor.title() + ' ' + pokemon.title()
-    input_hat = descriptor.title() + ' Hat ' + pokemon.title()
+def match_form(pokemon, descriptor=None):
+    """Try to find a matching costumed pokemon or specific form."""
+    if descriptor is not None:
+        input_ = descriptor.title() + ' ' + pokemon.title()
+        input_mods = [descriptor.title() + ' Hat ' + pokemon.title()]
+        input_mods.append(descriptor.title() + ' Forme ' + pokemon.title())
+        input_mods.append(descriptor.title() + ' Cloak ' + pokemon.title())
+        input_mods.append(descriptor.title() + ' Sea ' + pokemon.title())
+    else:
+        input_ = pokemon
+        input_mods = []
     current_best = (None, 90)
-    with open('costumes.txt') as file:
+    with open('forms.txt') as file:
         line = file.readline().strip('\n')
         while line:
-            ratio = fuzz.partial_ratio(input_, line)
-            ratio2 = fuzz.partial_ratio(input_hat, line)
-            if max(ratio, ratio2) > current_best[1]:
+            ratios = [fuzz.partial_ratio(input_, line)]
+            for input_mod in input_mods:
+                ratios.append(fuzz.partial_ratio(input_mod, line))
+            if max(ratios) > current_best[1]:
                 line = line.split(',')[0]
-                current_best = (line, max(ratio, ratio2))
+                current_best = (line, max(ratios))
             line = file.readline().strip('\n')
     return current_best[0]
 
