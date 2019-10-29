@@ -283,13 +283,18 @@ def parse_leekduck(url_str):
         if '_' in pokemon:
             if pokemon.split('_')[1] == '61':
                 poke_str = 'Alolan ' + pokemap.match_pokemon(int(pokemon.split('_')[0]))
+            if pokemon.split('_')[0] == '327':
+                poke_str = 'Spinda-' + str(int(pokemon.split('_')[1])-10)
             else:
                 poke_str = pokemap.match_form(pokemon)
         elif 'Fall' in pokemon:
             poke_str = pokemap.match_form(pokemon)
         else:
             poke_str = pokemap.match_pokemon(int(pokemon))
-        return_list.append('Shiny ' + poke_str)
+        if poke_str is not None:
+            return_list.append('Shiny ' + poke_str)
+        else:
+            print('Unable to find %s' % pokemon)
     return return_list
 
 

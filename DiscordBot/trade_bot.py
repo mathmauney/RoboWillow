@@ -23,6 +23,7 @@ maintainer_id = 200038656021364736
 client = Bot(command_prefix=bot_prefix)
 
 prev_matches = {}
+prev_views = {}
 # ------------------------------------------------------------------------------------------------------------------------------- #
 
 
@@ -56,7 +57,7 @@ async def bot_embed_respond(message, msg):
         await client.send_message(message.author, "You seem to have tried to send a command in a channel I can't talk in. Try again in the appropriate channel")
 
 
-async def process_matches(message, offer):
+async def process_matches(message, offer, reply=False):
     """Check for matches on an offer and notify both parties if there are matches."""
     matches = tf.parse_matches(offer)
     offer_dict = tf.offers.find_one(offer)
@@ -85,7 +86,6 @@ async def process_matches(message, offer):
             tf.set_notified(offer, match_user_id)
         other_offer = tf.offers.find_one(match[3])
         tf.set_notified(other_offer, int(sender.id))
-
     if embed_components != []:
         embed_strs = ['']
         embed_num = 0
@@ -100,6 +100,8 @@ async def process_matches(message, offer):
         embed.add_field(name='Matches', value=embed_strs[0], inline=False)
         embed.set_footer(text='Page 1 of %s. Use %smorematches n to see page n.' % (len(embed_strs), bot_prefix[0]))
         await bot_embed_respond(message, embed)
+    elif reply is True:
+        await bot_respond(message, 'No matches found')
 
 
 @client.command(pass_context=True)
@@ -297,31 +299,70 @@ async def view(ctx, offer_name):
         return
     (wants, haves) = tf.get_offer_contents(offer)
     if haves == []:
-        have_str = 'None'
+        have_strs = ['None']
+        want_strs = ['']
     else:
-        have_str = '\n'.join(haves).title()
+        i = 0
+        have_strs = ['']
+        want_strs = ['']
+        for have in haves:
+            if len(have_strs[i]) > 500:
+                i = i + 1
+                have_strs.append('')
+                want_strs.append('')
+            have_strs[i] = have_strs[i] + have + '\n'
     if wants == []:
-        want_str = 'None'
+        for want_str in want_strs:
+            want_str = 'None'
     else:
-        want_str = '\n'.join(wants).title()
+        i = 0
+        for want in wants:
+            if len(want_strs[i]) > 500:
+                i = i + 1
+                if i >= len(have_strs):
+                    have_strs.append('')
+                    want_strs.append('')
+            want_strs[i] = want_strs[i] + want + '\n'
+    prev_views[ctx.message.author.id] = (have_strs, want_strs)
     embed = discord.Embed(colour=discord.Colour(0x186a0))
-    embed.add_field(name='You Have', value=have_str, inline=False)
-    embed.add_field(name='You Want', value=want_str.title(), inline=False)
+    embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), bot_prefix[0]))
+    embed.add_field(name='You Have', value=have_strs[0], inline=False)
+    embed.add_field(name='You Want', value=want_strs[0], inline=False)
     await bot_embed_respond(ctx.message, embed)
 
 
 @client.command(pass_context=True)
-async def check(ctx, offer_name):
+async def viewmore(ctx, page):
+    (have_strs, want_strs) = prev_views.get(ctx.message.author.id, (None, None))
+    if int(page) > len(have_strs):
+        await bot_respond(ctx.message, 'Page out of range')
+    if have_strs is not None:
+        embed = discord.Embed(colour=discord.Colour(0x186a0))
+        have_str = have_strs[int(page)-1]
+        want_str = want_strs[int(page)-1]
+        if have_str != '':
+            embed.add_field(name='You Have', value=have_str, inline=False)
+        if want_str != '':
+            embed.add_field(name='You Want', value=want_str, inline=False)
+        embed.set_footer(text='Page %s of %s. Use %sviewmore n to see page n.' % (page, len(want_strs), bot_prefix[0]))
+        await bot_embed_respond(ctx.message, embed)
+
+
+@client.command(pass_context=True)
+async def check(ctx, offer_name=None):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
         user = tf.add_user(ctx.message.author.id)
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
+    if offer_name is None:
+        await bot_respond(ctx.message, "No offer group supplied")
+        return
     offer = tf.find_offer(user, offer_name)
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    await process_matches(ctx.message, offer)
+    await process_matches(ctx.message, offer, True)
 
 
 @client.command(pass_context=True, aliases=['viewoffers'])
@@ -339,6 +380,16 @@ async def listoffers(ctx):
         embed = discord.Embed(colour=discord.Colour(0x186a0))
         embed.add_field(name='Offer Names', value=offer_str, inline=False)
         await bot_embed_respond(ctx.message, embed)
+
+
+def searchoffers(ctx, search_terms*):
+    user_id = None
+    for search_term in search_terms:
+        if isinstance(search_term, discord.User):
+            user_id = search_term.id
+            search_terms.remove(search_term)
+    search_list = tf.clean_pokemon_list(search_terms)
+
 
 
 @client.event
