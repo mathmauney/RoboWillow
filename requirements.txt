@@ -3,7 +3,6 @@ pygeoj
 datetime
 asyncio
 pytz
-inspect
 fuzzywuzzy
 python-Levenshtein
 lxml
