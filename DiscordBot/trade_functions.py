@@ -2,7 +2,7 @@ import pymongo
 import pokemap
 import urllib.parse as urlparse
 
-host = "mongodb://mathmauney.no-ip.org:27017/"
+host = "mongodb://localhost:27017/"
 my_client = pymongo.MongoClient(host)
 trade_db = my_client['trade_test']
 users = trade_db['users']

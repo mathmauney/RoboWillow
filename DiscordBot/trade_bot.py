@@ -382,7 +382,7 @@ async def listoffers(ctx):
         await bot_embed_respond(ctx.message, embed)
 
 
-def searchoffers(ctx, search_terms*):
+def searchoffers(ctx, *search_terms):
     user_id = None
     for search_term in search_terms:
         if isinstance(search_term, discord.User):
