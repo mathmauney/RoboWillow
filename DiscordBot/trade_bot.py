@@ -312,8 +312,7 @@ async def view(ctx, offer_name):
                 want_strs.append('')
             have_strs[i] = have_strs[i] + have + '\n'
     if wants == []:
-        for want_str in want_strs:
-            want_str = 'None'
+        want_strs[0] = 'None'
     else:
         i = 0
         for want in wants:
