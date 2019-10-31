@@ -248,6 +248,12 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                             matched_poke = 'Origin Forme Giratina'
                         elif modifier.startswith('A'):
                             matched_poke = 'Altered Forme Giratina'
+                else:
+                    with open('forms.txt') as file:
+                        if matched_poke in file.read():
+                            matched_form = pokemap.match_form(matched_poke, pokemon_list[i+1])
+                            if matched_form is not None:
+                                matched_poke = matched_form
                 if shiny is True and alolan is True:
                     cleaned_list.append('Shiny Alolan ' + matched_poke)
                     shiny = False
