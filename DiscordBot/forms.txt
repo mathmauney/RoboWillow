@@ -54,3 +54,7 @@ Overcast Cherrim
 Sunshine Cherrim
 Altered Forme Giratina
 Origin Forme Giratina
+West Sea Shellos, Pink Shellos
+East Sea Shellos, Blue Shellos
+West Sea Gastrodon, Pink Gastrodon
+East Sea Gastrodon, Blue Gastrodon
