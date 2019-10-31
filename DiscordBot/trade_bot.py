@@ -420,9 +420,9 @@ async def viewuseroffers(ctx, pogo_name, *search_terms):
                 embed = discord.Embed(colour=discord.Colour(0x186a0))
                 embed.add_field(name='Offer Names', value=offer_str, inline=False)
                 await bot_embed_respond(ctx.message, embed)
-        if len(search_terms) == 1:
+        elif len(search_terms) == 1:
             offer_name = search_terms[0]
-            offer = tf.find_offer(user_id, offer_name)
+            offer = tf.find_offer(user, offer_name)
             (wants, haves) = tf.get_offer_contents(offer)
             if haves == []:
                 have_strs = ['None']
