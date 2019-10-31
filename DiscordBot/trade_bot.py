@@ -398,6 +398,8 @@ async def setname(ctx, pogo_name):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
         user = tf.add_user(ctx.message.author.id)
+    if ctx.message.server is not None:
+        tf.add_community(user, ctx.message.server.id)
     try:
         tf.set_name(user, pogo_name)
         await bot_thumbsup(ctx.message)
