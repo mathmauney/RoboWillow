@@ -409,7 +409,7 @@ async def setname(ctx, pogo_name):
 async def viewuseroffers(ctx, pogo_name, *search_terms):
     user = tf.find_user(pogo_name)
     if user is None:
-        await bot_embed_respond(ctx.message, 'User not found')
+        await bot_respond(ctx.message, 'User not found')
     else:
         if len(search_terms) == 0:
             offer_names = tf.find_offers(user)
