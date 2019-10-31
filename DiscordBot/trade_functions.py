@@ -37,7 +37,8 @@ def set_name(user, pogo_name=None):
                 raise ValueError("Name already used")
         update_dict = {'$set': {'name': pogo_name}}
     users.update_one(user, update_dict)
-
+    user_offer_ids = users.find_one(user)['offers']
+    offers.update_many({'_id': {'$in': user_offer_ids}}, update_dict)
 
 
 def add_community(user, community_id):
@@ -45,9 +46,7 @@ def add_community(user, community_id):
         update_dict = {'$addToSet': {'communities': int(community_id)}}
         users.update(user, update_dict)
         user_offer_ids = users.find_one(user)['offers']
-        user_offers = offers.find({'_id': {'$in': user_offer_ids}})
-        for user_offer in user_offers:
-            offers.update(user_offer, update_dict)
+        offers.update_many({'_id': {'$in': user_offer_ids}}, update_dict)
 
 
 def add_friend(user1, user2):
@@ -97,6 +96,7 @@ def add_offer(user, offer_name):
     user_friends = user_dict['friends']
     offer_dict = {"offer_name": offer_name.lower(),
                   "user": user,
+                  "name": user_dict['name'],
                   "haves": [],
                   "wants": [],
                   "communities": user_communities,
@@ -180,6 +180,7 @@ def find_matches(offer):
     _communities = _offer['communities']
     search_dict = {'wants': {'$in': _haves},
                    'haves': {'$in': _wants},
+                   'user': {'$not': _offer['user']},
                    '$or': [{'friends': _user_id},
                            {'communities': {'$in': _communities}}]}
     matches = offers.find(search_dict)
@@ -329,6 +330,21 @@ def parse_leekduck(url_str):
     return return_list
 
 
+def search_haves(user, pokemon):
+    user_dict = users.find_one(user)
+    search_dict = {'haves': pokemon,
+                   '$and': [{'name': {'$ne': ''}}, {'name': {'exists': True}}],
+                   'user': {'$ne': user},
+                   '$or': [{'friends': user_dict['discord_id']},
+                           {'communities': {'$in': user_dict['communities']}}]}
+    matches = offers.find(search_dict)
+    output = []
+    for match in matches:
+        output.append()
+
+
+
+
 
 class TradeException(Exception):
     """Base class for the module so all module exceptions can be caught together if needed."""
@@ -336,6 +352,7 @@ class TradeException(Exception):
     def __init__(self):
         """Add default message."""
         self.message = 'No error message set, contact maintainer'
+
 
 class InvalidUrl(TradeException):
     """Exception for when stop not found with the given search string."""

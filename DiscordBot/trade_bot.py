@@ -458,6 +458,18 @@ async def viewuseroffers(ctx, pogo_name, *search_terms):
             await bot_respond(ctx.message, 'Too many arguments')
 
 
+@client.command(pass_context=True)
+async def viewhave(ctx, *search_terms):
+    cleaned_list = tf.clean_pokemon_list(search_terms)
+    user = tf.get_user(ctx.message.author.id)
+    if user is None:
+        user = tf.add_user(ctx.message.author.id)
+    if len(cleaned_list) != 1:
+        await bot_respont(ctx.message, 'Too many or too few pokemon matched: ' % ', '.join(cleaned_list))
+    else:
+        tf.search_haves(user, cleaned_list[0])
+
+
 @client.event
 async def on_message(message):
     if message.author == client.user:
