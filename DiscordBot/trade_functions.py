@@ -81,6 +81,7 @@ def find_user(pogo_name):
     user = users.find_one(find_dict, return_dict)
     return user
 
+
 def delete_user(discord_id):
     user = get_user(discord_id)
     for offer in users.find_one(user)['offers']:
@@ -333,7 +334,7 @@ def parse_leekduck(url_str):
 def search_haves(user, pokemon):
     user_dict = users.find_one(user)
     search_dict = {'haves': pokemon,
-                   '$and': [{'name': {'$ne': ''}}, {'name': {'exists': True}}],
+                   '$and': [{'name': {'$ne': ''}}, {'name': {'$exists': True}}],
                    'user': {'$ne': user},
                    '$or': [{'friends': user_dict['discord_id']},
                            {'communities': {'$in': user_dict['communities']}}]}

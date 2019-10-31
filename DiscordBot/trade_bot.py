@@ -60,6 +60,8 @@ async def bot_embed_respond(message, msg):
 async def bot_thumbsup(message):
     await client.add_reaction(message, '👍')
 
+async def bot_x(message):
+    await client.add_reaction(message, ':x:')
 
 async def process_matches(message, offer, reply=False):
     """Check for matches on an offer and notify both parties if there are matches."""
@@ -211,8 +213,11 @@ async def addwant(ctx, offer_name, *pokemon):
         return
     cleaned_list = tf.clean_pokemon_list(pokemon)
     tf.add_wants(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
-    await process_matches(ctx.message, offer)
+    if len(cleaned_list) == 0:
+        await bot_x(ctx.message)
+    else:
+        await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
+        await process_matches(ctx.message, offer)
 
 
 @client.command(pass_context=True, aliases=['addhaves'])
