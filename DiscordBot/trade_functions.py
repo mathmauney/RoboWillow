@@ -346,6 +346,21 @@ def search_haves(user, pokemon):
     return output
 
 
+def search_wants(user, pokemon):
+    user_dict = users.find_one(user)
+    search_dict = {'wants': pokemon,
+                   '$and': [{'name': {'$ne': ''}}, {'name': {'$exists': True}}],
+                   'user': {'$ne': user},
+                   '$or': [{'friends': user_dict['discord_id']},
+                           {'communities': {'$in': user_dict['communities']}}]}
+    matches = offers.find(search_dict)
+    output = []
+    for match in matches:
+        matched_user = users.find_one(match['user'])
+        output.append((matched_user['discord_id'], matched_user['name'], match['offer_name']))
+    return output
+
+
 
 
 class TradeException(Exception):

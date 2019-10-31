@@ -61,8 +61,10 @@ async def bot_embed_respond(message, msg):
 async def bot_thumbsup(message):
     await client.add_reaction(message, '👍')
 
+
 async def bot_x(message):
     await client.add_reaction(message, '❌')
+
 
 async def process_matches(message, offer, reply=False):
     """Check for matches on an offer and notify both parties if there are matches."""
@@ -120,6 +122,18 @@ async def morematches(ctx, page):
         embed = discord.Embed(colour=discord.Colour(0x186a0))
         embed.add_field(name='Matches', value=embed_strs[int(page)-1], inline=False)
         embed.set_footer(text='Page %s of %s. Use %smorematches n to see page n.' % (page, len(embed_strs), bot_prefix[0]))
+        await bot_embed_respond(ctx.message, embed)
+
+
+@client.command(pass_context=True)
+async def moreresults(ctx, page):
+    embed_strs = prev_search.get(ctx.message.author.id, None)
+    if int(page) > len(embed_strs):
+        await bot_respond(ctx.message, 'Page out of range')
+    if embed_strs is not None:
+        embed = discord.Embed(colour=discord.Colour(0x186a0))
+        embed.add_field(name='Search Results', value=embed_strs[int(page)-1], inline=False)
+        embed.set_footer(text='Page %s of %s. Use %smoreresults n to see page n.' % (page, len(embed_strs), bot_prefix[0]))
         await bot_embed_respond(ctx.message, embed)
 
 
@@ -428,7 +442,7 @@ async def setname(ctx, pogo_name):
         await bot_respond(ctx.message, 'Name already in use, please contact <@%s> if you think this is in error.' % maintainer_id)
 
 
-@client.command(pass_context=True)
+@client.command(pass_context=True, aliases=['viewuseroffer'])
 async def viewuseroffers(ctx, pogo_name, *search_terms):
     user = tf.find_user(pogo_name)
     if user is None:
@@ -493,6 +507,7 @@ async def viewhave(ctx, *search_terms):
     results = tf.search_haves(user, cleaned_list[0])
     if len(results) == 0:
         await bot_respond(ctx.message, 'No public offers matching query found.')
+        return
     embed_strs = ['']
     embed_num = 0
     for result in results:
