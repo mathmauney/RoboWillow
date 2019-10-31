@@ -165,7 +165,7 @@ async def deletewant(ctx, offer_name, *pokemon):
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    if pokemon == []:
+    if pokemon == ():
         tf.remove_wants(offer, 'all')
         await bot_respond(ctx.message, 'Removed all wants')
     else:
@@ -185,7 +185,7 @@ async def deletehave(ctx, offer_name, *pokemon):
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    if pokemon == []:
+    if pokemon == ():
         tf.remove_haves(offer, 'all')
         await bot_respond(ctx.message, 'Removed all haves')
     else:
