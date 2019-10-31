@@ -241,13 +241,12 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                                 prev_space = True
                         except IndexError:
                             pass
-                elif matched_poke == 'Giratina':
-                    if '-' in poke:
-                        modifier = poke.split('-')[1].title()
-                        if modifier.startswith('O'):
-                            matched_poke = 'Origin Forme Giratina'
-                        elif modifier.startswith('A'):
-                            matched_poke = 'Altered Forme Giratina'
+                elif matched_poke == 'Giratina' and '-' in poke:
+                    modifier = poke.split('-')[1].title()
+                    if modifier.startswith('O'):
+                        matched_poke = 'Origin Forme Giratina'
+                    elif modifier.startswith('A'):
+                        matched_poke = 'Altered Forme Giratina'
                 else:
                     with open('forms.txt') as file:
                         if matched_poke in file.read():
@@ -278,6 +277,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                 else:
                     form = form + ' ' + poke
     return cleaned_list
+
 
 def parse_leekduck(url_str):
     parsed = urlparse.urlparse(url_str)
