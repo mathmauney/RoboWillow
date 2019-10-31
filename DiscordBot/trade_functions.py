@@ -33,7 +33,7 @@ def set_name(user, pogo_name=None):
         check = {"name": pogo_name}
         check_user = users.find_one(check)
         if check_user is not None:
-            if check_user != users.find_one({user}):
+            if check_user != users.find_one(user):
                 raise ValueError("Name already used")
         update_dict = {'$set': {'name': pogo_name}}
     users.update_one(user, update_dict)
