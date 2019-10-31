@@ -488,9 +488,11 @@ async def viewhave(ctx, *search_terms):
     if user is None:
         user = tf.add_user(ctx.message.author.id)
     if len(cleaned_list) != 1:
-        await bot_respont(ctx.message, 'Too many or too few pokemon matched: ' % ', '.join(cleaned_list))
+        await bot_respond(ctx.message, 'Too many or too few pokemon matched: ' % ', '.join(cleaned_list))
         return
     results = tf.search_haves(user, cleaned_list[0])
+    if len(results) == 0:
+        await bot_respond(ctx.message, 'No public offers matching query found.')
     embed_strs = ['']
     embed_num = 0
     for result in results:
@@ -503,7 +505,7 @@ async def viewhave(ctx, *search_terms):
     embed = discord.Embed(colour=discord.Colour(0x186a0))
     embed.add_field(name='Search Results', value=embed_strs[0], inline=False)
     embed.set_footer(text='Page 1 of %s. Use %smoreresults n to see page n.' % (len(embed_strs), bot_prefix[0]))
-    await bot_embed_respond(message, embed)
+    await bot_embed_respond(ctx.message, embed)
 
 
 @client.event
