@@ -23,7 +23,21 @@ def add_user(discord_id):
         users.insert_one(user_dict)
         return get_user(discord_id)
     else:
-        raise KeyError("User already exists")
+        raise ValueError("User already exists")
+
+
+def set_name(user, pogo_name=None):
+    if pogo_name is None:
+        update_dict = {'$set': {'name': ''}}
+    else:
+        check = {"name": pogo_name}
+        check_user = users.find_one(check)
+        if check_user is not None:
+            if check_user != users.find_one({user}):
+                raise ValueError("Name already used")
+        update_dict = {'$set': {'name': pogo_name}}
+    users.update_one(user, update_dict)
+
 
 
 def add_community(user, community_id):
@@ -61,6 +75,12 @@ def get_user(discord_id):
     user = users.find_one(find_dict, return_dict)
     return user
 
+
+def find_user(pogo_name):
+    find_dict = {'name': pogo_name}
+    return_dict = {}
+    user = users.find_one(find_dict, return_dict)
+    return user
 
 def delete_user(discord_id):
     user = get_user(discord_id)
