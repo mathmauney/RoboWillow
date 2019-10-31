@@ -24,6 +24,7 @@ client = Bot(command_prefix=bot_prefix)
 
 prev_matches = {}
 prev_views = {}
+prev_search = {}
 # ------------------------------------------------------------------------------------------------------------------------------- #
 
 
@@ -488,8 +489,21 @@ async def viewhave(ctx, *search_terms):
         user = tf.add_user(ctx.message.author.id)
     if len(cleaned_list) != 1:
         await bot_respont(ctx.message, 'Too many or too few pokemon matched: ' % ', '.join(cleaned_list))
-    else:
-        tf.search_haves(user, cleaned_list[0])
+        return
+    results = tf.search_haves(user, cleaned_list[0])
+    embed_strs = ['']
+    embed_num = 0
+    for result in results:
+        to_add = "%s (<@%s>)'s offer: %s.\n" % (result[1], str(result[0]), result[2])
+        if (len(embed_strs[embed_num]) + len(to_add)) > 1000:
+            embed_num += 1
+            embed_strs.append('')
+        embed_strs[embed_num] += to_add
+    prev_matches[message.author.id] = embed_strs
+    embed = discord.Embed(colour=discord.Colour(0x186a0))
+    embed.add_field(name='Search Results', value=embed_strs[0], inline=False)
+    embed.set_footer(text='Page 1 of %s. Use %smoreresults n to see page n.' % (len(embed_strs), bot_prefix[0]))
+    await bot_embed_respond(message, embed)
 
 
 @client.event
