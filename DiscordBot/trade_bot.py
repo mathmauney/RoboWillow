@@ -233,8 +233,11 @@ async def addhave(ctx, offer_name, *pokemon):
         return
     cleaned_list = tf.clean_pokemon_list(pokemon)
     tf.add_haves(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
-    await process_matches(ctx.message, offer)
+    if len(cleaned_list) == 0:
+        await bot_x(ctx.message)
+    else:
+        await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
+        await process_matches(ctx.message, offer)
 
 
 @client.command(pass_context=True, aliases=['deleteshinywants'])
@@ -250,7 +253,10 @@ async def deleteshinywant(ctx, offer_name, *pokemon):
         return
     cleaned_list = tf.clean_pokemon_list(pokemon, True)
     tf.remove_wants(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
+    if len(cleaned_list) == 0:
+        await bot_x(ctx.message)
+    else:
+        await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
 
 
 @client.command(pass_context=True, aliases=['deleteshinyhaves'])
@@ -266,7 +272,10 @@ async def deleteshinyhave(ctx, offer_name, *pokemon):
         return
     cleaned_list = tf.clean_pokemon_list(pokemon, True)
     tf.remove_haves(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
+    if len(cleaned_list) == 0:
+        await bot_x(ctx.message)
+    else:
+        await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
 
 
 @client.command(pass_context=True, aliases=['addshinywants'])
@@ -282,8 +291,11 @@ async def addshinywant(ctx, offer_name, *pokemon):
         return
     cleaned_list = tf.clean_pokemon_list(pokemon, True)
     tf.add_wants(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
-    await process_matches(ctx.message, offer)
+    if len(cleaned_list) == 0:
+        await bot_x(ctx.message)
+    else:
+        await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
+        await process_matches(ctx.message, offer)
 
 
 @client.command(pass_context=True, aliases=['addshinyhaves'])
@@ -299,8 +311,11 @@ async def addshinyhave(ctx, offer_name, *pokemon):
         return
     cleaned_list = tf.clean_pokemon_list(pokemon, True)
     tf.add_haves(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
-    await process_matches(ctx.message, offer)
+    if len(cleaned_list) == 0:
+        await bot_x(ctx.message)
+    else:
+        await bot_respond(ctx.message, 'Added: ' + ', '.join(cleaned_list))
+        await process_matches(ctx.message, offer)
 
 
 @client.command(pass_context=True, aliases=['viewoffer'])
