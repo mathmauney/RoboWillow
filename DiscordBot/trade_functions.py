@@ -342,7 +342,7 @@ def search_haves(user, pokemon):
     output = []
     for match in matches:
         matched_user = users.find_one(match['user'])
-        output.append(matched_user['discord_id'], matched_user['name'], match['offer_name'])
+        output.append((matched_user['discord_id'], matched_user['name'], match['offer_name'])
     return output
 
 
