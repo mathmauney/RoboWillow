@@ -112,9 +112,7 @@ def find_offers(user):
 
 
 def add_haves(offer, pokemon):
-    if pokemon == 'all':
-        update_dict = {'$set': {'haves': []}}
-    elif isinstance(pokemon, str):
+    if isinstance(pokemon, str):
         update_dict = {'$addToSet': {'haves': pokemon}}
     elif isinstance(pokemon, list):
         update_dict = {'$addToSet': {'haves': {'$each': pokemon}}}
@@ -122,9 +120,7 @@ def add_haves(offer, pokemon):
 
 
 def add_wants(offer, pokemon):
-    if pokemon == 'all':
-        update_dict = {'$set': {'wants': []}}
-    elif isinstance(pokemon, str):
+    if isinstance(pokemon, str):
         update_dict = {'$addToSet': {'wants': pokemon}}
     elif isinstance(pokemon, list):
         update_dict = {'$addToSet': {'wants': {'$each': pokemon}}}
@@ -132,7 +128,9 @@ def add_wants(offer, pokemon):
 
 
 def remove_haves(offer, pokemon):
-    if isinstance(pokemon, str):
+    if pokemon == 'all':
+        update_dict = {'$set': {'haves': []}}
+    elif isinstance(pokemon, str):
         update_dict = {'$pull': {'haves': pokemon}}
     if isinstance(pokemon, list):
         update_dict = {'$pullAll': {'haves': pokemon}}
@@ -140,7 +138,9 @@ def remove_haves(offer, pokemon):
 
 
 def remove_wants(offer, pokemon):
-    if isinstance(pokemon, str):
+    if pokemon == 'all':
+        update_dict = {'$set': {'wants': []}}
+    elif isinstance(pokemon, str):
         update_dict = {'$pull': {'wants': pokemon}}
     if isinstance(pokemon, list):
         update_dict = {'$pullAll': {'wants': pokemon}}
