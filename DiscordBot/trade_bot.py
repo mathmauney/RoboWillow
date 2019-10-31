@@ -501,7 +501,7 @@ async def viewhave(ctx, *search_terms):
             embed_num += 1
             embed_strs.append('')
         embed_strs[embed_num] += to_add
-    prev_matches[message.author.id] = embed_strs
+    prev_search[ctx.message.author.id] = embed_strs
     embed = discord.Embed(colour=discord.Colour(0x186a0))
     embed.add_field(name='Search Results', value=embed_strs[0], inline=False)
     embed.set_footer(text='Page 1 of %s. Use %smoreresults n to see page n.' % (len(embed_strs), bot_prefix[0]))
