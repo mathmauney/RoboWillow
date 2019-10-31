@@ -247,10 +247,9 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                         matched_poke = 'Origin Forme Giratina'
                     elif modifier.startswith('A'):
                         matched_poke = 'Altered Forme Giratina'
-                else:
+                elif i+1 != len(pokemon_list):
                     with open('forms.txt') as file:
                         if matched_poke in file.read():
-                            print('Sending %s and %s' % (matched_poke, pokemon_list[i+1]))
                             matched_form = pokemap.match_form(matched_poke, pokemon_list[i+1])
                             if matched_form != matched_poke and matched_form is not None:
                                 matched_poke = matched_form
