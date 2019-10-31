@@ -406,7 +406,7 @@ async def setname(ctx, pogo_name):
 
 
 @client.command(pass_context=True)
-async def searchoffers(ctx, pogo_name, *search_terms):
+async def viewuseroffers(ctx, pogo_name, *search_terms):
     user = find_user(pogo_name)
     if user is None:
         await bot_embed_respond(ctx.message, 'User not found')
