@@ -61,7 +61,7 @@ async def bot_thumbsup(message):
     await client.add_reaction(message, '👍')
 
 async def bot_x(message):
-    await client.add_reaction(message, ':x:')
+    await client.add_reaction(message, '❌')
 
 async def process_matches(message, offer, reply=False):
     """Check for matches on an offer and notify both parties if there are matches."""
