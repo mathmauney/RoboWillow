@@ -112,17 +112,21 @@ def find_offers(user):
 
 
 def add_haves(offer, pokemon):
-    if isinstance(pokemon, str):
+    if pokemon == 'all':
+        update_dict = {'$set': {'haves': []}}
+    elif isinstance(pokemon, str):
         update_dict = {'$addToSet': {'haves': pokemon}}
-    if isinstance(pokemon, list):
+    elif isinstance(pokemon, list):
         update_dict = {'$addToSet': {'haves': {'$each': pokemon}}}
     offers.update(offer, update_dict)
 
 
 def add_wants(offer, pokemon):
-    if isinstance(pokemon, str):
+    if pokemon == 'all':
+        update_dict = {'$set': {'wants': []}}
+    elif isinstance(pokemon, str):
         update_dict = {'$addToSet': {'wants': pokemon}}
-    if isinstance(pokemon, list):
+    elif isinstance(pokemon, list):
         update_dict = {'$addToSet': {'wants': {'$each': pokemon}}}
     offers.update(offer, update_dict)
 

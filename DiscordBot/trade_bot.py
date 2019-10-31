@@ -165,9 +165,13 @@ async def deletewant(ctx, offer_name, *pokemon):
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    cleaned_list = tf.clean_pokemon_list(pokemon)
-    tf.remove_wants(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
+    if pokemon == []:
+        tf.remove_wants(offer, 'all')
+        await bot_respond(ctx.message, 'Removed all wants')
+    else:
+        cleaned_list = tf.clean_pokemon_list(pokemon)
+        tf.remove_wants(offer, cleaned_list)
+        await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
 
 
 @client.command(pass_context=True, aliases=['deletehaves'])
@@ -181,9 +185,13 @@ async def deletehave(ctx, offer_name, *pokemon):
     if offer is None:
         await bot_respond(ctx.message, "Offer group not found.")
         return
-    cleaned_list = tf.clean_pokemon_list(pokemon)
-    tf.remove_haves(offer, cleaned_list)
-    await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
+    if pokemon == []:
+        tf.remove_haves(offer, 'all')
+        await bot_respond(ctx.message, 'Removed all haves')
+    else:
+        cleaned_list = tf.clean_pokemon_list(pokemon)
+        tf.remove_haves(offer, cleaned_list)
+        await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
 
 
 @client.command(pass_context=True, aliases=['addwants'])
