@@ -361,8 +361,6 @@ def search_wants(user, pokemon):
     return output
 
 
-
-
 class TradeException(Exception):
     """Base class for the module so all module exceptions can be caught together if needed."""
 

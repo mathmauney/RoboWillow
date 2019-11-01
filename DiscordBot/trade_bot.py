@@ -436,7 +436,7 @@ async def setname(ctx, pogo_name):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     try:
-        tf.set_name(user, pogo_name)
+        tf.set_name(user, pogo_name.title())
         await bot_thumbsup(ctx.message)
     except ValueError:
         await bot_respond(ctx.message, 'Name already in use, please contact <@%s> if you think this is in error.' % maintainer_id)
@@ -444,7 +444,7 @@ async def setname(ctx, pogo_name):
 
 @client.command(pass_context=True, aliases=['viewuseroffer'])
 async def viewuseroffers(ctx, pogo_name, *search_terms):
-    user = tf.find_user(pogo_name)
+    user = tf.find_user(pogo_name.title())
     if user is None:
         await bot_respond(ctx.message, 'User not found')
     else:
