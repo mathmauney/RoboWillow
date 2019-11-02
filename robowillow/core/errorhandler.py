@@ -1,4 +1,5 @@
 import discord
+from discord.exts import commands
 from discord.exts.commands import Cog
 
 
@@ -11,6 +12,8 @@ class ErrorHandler(Cog):
     async def on_command_error(self, ctx, error):
         if isinstance(error, discord.errors.Forbidden):
             await self.bot.send_message(ctx.message.author, "You seem to have tried to send a command in a channel I can't talk in. Try again in the appropriate channel")
+        if isinstance(error, commands.MissingRequiredArgument):
+            await ctx.send("Missing arguements.")
 
 
 def setup(bot):

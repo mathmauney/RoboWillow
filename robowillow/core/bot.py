@@ -27,8 +27,8 @@ class Bot(commands.Bot):
         self.req_perms = discord.Permissions(config.bot_permissions)
         # Import the tasklist object or create new one
         try:
-            task_path = self.config.file_paths['tasklist']
-            with open(task_path, 'rb') as file_input:
+            self.task_path = self.config.file_paths['tasklist']
+            with open(self.task_path, 'rb') as file_input:
                 self.tasklist = pickle.load(file_input)
         except FileNotFoundError:
             self.tasklist = pokemap.Tasklist()
