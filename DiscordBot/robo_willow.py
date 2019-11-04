@@ -1112,7 +1112,7 @@ Add pokemon to your offer using:\n
     - Forms can be added before the pokemon name (ex. Altered Giratina or Shedinja Costume Bulbasaur)\n
     - Unown letters and Spinda numbers can be added after the pokemon name (ex. Unown A or Spinda 1)\n
 .\n"""
-                instructions_text2 = """Remove pokemon from your offer using:\n
+                instruction_text2 = """Remove pokemon from your offer using:\n
 ?deletewant <offer_name> <pokemon>\n
 ?deletehave <offer_name> <pokemon>\n
 - Delete all pokemon by not listing any after the offer name\n
