@@ -232,16 +232,17 @@ async def addoffer(ctx, offer_name):
 
 
 @client.command(pass_context=True)
-async def deleteoffer(ctx, offer_name):
+async def deleteoffer(ctx, *offer_names):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
         user = tf.add_user(ctx.message.author.id)
-    offer = tf.find_offer(user, offer_name)
-    if offer is not None:
-        tf.delete_offer(offer)
-        await bot_thumbsup(ctx.message)
-    else:
-        await bot_respond(ctx.message, 'Unable to find offer')
+    for offer in offer_names:
+        offer = tf.find_offer(user, offer_name)
+        if offer is not None:
+            tf.delete_offer(offer)
+            await bot_thumbsup(ctx.message)
+        else:
+            await bot_respond(ctx.message, 'Unable to find offer')
 
 
 @client.command(pass_context=True, aliases=['deletewants'])
