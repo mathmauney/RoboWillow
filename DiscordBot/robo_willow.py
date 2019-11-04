@@ -1141,7 +1141,7 @@ To view someone else's offer(s) use:
 When you and someone else match you will be notified automatically. You can view all your matches using ?check"""
                 msg.add_field(name='Introduction', value=intro_text, inline=False)
                 msg.add_field(name='Instructions', value=instruction_text, inline=False)
-                msg.add_field(name='Instructions', value=instruction_text2, inline=False)
+                msg.add_field(name='', value=instruction_text2, inline=False)
                 await bot_embed_respond(message, msg)
             else:
                 await bot_respond(message, 'Use either "help trade" or "help research" to specify topic.')
