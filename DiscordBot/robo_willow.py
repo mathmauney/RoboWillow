@@ -1146,7 +1146,7 @@ When you and someone else match (ie. they "want" something you "have" and vise-v
                 msg.add_field(name='Introduction', value=intro_text, inline=False)
                 msg.add_field(name='Instructions', value=instuructions_text, inline=False)
             else:
-                await bot_embed_respond(message, 'Use either "help trade" or "help research" to specify topic.')
+                await bot_respond(message, 'Use either "help trade" or "help research" to specify topic.')
         elif msg.startswith('setup'):
             msg = discord.Embed(colour=discord.Colour(0x186a0))
             command_name = 'Initial Setup Commands'
