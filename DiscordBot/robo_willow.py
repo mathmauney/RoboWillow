@@ -1092,53 +1092,52 @@ async def on_message(message):
 - You can have multiple offers (for shinies, regionals, pvp wishlists, unowns, etc)
 - You can search and view other people offers!
 - You will receive notifications when you and another person match!"""
-                instruction_text = """All messages must be sent in the form of a (?) command. To begin, add your pogo-username using:\n
-?setname <pogo_name>\n
- - Replace <pogo_name> with your in-game username\n
-\n
-Now you can create trade offers using:\n
-?addoffer <offer_name>\n
-- Replace <offer_name> with any word. This will be the title of your trade offer.\n
-\n
-Add pokemon to your offer using:\n
-?addwant <offer_name> <pokemon>\n
-?addhave <offer_name> <pokemon>\n
-- Replace <offer_name> with the offer you want to edit\n
-- Replace <pokemon> with the pokemon you want/have\n
-- Both commands can take multiple pokemon seperated by spaces\n
-\n
-- Modifiers can be added to the pokemon names if needed\n
-    - Shiny can be added before the pokemon name (ex. Shiny Pikachu)\n
-    - Forms can be added before the pokemon name (ex. Altered Giratina or Shedinja Costume Bulbasaur)\n
-    - Unown letters and Spinda numbers can be added after the pokemon name (ex. Unown A or Spinda 1)\n
-.\n"""
+                instruction_text = """All messages must be sent in the form of a (?) command. To begin, add your pogo-username using:
+?setname <pogo_name>
+ - Replace <pogo_name> with your in-game username
+
+Now you can create trade offers using:
+?addoffer <offer_name>
+- Replace <offer_name> with any word. This will be the title of your trade offer.
+
+Add pokemon to your offer using:
+?addwant <offer_name> <pokemon>
+?addhave <offer_name> <pokemon>
+- Replace <offer_name> with the offer you want to edit
+- Replace <pokemon> with the pokemon you want/have
+- Both commands can take multiple pokemon seperated by spaces
+
+- Modifiers can be added to the pokemon names if needed
+    - Shiny can be added before the pokemon name (ex. Shiny Pikachu)
+    - Forms can be added before the pokemon name (ex. Altered Giratina or Shedinja Costume Bulbasaur)
+    - Unown letters and Spinda numbers can be added after the pokemon name (ex. Unown A or Spinda 1)"""
                 instruction_text2 = """Remove pokemon from your offer using:\n
-?deletewant <offer_name> <pokemon>\n
-?deletehave <offer_name> <pokemon>\n
-- Delete all pokemon by not listing any after the offer name\n
-\n
-To add or remove multiple shinies at once use:\n
+?deletewant <offer_name> <pokemon>
+?deletehave <offer_name> <pokemon>
+- Delete all pokemon by not listing any after the offer name
+
+To add or remove multiple shinies at once use:
 ?addshinywant, ?addshinyhave, ?deleteshinywant or ?deleteshinyhave
-- These are the same as the normal commands will assume all pokemon listed are shiny\n
-\n
-Remove an offer completely using:\n
-?deleteoffer <offer_name>\n
-\n
-To view a list of all your offers, use:\n
-?listoffers\n
-\n
-To view the contents of one of your offers use:\n
-?viewoffer <offer_name>\n
-\n
-To search everyone else's offers for a specific pokemon use:\n
-?searchwant <pokemon>\n
-?searchhave <pokemon>\n
-- These will return a list of each person that has the pokemon and the name of their offer\n
-\n
-To view someone else's offer(s) use:\n
-?listoffers <pogo_name>\n
-?viewoffer <pogo_name> <offer_name>\n
-\n
+- These are the same as the normal commands will assume all pokemon listed are shiny
+
+Remove an offer completely using:
+?deleteoffer <offer_name>
+
+To view a list of all your offers, use:
+?listoffers
+
+To view the contents of one of your offers use:
+?viewoffer <offer_name>
+
+To search everyone else's offers for a specific pokemon use:
+?searchwant <pokemon>
+?searchhave <pokemon>
+- These will return a list of each person that has the pokemon and the name of their offer
+
+To view someone else's offer(s) use:
+?listoffers <pogo_name>
+?viewoffer <pogo_name> <offer_name>
+
 When you and someone else match you will be notified automatically. You can view all your matches using ?check"""
                 msg.add_field(name='Introduction', value=intro_text, inline=False)
                 msg.add_field(name='Instructions', value=instruction_text, inline=False)
