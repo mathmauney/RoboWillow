@@ -26,6 +26,9 @@ maps = {}
 prev_message_was_stop = {}
 prev_message_stop = {}
 prev_message = {}
+prev_matches = {}
+prev_views = {}
+prev_search = {}
 # Import the tasklist object or create new one
 try:
     with open(task_path, 'rb') as file_input:
@@ -1068,7 +1071,7 @@ async def on_message(message):
                 command_help += '- Lastly set the timezone your map is in (so it resets at midnight correctly) using "' + bot_prefix[0] + 'settimezone timezone_str" where timezone_str is from the list https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones.'
                 msg.add_field(name=command_name, value=command_help, inline=False)
                 await client.send_message(message.channel, embed=msg)
-            else:
+            elif 'research' in message.content.lower():
                 commands = {}
                 commands[bot_prefix[0] + 'addstop'] = 'Add a new stop to the map.'
                 commands[bot_prefix[0] + 'addtask'] = 'Define a new task and reward set.'
@@ -1082,6 +1085,68 @@ async def on_message(message):
                 msg.add_field(name='For more info', value='Use "' + bot_prefix[0] + 'help command" for more info on a command, or use "' + bot_prefix[0] + 'help advanced" to get information on commands for advanced users', inline=False)
                 msg.add_field(name='To view the current map', value='Click [here](' + map_url + '/?map=' + str(message.server.id) + ')', inline=False)
                 await bot_embed_respond(message, msg)
+            elif 'trade' in message.content.lower():
+                msg = discord.Embed(colour=discord.Colour(0x186a0))
+                intro_text = """This bot allows you to create trade offers.\n
+- You can offer pokemon A,B,C.. for pokemon X,Y,Z... (no limits!)\n
+- You can have multiple offers (for shinies, regionals, pvp wishlists, unowns, etc)\n
+- You can search and view other people offers!\n
+- You will receive notifications when you and another person match!"""
+                instruction_text = """All messages must be sent in the form of a (!) command. To begin, add your pogo-username using:\n
+!setname <pogo_name>\n
+ - Replace <pogo_name> with your in-game username\n
+\n
+Now you can create trade offers using:\n
+!addoffer <offer_name>\n
+- Replace <offer_name> with any word (no spaces and no inappropriate words). This will be the title of your trade offer.\n
+\n
+Add pokemon to your offer using:\n
+!addwant <offer_name> <pokemon>\n
+!addhave <offer_name> <pokemon>\n
+- Replace <offer_name> with the offer you want to edit\n
+- Replace <pokemon> with the pokemon you want/have\n
+- Both commands can take multiple pokemon seperated by spaces\n
+\n
+- Modifiers can be added to the pokemon names if needed\n
+    - Shiny can be added before the pokemon name (ex. Shiny Pikachu)\n
+    - Forms can be added before the pokemon name (ex. Altered Giratina or Shedinja Costume Bulbasaur)\n
+    - Unown letters and Spinda numbers can be added after the pokemon name (ex. Unown A or Spinda 1)\n
+.\n
+Remove pokemon from your offer using:\n
+!deletewant <offer_name> <pokemon>\n
+!deletehave <offer_name> <pokemon>\n
+- Delete all pokemon by not listing any after the offer name\n
+\n
+To add or remove multiple shinies at once use:\n
+!addshinywant <offer_name> <pokemon>\n
+!addshinyhave <offer_name> <pokemon>\n
+!deleteshinywant <offer_name> <pokemon>\n
+!deleteshinyhave <offer_name> <pokemon>\n
+- These will assume all pokemon listed are shiny so that you don't need to type "shiny" multiple times\n
+\n
+Remove an offer completely using:\n
+!deleteoffer <offer_name>\n
+\n
+To view a list of all your offers, use:\n
+!listoffers\n
+\n
+To view the contents of one of your offers use:\n
+!viewoffer <offer_name>\n
+\n
+To search everyone else's offers for a specific pokemon use:\n
+!searchwant <pokemon>\n
+!searchhave <pokemon>\n
+- These will return a list of each person that has the pokemon you searched for in their offer as well as the name of their offer\n
+\n
+To view someone else's offer(s) use:\n
+!listoffers <pogo_name>\n
+!viewoffer <pogo_name> <offer_name>\n
+\n
+When you and someone else match (ie. they "want" something you "have" and vise-versa), you will be notified automatically. You can check back manually using: !check"""
+                msg.add_field(name='Introduction', value=intro_text, inline=False)
+                msg.add_field(name='Instructions', value=instuructions_text, inline=False)
+            else:
+                await bot_embed_respond(message, 'Use either "help trade" or "help research" to specify topic.')
         elif msg.startswith('setup'):
             msg = discord.Embed(colour=discord.Colour(0x186a0))
             command_name = 'Initial Setup Commands'
@@ -1159,7 +1224,7 @@ async def on_message(message):
                 except pokemap.TaskAlreadyAssigned:
                     if stop.properties['Reward'] == task.reward:
                         await client.add_reaction(message, '👍')
-                    else:f
+                    else:
                         pass
                 except pokemap.PokemapException:
                     pass
