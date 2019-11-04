@@ -1087,10 +1087,10 @@ async def on_message(message):
                 await bot_embed_respond(message, msg)
             elif 'trade' in message.content.lower():
                 msg = discord.Embed(colour=discord.Colour(0x186a0))
-                intro_text = """This bot allows you to create trade offers.\n
-- You can offer pokemon A,B,C.. for pokemon X,Y,Z... (no limits!)\n
-- You can have multiple offers (for shinies, regionals, pvp wishlists, unowns, etc)\n
-- You can search and view other people offers!\n
+                intro_text = """This bot allows you to create trade offers.
+- You can offer pokemon A,B,C.. for pokemon X,Y,Z... (no limits!)
+- You can have multiple offers (for shinies, regionals, pvp wishlists, unowns, etc)
+- You can search and view other people offers!
 - You will receive notifications when you and another person match!"""
                 instruction_text = """All messages must be sent in the form of a (?) command. To begin, add your pogo-username using:\n
 ?setname <pogo_name>\n
