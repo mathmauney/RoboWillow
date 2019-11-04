@@ -8,6 +8,7 @@ from datetime import datetime
 from discord import Game
 from discord.ext.commands import Bot, has_permissions
 from config import discord_token
+import trade_functions as tf
 import urllib.parse as urlparse
 
 # Setup Variables
