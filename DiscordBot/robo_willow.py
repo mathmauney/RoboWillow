@@ -1145,6 +1145,7 @@ To view someone else's offer(s) use:\n
 When you and someone else match (ie. they "want" something you "have" and vise-versa), you will be notified automatically. You can check back manually using: !check"""
                 msg.add_field(name='Introduction', value=intro_text, inline=False)
                 msg.add_field(name='Instructions', value=instruction_text, inline=False)
+                await bot_embed_respond(message, msg)
             else:
                 await bot_respond(message, 'Use either "help trade" or "help research" to specify topic.')
         elif msg.startswith('setup'):
