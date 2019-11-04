@@ -378,8 +378,12 @@ async def view(ctx, *args):
         embed.add_field(name='Want', value=want_strs[0], inline=False)
         await bot_embed_respond(ctx.message, embed)
     elif len(args) >= 2:
-        pogo_name = args[0]
-        user = tf.find_user(pogo_name.title())
+        if len(ctx.mentions) == 0:
+            pogo_name = args[0]
+            user = tf.find_user(pogo_name.title())
+        elif len(ctx.mentions) == 1:
+            user_id = int(ctx.mentions[0].id)
+            user = tf.find_user(pogo_name.title())
         if user is None:
             await bot_respond(ctx.message, 'User not found')
         else:
@@ -501,59 +505,6 @@ async def setname(ctx, pogo_name):
         await bot_thumbsup(ctx.message)
     except ValueError:
         await bot_respond(ctx.message, 'Name already in use, please contact <@%s> if you think this is in error.' % maintainer_id)
-
-
-# @client.command(pass_context=True, aliases=['viewuseroffer'])
-# async def viewuseroffers(ctx, pogo_name, *search_terms):
-#     user = tf.find_user(pogo_name.title())
-#     if user is None:
-#         await bot_respond(ctx.message, 'User not found')
-#     else:
-#         if len(search_terms) == 0:
-#             offer_names = tf.find_offers(user)
-#             if offer_names == []:
-#                 await bot_respond(ctx.message, 'No offers found')
-#             else:
-#                 offer_str = '\n'.join(offer_names)
-#                 embed = discord.Embed(colour=discord.Colour(0x186a0))
-#                 embed.add_field(name='Offer Names', value=offer_str, inline=False)
-#                 await bot_embed_respond(ctx.message, embed)
-#         elif len(search_terms) == 1:
-#             offer_name = search_terms[0]
-#             offer = tf.find_offer(user, offer_name)
-#             (wants, haves) = tf.get_offer_contents(offer)
-#             if haves == []:
-#                 have_strs = ['None']
-#                 want_strs = ['']
-#             else:
-#                 i = 0
-#                 have_strs = ['']
-#                 want_strs = ['']
-#                 for have in haves:
-#                     if len(have_strs[i]) > 500:
-#                         i = i + 1
-#                         have_strs.append('')
-#                         want_strs.append('')
-#                     have_strs[i] = have_strs[i] + have + '\n'
-#             if wants == []:
-#                 want_strs[0] = 'None'
-#             else:
-#                 i = 0
-#                 for want in wants:
-#                     if len(want_strs[i]) > 500:
-#                         i = i + 1
-#                         if i >= len(have_strs):
-#                             have_strs.append('')
-#                             want_strs.append('')
-#                     want_strs[i] = want_strs[i] + want + '\n'
-#             prev_views[ctx.message.author.id] = (have_strs, want_strs)
-#             embed = discord.Embed(colour=discord.Colour(0x186a0))
-#             embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), bot_prefix[0]))
-#             embed.add_field(name='Haves', value=have_strs[0], inline=False)
-#             embed.add_field(name='Wants', value=want_strs[0], inline=False)
-#             await bot_embed_respond(ctx.message, embed)
-#         else:
-#             await bot_respond(ctx.message, 'Too many arguments')
 
 
 @client.command(pass_context=True, aliases=['searchhaves'])
