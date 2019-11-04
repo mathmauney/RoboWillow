@@ -1092,17 +1092,17 @@ async def on_message(message):
 - You can have multiple offers (for shinies, regionals, pvp wishlists, unowns, etc)\n
 - You can search and view other people offers!\n
 - You will receive notifications when you and another person match!"""
-                instruction_text = """All messages must be sent in the form of a (!) command. To begin, add your pogo-username using:\n
-!setname <pogo_name>\n
+                instruction_text = """All messages must be sent in the form of a (?) command. To begin, add your pogo-username using:\n
+?setname <pogo_name>\n
  - Replace <pogo_name> with your in-game username\n
 \n
 Now you can create trade offers using:\n
-!addoffer <offer_name>\n
-- Replace <offer_name> with any word (no spaces and no inappropriate words). This will be the title of your trade offer.\n
+?addoffer <offer_name>\n
+- Replace <offer_name> with any word. This will be the title of your trade offer.\n
 \n
 Add pokemon to your offer using:\n
-!addwant <offer_name> <pokemon>\n
-!addhave <offer_name> <pokemon>\n
+?addwant <offer_name> <pokemon>\n
+?addhave <offer_name> <pokemon>\n
 - Replace <offer_name> with the offer you want to edit\n
 - Replace <pokemon> with the pokemon you want/have\n
 - Both commands can take multiple pokemon seperated by spaces\n
@@ -1111,40 +1111,38 @@ Add pokemon to your offer using:\n
     - Shiny can be added before the pokemon name (ex. Shiny Pikachu)\n
     - Forms can be added before the pokemon name (ex. Altered Giratina or Shedinja Costume Bulbasaur)\n
     - Unown letters and Spinda numbers can be added after the pokemon name (ex. Unown A or Spinda 1)\n
-.\n
-Remove pokemon from your offer using:\n
-!deletewant <offer_name> <pokemon>\n
-!deletehave <offer_name> <pokemon>\n
+.\n"""
+                instructions_text2 = """Remove pokemon from your offer using:\n
+?deletewant <offer_name> <pokemon>\n
+?deletehave <offer_name> <pokemon>\n
 - Delete all pokemon by not listing any after the offer name\n
 \n
 To add or remove multiple shinies at once use:\n
-!addshinywant <offer_name> <pokemon>\n
-!addshinyhave <offer_name> <pokemon>\n
-!deleteshinywant <offer_name> <pokemon>\n
-!deleteshinyhave <offer_name> <pokemon>\n
-- These will assume all pokemon listed are shiny so that you don't need to type "shiny" multiple times\n
+?addshinywant, ?addshinyhave, ?deleteshinywant or ?deleteshinyhave
+- These are the same as the normal commands will assume all pokemon listed are shiny\n
 \n
 Remove an offer completely using:\n
-!deleteoffer <offer_name>\n
+?deleteoffer <offer_name>\n
 \n
 To view a list of all your offers, use:\n
-!listoffers\n
+?listoffers\n
 \n
 To view the contents of one of your offers use:\n
-!viewoffer <offer_name>\n
+?viewoffer <offer_name>\n
 \n
 To search everyone else's offers for a specific pokemon use:\n
-!searchwant <pokemon>\n
-!searchhave <pokemon>\n
-- These will return a list of each person that has the pokemon you searched for in their offer as well as the name of their offer\n
+?searchwant <pokemon>\n
+?searchhave <pokemon>\n
+- These will return a list of each person that has the pokemon and the name of their offer\n
 \n
 To view someone else's offer(s) use:\n
-!listoffers <pogo_name>\n
-!viewoffer <pogo_name> <offer_name>\n
+?listoffers <pogo_name>\n
+?viewoffer <pogo_name> <offer_name>\n
 \n
-When you and someone else match (ie. they "want" something you "have" and vise-versa), you will be notified automatically. You can check back manually using: !check"""
+When you and someone else match you will be notified automatically. You can view all your matches using ?check"""
                 msg.add_field(name='Introduction', value=intro_text, inline=False)
                 msg.add_field(name='Instructions', value=instruction_text, inline=False)
+                msg.add_field(name='Instructions', value=instruction_text2, inline=False)
                 await bot_embed_respond(message, msg)
             else:
                 await bot_respond(message, 'Use either "help trade" or "help research" to specify topic.')
