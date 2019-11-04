@@ -378,12 +378,8 @@ async def view(ctx, *args):
         embed.add_field(name='Want', value=want_strs[0], inline=False)
         await bot_embed_respond(ctx.message, embed)
     elif len(args) >= 2:
-        if len(ctx.mentions) == 0:
-            pogo_name = args[0]
-            user = tf.find_user(pogo_name.title())
-        elif len(ctx.mentions) == 1:
-            user_id = int(ctx.mentions[0].id)
-            user = tf.get_user(user_id)
+        pogo_name = args[0]
+        user = tf.find_user(pogo_name.title())
         if user is None:
             await bot_respond(ctx.message, 'User not found')
         else:
