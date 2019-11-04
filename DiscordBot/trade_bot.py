@@ -383,7 +383,7 @@ async def view(ctx, *args):
             user = tf.find_user(pogo_name.title())
         elif len(ctx.mentions) == 1:
             user_id = int(ctx.mentions[0].id)
-            user = tf.get_user(pogo_name.title())
+            user = tf.get_user(user_id)
         if user is None:
             await bot_respond(ctx.message, 'User not found')
         else:
