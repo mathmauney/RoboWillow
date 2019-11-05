@@ -1,6 +1,6 @@
 import discord
 import sys
-from .robowillow.core import Bot
+from core import Bot
 
 
 def run_bot(debug=False):
