@@ -5,6 +5,12 @@ with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 setup(
+    name='robowillow',
+    version='0.0',
+    description='',
+    author='',
+    author_email='foomail@foo.com',
+    packages=['robowillow'],  #same as name
     install_requires=requirements,
 
     entry_points={
