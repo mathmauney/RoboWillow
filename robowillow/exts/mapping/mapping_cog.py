@@ -15,6 +15,7 @@ class Mapper(Cog):
         self.maps = bot.maps
         self.maintainer_id = bot.config.bot_owner
         self.tasklist = bot.tasklist
+        self.task_path = bot.config.file_paths['tasklist']
         print("Mapper loaded")
 
     @command()
