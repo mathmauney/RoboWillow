@@ -23,6 +23,8 @@ class Mapper(Cog):
         for guild in self.bot.guilds:
             print(str(guild.id))
             self.prev_message_was_stop[guild.id] = False
+            self.prev_message[guild.id] = None
+            self.prev_message_stop[guild.id] = None
 
     @command()
     async def addstop(self, ctx, *args):
