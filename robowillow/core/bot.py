@@ -98,7 +98,7 @@ class Bot(commands.Bot):
         await self.change_presence(status=discord.Status.idle)
 
     async def on_ready(self):
-        await self.change_presence(game=discord.Game(name=self.config.bot_status))  # Sets the game presence
+        await self.change_presence(activity=discord.Game(name=self.config.bot_status))  # Sets the game presence
         print("Logged in as " + self.user.name)  # Logs sucessful login
         map_dir = self.config.file_paths['map_directory']
         for server in self.guilds:

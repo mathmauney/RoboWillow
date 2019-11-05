@@ -6,7 +6,7 @@ class Core(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-
+        print("Core loaded")
 
     @command
     async def load(self, ctx, extension):
