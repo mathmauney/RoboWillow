@@ -344,13 +344,13 @@ def match_pokemon(input_):
     """Find the closest pokemon to a string or by number."""
     if isinstance(input_, str):
         name = input_
-        with open('data/pokemon.txt') as file:
+        with open('./data/pokemon.txt') as file:
             if name.title == 'Bulbasaur':
                 return name.title()
             elif '\n' + name.title() + '\n' in file.read():
                 return name.title()
         current_best = (None, 90)
-        with open('data/pokemon.txt') as file:
+        with open('./data/pokemon.txt') as file:
             line = file.readline().strip('\n')
             while line:
                 ratio = fuzz.partial_ratio(name.title(), line)
@@ -364,7 +364,7 @@ def match_pokemon(input_):
         return None
     if isinstance(input_, int):
         num = input_
-        with open('data/pokemon.txt') as file:
+        with open('./data/pokemon.txt') as file:
             for i, line in enumerate(file):
                 if i + 1 == num:
                     return line.strip('\n')
@@ -382,7 +382,7 @@ def match_form(pokemon, descriptor=None):
         input_ = pokemon
         input_mods = []
     current_best = (None, 90)
-    with open('data/forms.txt') as file:
+    with open('./data/forms.txt') as file:
         line = file.readline().strip('\n')
         while line:
             ratios = [fuzz.partial_ratio(input_, line)]
