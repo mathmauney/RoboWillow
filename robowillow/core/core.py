@@ -6,7 +6,7 @@ class Core(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        bot.load_extension("robowillow.exts.mapping")
+        
 
     @command
     async def load(self, ctx, extension):

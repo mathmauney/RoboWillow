@@ -1,4 +1,4 @@
-discord==0.16.12
+discord
 pygeoj
 datetime
 asyncio
