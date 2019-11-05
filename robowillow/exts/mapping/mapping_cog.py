@@ -21,7 +21,7 @@ class Mapper(Cog):
         self.prev_message = {}
         print("Mapper loaded")
         for guild in self.bot.guilds:
-            print(str(guild.id))
+            print(f"Mapper init: {str(guild.id)}")
             self.prev_message_was_stop[guild.id] = False
             self.prev_message[guild.id] = None
             self.prev_message_stop[guild.id] = None
