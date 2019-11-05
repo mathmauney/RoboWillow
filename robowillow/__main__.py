@@ -9,7 +9,7 @@ def run_bot(debug=False):
     bot = Bot(debug=debug)
 
     bot.load_extension("robowillow.exts.mapping")
-    bot.load_extension("robowillow.core")
+    bot.load_extension("robowillow.core.core_commands")
 
     if bot.token is None or not bot.default_prefix:
         bot.logger.critical(

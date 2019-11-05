@@ -6,7 +6,7 @@ class Core(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        
+
 
     @command
     async def load(self, ctx, extension):
