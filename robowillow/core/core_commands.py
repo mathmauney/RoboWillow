@@ -16,7 +16,7 @@ class Core(Cog):
             ctx.bot.reload_extension(extension)
         else:
             ctx.bot.load_extension(extension)
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
 
 def setup(bot):
