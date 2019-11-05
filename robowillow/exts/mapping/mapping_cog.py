@@ -20,6 +20,9 @@ class Mapper(Cog):
         self.prev_message_stop = {}
         self.prev_message = {}
         print("Mapper loaded")
+        for guild in self.bot.guilds:
+            print(str(guild.id))
+            self.prev_message_was_stop[guild.id] = False
 
     @command()
     async def addstop(self, ctx, *args):
@@ -345,6 +348,3 @@ class Mapper(Cog):
         @Cog.listener()
         async def on_ready(self):
             """Take actions on login."""
-            for guild in self.bot.guilds:
-                print(str(guild.id))
-                self.prev_message_was_stop[guild.id] = False
