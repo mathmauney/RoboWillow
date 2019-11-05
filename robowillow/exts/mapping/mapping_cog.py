@@ -115,7 +115,7 @@ class Mapper(Cog):
         """Pull tasks from TheSilphRoad."""
         backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
         self.tasklist.save(backup_name)
-        self.tasklist = pokemap.fetch_self.tasklist()
+        self.tasklist = pokemap.fetch_tasklist()
         self.tasklist.save(self.task_path)
         await ctx.message.add_reaction('👍')
 

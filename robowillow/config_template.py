@@ -23,7 +23,7 @@ db_details = {
 }
 
 file_paths = {
-    'map_directory': '/war/www/html/maps/',
+    'map_directory': '/var/www/html/maps/',
     'tasklist': './tasklist.pkl'
 }
 
