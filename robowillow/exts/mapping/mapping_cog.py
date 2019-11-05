@@ -16,6 +16,9 @@ class Mapper(Cog):
         self.maintainer_id = bot.config.bot_owner
         self.tasklist = bot.tasklist
         self.task_path = bot.config.file_paths['tasklist']
+        self.prev_message_was_stop = {}
+        self.prev_message_stop = {}
+        self.prev_message = {}
         print("Mapper loaded")
 
     @command()
@@ -251,3 +254,90 @@ class Mapper(Cog):
             await ctx.message.add_reaction('👍')
         except ValueError:
             pass
+
+    @Cog.listener()
+    async def on_message(self, message):
+        """Respond to messages.
+
+        Contains the help commands, and the bots ability to parse language.
+
+        """
+        message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
+        message.content = message.content.replace(u"\u201D", '"')
+        for role in message.role_mentions:
+            role_str = '<@&' + str(role.id) + '>'
+            message.content = message.content.replace(role_str, role.name)
+        if message.server is not None:
+            taskmap = self.maps[message.server.id]
+        if message.author == self.bot.user:
+            return
+        elif self.prev_message_was_stop[message.server.id] and self.prev_message[message.server.id].author == message.author:
+            self.prev_message_was_stop[message.server.id] = False
+            if 'shadow' in message.content.lower():
+                pokemon = message.content.split()[-1]
+                try:
+                    if 'shadow' not in pokemon.lower():
+                        if 'gone' in message.content.lower():
+                            self.prev_message_stop[message.server.id].reset_shadow()
+                        else:
+                            self.prev_message_stop[message.server.id].set_shadow(pokemon)
+                    else:
+                        self.prev_message_stop[message.server.id].set_shadow()
+                    taskmap.save()
+                    await self.prev_message[message.server.id].add_reaction('👍')
+                    await message.add_reaction('👍')
+                except pokemap.PokemapException as e:
+                    await message.channel.send_message(e.message)
+            else:
+                try:
+                    task_name = message.content
+                    task = self.tasklist.find_task(task_name)
+                    self.prev_message_stop[message.server.id].set_task(task)
+                    if task_name.title() in task.rewards:
+                        self.prev_message_stop[message.server.id].properties['Icon'] = task_name.title()
+                    taskmap.save()
+                    await self.prev_message[message.server.id].add_reaction('👍')
+                    await message.add_reaction('👍')
+                except pokemap.TaskAlreadyAssigned:
+                    if self.prev_message_stop[message.server.id].properties['Reward'] == task.reward:
+                        await self.prev_message[message.server.id].add_reaction('👍')
+                        await message.add_reaction('👍')
+                except pokemap.PokemapException as e:
+                    await message.channel.send_message(e.message)
+        else:
+            try:
+                stop_name = message.content
+                self.prev_message_stop[message.server.id] = taskmap.find_stop(stop_name)
+                self.prev_message_was_stop[message.server.id] = True
+                self.prev_message[message.server.id] = message
+            except pokemap.StopNotFound:
+                self.prev_message_was_stop[message.server.id] = False
+                if '\n' in message.content:
+                    try:
+                        args = message.content.split('\n', 1)
+                        stop_name = args[0]
+                        task_name = args[1]
+                        stop = taskmap.find_stop(stop_name)
+                        if 'shadow' in task_name.lower():
+                            pokemon = task_name.split()[-1]
+                            if 'shadow' not in pokemon:
+                                if 'gone' in message.content.lower():
+                                    stop.reset_shadow()
+                                else:
+                                    stop.set_shadow(pokemon)
+                            else:
+                                stop.set_shadow()
+                        else:
+                            task = self.tasklist.find_task(task_name)
+                            stop.set_task(task)
+                            if task_name.title() in task.rewards:
+                                stop.properties['Icon'] = task_name.title()
+                        taskmap.save()
+                        await message.add_reaction('👍')
+                    except pokemap.TaskAlreadyAssigned:
+                        if stop.properties['Reward'] == task.reward:
+                            await message.add_reaction('👍')
+                        else:
+                            pass
+                    except pokemap.PokemapException:
+                        pass
