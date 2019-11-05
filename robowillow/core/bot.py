@@ -42,30 +42,30 @@ class Bot(commands.Bot):
         self.logger = logging.getLogger('willow.Bot')
 
     # async def send_cmd_help(self, ctx, **kwargs):
-    async def send_cmd_help(self, ctx, **kwargs):
-        """Invoke help output for a command.
+    # async def send_cmd_help(self, ctx, **kwargs):
+    #     """Invoke help output for a command.
 
-        Parameters
-        -----------
-        ctx: :class:`discord.ext.commands.Context`
-            Context object from the originally invoked command.
-        per_page: :class:`int`
-            Number of entries in the help embed page. 12 is default.
-        title: :class:`str`
-            Title of the embed message.
-        """
-        try:
-            if ctx.invoked_subcommand:
-                kwargs['title'] = kwargs.get('title', 'Sub-Command Help')
-                p = await pagination.Pagination.from_command(
-                    ctx, ctx.invoked_subcommand, **kwargs)
-            else:
-                kwargs['title'] = kwargs.get('title', 'Command Help')
-                p = await pagination.Pagination.from_command(
-                    ctx, ctx.command, **kwargs)
-            await p.paginate()
-        except discord.DiscordException as exc:
-            await ctx.send(exc)
+    #     Parameters
+    #     -----------
+    #     ctx: :class:`discord.ext.commands.Context`
+    #         Context object from the originally invoked command.
+    #     per_page: :class:`int`
+    #         Number of entries in the help embed page. 12 is default.
+    #     title: :class:`str`
+    #         Title of the embed message.
+    #     """
+    #     try:
+    #         if ctx.invoked_subcommand:
+    #             kwargs['title'] = kwargs.get('title', 'Sub-Command Help')
+    #             p = await pagination.Pagination.from_command(
+    #                 ctx, ctx.invoked_subcommand, **kwargs)
+    #         else:
+    #             kwargs['title'] = kwargs.get('title', 'Command Help')
+    #             p = await pagination.Pagination.from_command(
+    #                 ctx, ctx.command, **kwargs)
+    #         await p.paginate()
+    #     except discord.DiscordException as exc:
+    #         await ctx.send(exc)
 
     @cached_property
     def invite_url(self):
