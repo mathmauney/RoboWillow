@@ -77,7 +77,7 @@ class Mapper(Cog):
                 stop.set_task(task)
                 if task_str.title() in task.rewards:
                     stop.properties['Icon'] = task_str.title()
-                await ctx.add_reaction('👍')
+                await ctx.message.add_reaction('👍')
                 taskmap.save()
             except pokemap.PokemapException as e:
                 await ctx.send(e.message)
@@ -93,14 +93,14 @@ class Mapper(Cog):
         stop = taskmap.find_stop(stop_name)
         stop.reset()
         taskmap.save()
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
     @command()
     async def addtask(self, ctx, reward, quest, shiny=False):
         """Add a task to a stop."""
         self.tasklist.add_task(pokemap.Task(reward, quest, shiny))
         self.tasklist.save(self.bot.task_path)
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
     @command()
     async def resettasklist(self, ctx):
@@ -108,7 +108,7 @@ class Mapper(Cog):
         backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
         self.tasklist.save(backup_name)
         self.tasklist.clear()
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
     @command()
     async def pulltasklist(self, ctx):
@@ -117,7 +117,7 @@ class Mapper(Cog):
         self.tasklist.save(backup_name)
         self.tasklist = pokemap.fetch_self.tasklist()
         self.tasklist.save(self.task_path)
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
     @command(aliases=['tasklist'])
     async def listtasks(self, ctx):
@@ -152,7 +152,7 @@ class Mapper(Cog):
         stop = taskmap.find_stop(stop_str)
         taskmap.remove_stop(stop)
         taskmap.save()
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
     @command()
     async def deletetask(self, ctx, task_str):
@@ -160,7 +160,7 @@ class Mapper(Cog):
         task = self.tasklist.find_task(task_str)
         self.tasklist.remove_task(task)
         self.tasklist.save(self.task_path)
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
     @command()
     async def nicknamestop(self, ctx, stop_name, nickname):
@@ -169,7 +169,7 @@ class Mapper(Cog):
         stop = taskmap.find_stop(stop_name)
         stop.add_nickname(nickname)
         taskmap.save()
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
     @command()
     async def nicknametask(self, ctx, task_name, nickname):
@@ -177,7 +177,7 @@ class Mapper(Cog):
         task = self.tasklist.find_task(task_name)
         task.add_nickname(nickname)
         self.tasklist.save(self.task_path)
-        await ctx.add_reaction('👍')
+        await ctx.message.add_reaction('👍')
 
     @command()
     @has_permissions(administrator=True)
@@ -187,7 +187,7 @@ class Mapper(Cog):
         taskmap.set_location(float(lat), float(long))
         try:
             taskmap.save()
-            await ctx.add_reaction('👍')
+            await ctx.message.add_reaction('👍')
         except ValueError:
             pass
 
@@ -206,7 +206,7 @@ class Mapper(Cog):
             taskmap = self.maps[guild_id]
             taskmap.reset_all()
             taskmap.save()
-            await ctx.add_reaction('👍')
+            await ctx.message.add_reaction('👍')
         else:
             await ctx.send("Sorry you can't do that" + ctx.message.author.id)
 
@@ -231,7 +231,7 @@ class Mapper(Cog):
         taskmap.set_bounds(coords1, coords2)
         try:
             taskmap.save()
-            await ctx.add_reaction('👍')
+            await ctx.message.add_reaction('👍')
         except ValueError:
             pass
 
@@ -243,6 +243,6 @@ class Mapper(Cog):
         taskmap.set_time_zone(tz_str)
         try:
             taskmap.save()
-            await ctx.add_reaction('👍')
+            await ctx.message.add_reaction('👍')
         except ValueError:
             pass
