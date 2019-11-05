@@ -12,7 +12,7 @@ setup(
     author_email='foomail@foo.com',
     packages=['robowillow'],  #same as name
     install_requires=requirements,
-    include_package_data=True,
+    data_files=[('utils/data', ['forms.txt', 'pokemon.txt', 'pokemonwithspaces.txt'])],
 
     entry_points={
         'console_scripts': [
