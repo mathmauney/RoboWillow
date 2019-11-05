@@ -10,6 +10,6 @@ setup(
     entry_points={
         'console_scripts': [
             'robowillow=robowillow.launcher:main',
-            'robowillow-bot=robowillow.__main__:main'
+            'robowillow-bot=robowillow.__main__:main']
     },
 )
