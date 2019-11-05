@@ -114,11 +114,15 @@ class Mapper(Cog):
     @command()
     async def pulltasklist(self, ctx):
         """Pull tasks from TheSilphRoad."""
-        backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
-        self.tasklist.save(backup_name)
-        self.tasklist = pokemap.fetch_tasklist()
-        self.tasklist.save(self.task_path)
-        await ctx.message.add_reaction('👍')
+        new_tasklist = pokemap.fetch_tasklist()
+        if len(new_tasklist.tasks) == 0:
+            await ctx.message.add_reaction('❌')
+        else:
+            backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
+            self.tasklist.save(backup_name)
+            self.tasklist = pokemap.fetch_tasklist()
+            self.tasklist.save(self.task_path)
+            await ctx.message.add_reaction('👍')
 
     @command(aliases=['tasklist'])
     async def listtasks(self, ctx):
