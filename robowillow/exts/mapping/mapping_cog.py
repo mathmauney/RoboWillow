@@ -290,7 +290,7 @@ class Mapper(Cog):
                     await self.prev_message[message.guild.id].add_reaction('👍')
                     await message.add_reaction('👍')
                 except pokemap.PokemapException as e:
-                    await message.channel.send_message(e.message)
+                    await message.channel.send(e.message)
             else:
                 try:
                     task_name = message.content
@@ -306,7 +306,7 @@ class Mapper(Cog):
                         await self.prev_message[message.guild.id].add_reaction('👍')
                         await message.add_reaction('👍')
                 except pokemap.PokemapException as e:
-                    await message.channel.send_message(e.message)
+                    await message.channel.send(e.message)
         else:
             try:
                 stop_name = message.content
