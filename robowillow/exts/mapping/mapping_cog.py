@@ -341,3 +341,10 @@ class Mapper(Cog):
                             pass
                     except pokemap.PokemapException:
                         pass
+
+        @Cog.listener()
+        async def on_ready(self):
+            """Take actions on login."""
+            for guild in self.bot.guilds:
+                print(str(guild.id))
+                self.prev_message_was_stop[guild.id] = False
