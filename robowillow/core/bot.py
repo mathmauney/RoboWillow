@@ -91,7 +91,7 @@ class Bot(commands.Bot):
         self.maps[guild.id] = taskmap
 
     async def on_message(self, message):
-        await self.procees_commands(message)
+        await self.process_commands(message)
 
     async def on_connect(self):
         print('Connected')
