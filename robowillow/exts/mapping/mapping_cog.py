@@ -267,24 +267,24 @@ class Mapper(Cog):
         for role in message.role_mentions:
             role_str = '<@&' + str(role.id) + '>'
             message.content = message.content.replace(role_str, role.name)
-        if message.server is not None:
-            taskmap = self.maps[message.server.id]
+        if message.guild is not None:
+            taskmap = self.maps[message.guild.id]
         if message.author == self.bot.user:
             return
-        elif self.prev_message_was_stop[message.server.id] and self.prev_message[message.server.id].author == message.author:
-            self.prev_message_was_stop[message.server.id] = False
+        elif self.prev_message_was_stop[message.guild.id] and self.prev_message[message.guild.id].author == message.author:
+            self.prev_message_was_stop[message.guild.id] = False
             if 'shadow' in message.content.lower():
                 pokemon = message.content.split()[-1]
                 try:
                     if 'shadow' not in pokemon.lower():
                         if 'gone' in message.content.lower():
-                            self.prev_message_stop[message.server.id].reset_shadow()
+                            self.prev_message_stop[message.guild.id].reset_shadow()
                         else:
-                            self.prev_message_stop[message.server.id].set_shadow(pokemon)
+                            self.prev_message_stop[message.guild.id].set_shadow(pokemon)
                     else:
-                        self.prev_message_stop[message.server.id].set_shadow()
+                        self.prev_message_stop[message.guild.id].set_shadow()
                     taskmap.save()
-                    await self.prev_message[message.server.id].add_reaction('👍')
+                    await self.prev_message[message.guild.id].add_reaction('👍')
                     await message.add_reaction('👍')
                 except pokemap.PokemapException as e:
                     await message.channel.send_message(e.message)
@@ -292,26 +292,26 @@ class Mapper(Cog):
                 try:
                     task_name = message.content
                     task = self.tasklist.find_task(task_name)
-                    self.prev_message_stop[message.server.id].set_task(task)
+                    self.prev_message_stop[message.guild.id].set_task(task)
                     if task_name.title() in task.rewards:
-                        self.prev_message_stop[message.server.id].properties['Icon'] = task_name.title()
+                        self.prev_message_stop[message.guild.id].properties['Icon'] = task_name.title()
                     taskmap.save()
-                    await self.prev_message[message.server.id].add_reaction('👍')
+                    await self.prev_message[message.guild.id].add_reaction('👍')
                     await message.add_reaction('👍')
                 except pokemap.TaskAlreadyAssigned:
-                    if self.prev_message_stop[message.server.id].properties['Reward'] == task.reward:
-                        await self.prev_message[message.server.id].add_reaction('👍')
+                    if self.prev_message_stop[message.guild.id].properties['Reward'] == task.reward:
+                        await self.prev_message[message.guild.id].add_reaction('👍')
                         await message.add_reaction('👍')
                 except pokemap.PokemapException as e:
                     await message.channel.send_message(e.message)
         else:
             try:
                 stop_name = message.content
-                self.prev_message_stop[message.server.id] = taskmap.find_stop(stop_name)
-                self.prev_message_was_stop[message.server.id] = True
-                self.prev_message[message.server.id] = message
+                self.prev_message_stop[message.guild.id] = taskmap.find_stop(stop_name)
+                self.prev_message_was_stop[message.guild.id] = True
+                self.prev_message[message.guild.id] = message
             except pokemap.StopNotFound:
-                self.prev_message_was_stop[message.server.id] = False
+                self.prev_message_was_stop[message.guild.id] = False
                 if '\n' in message.content:
                     try:
                         args = message.content.split('\n', 1)
