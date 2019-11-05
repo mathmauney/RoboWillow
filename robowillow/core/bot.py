@@ -1,5 +1,5 @@
 import pickle
-from robowill.utils import pokemap
+from robowillow.utils import pokemap
 import discord
 from discord.ext import commands
 from discord.utils import cached_property
