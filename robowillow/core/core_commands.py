@@ -8,7 +8,7 @@ class Core(Cog):
         self.bot = bot
         print("Core loaded")
 
-    @command
+    @command()
     async def load(self, ctx, extension):
         """Load or reload one of the extensions."""
         loaded = extension in ctx.bot.extensions
