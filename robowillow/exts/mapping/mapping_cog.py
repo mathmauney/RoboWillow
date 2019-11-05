@@ -24,7 +24,7 @@ class Mapper(Cog):
         !addstop stop name lat long             Stop name can be multiple words or symbols, but doesn't parse " marks correctly
         !addstop stop name ingress_url          ingress_url can be found from the ingress intel map, details in the help description
         """
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         n_args = len(args)
         if args[-1].startswith('https:'):  # Checks if the lat/long has been given as an ingress intel URL
             url_str = args[-1]
@@ -63,7 +63,7 @@ class Mapper(Cog):
     @command()
     async def settask(self, ctx, *args):
         """Set a task to a stop."""
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         n_args = len(args)
         if n_args > 1:
             try:
@@ -86,7 +86,7 @@ class Mapper(Cog):
     @command()
     async def resetstop(self, ctx, *args):
         """Reset the task associated with a stop."""
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         stop_name = ' '.join(args)
         stop_name = stop_name
         stop = taskmap.find_stop(stop_name)
@@ -146,7 +146,7 @@ class Mapper(Cog):
     @command()
     async def deletestop(self, ctx, *args):
         """Delete a stop."""
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         stop_str = ' '.join(args)
         stop = taskmap.find_stop(stop_str)
         taskmap.remove_stop(stop)
@@ -164,7 +164,7 @@ class Mapper(Cog):
     @command()
     async def nicknamestop(self, ctx, stop_name, nickname):
         """Add a nickname to a stop."""
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         stop = taskmap.find_stop(stop_name)
         stop.add_nickname(nickname)
         taskmap.save()
@@ -182,7 +182,7 @@ class Mapper(Cog):
     @has_permissions(administrator=True)
     async def setlocation(self, ctx, lat, long):
         """Set the location of the map for the web view."""
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         taskmap.set_location(float(lat), float(long))
         try:
             taskmap.save()
@@ -194,15 +194,15 @@ class Mapper(Cog):
     @has_permissions(administrator=True)
     async def resetall(self, ctx):
         """Set the location of the map for the web view."""
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         taskmap.reset_all()
         taskmap.save()
 
     @command()
-    async def resetmap(self, ctx, server_id):
+    async def resetmap(self, ctx, guild_id):
         """Allow bot owner to reset any map remotely."""
         if int(self, ctx.message.author.id) == int(self.maintainer_id):
-            taskmap = self.maps[server_id]
+            taskmap = self.maps[guild_id]
             taskmap.reset_all()
             taskmap.save()
             await ctx.add_reaction('👍')
@@ -224,7 +224,7 @@ class Mapper(Cog):
     @has_permissions(administrator=True)
     async def setbounds(self, ctx, lat1, long1, lat2, long2):
         """Set the boundaries of the maps for checking when pokestops are added."""
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         coords1 = [float(lat1), float(long1)]
         coords2 = [float(lat2), float(long2)]
         taskmap.set_bounds(coords1, coords2)
@@ -238,7 +238,7 @@ class Mapper(Cog):
     @has_permissions(administrator=True)
     async def settimezone(self, ctx, tz_str):
         """Set the timezone of the map so it resets itself correctly."""
-        taskmap = self.maps[ctx.message.server.id]
+        taskmap = self.maps[ctx.message.guild.id]
         taskmap.set_time_zone(tz_str)
         try:
             taskmap.save()

@@ -32,8 +32,7 @@ def run_bot(debug=False):
         bot.logger.critical("Fatal exception", exc_info=exc)
         loop.run_until_complete(bot.logout())
     finally:
-        code = bot.shutdown_mode
-        sys.exit(code.value)
+        sys.exit(1)
 
 
 def main():
