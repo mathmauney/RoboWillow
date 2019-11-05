@@ -274,6 +274,10 @@ class Mapper(Cog):
             message.content = message.content.replace(role_str, role.name)
         if message.guild is not None:
             taskmap = self.maps[message.guild.id]
+        if message.guild.id not in self.prev_message_was_stop:
+            self.prev_message_was_stop[message.guild.id] = False
+            self.prev_message[message.guild.id] = None
+            self.prev_message_stop[message.guild.id] = None
         if message.author == self.bot.user:
             return
         elif self.prev_message_was_stop[message.guild.id] and self.prev_message[message.guild.id].author == message.author:
