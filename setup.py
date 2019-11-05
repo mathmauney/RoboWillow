@@ -12,6 +12,7 @@ setup(
     author_email='foomail@foo.com',
     packages=['robowillow'],  #same as name
     install_requires=requirements,
+    include_package_data=True,
 
     entry_points={
         'console_scripts': [
