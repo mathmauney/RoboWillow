@@ -1,5 +1,5 @@
 """Commands to deal with the mapping of research tasks."""
-from discord.exts.commands import Cog, command, has_permissions
+from discord.ext.commands import Cog, command, has_permissions
 import urllib.parse as urlparse
 from robowillow.utils import pokemap
 from datetime import datetime
