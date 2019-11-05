@@ -40,6 +40,7 @@ class Bot(commands.Bot):
                       **kwargs)
         super().__init__(**kwargs)
         self.logger = logging.getLogger('willow.Bot')
+        self.load_extension("robowillow.core")
 
     # async def send_cmd_help(self, ctx, **kwargs):
     async def send_cmd_help(self, ctx, **kwargs):

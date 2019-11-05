@@ -6,9 +6,10 @@ class Core(Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        bot.load_extension("robowillow.exts.mapping")
 
     @command
-    def load(self, ctx, extension):
+    async def load(self, ctx, extension):
         """Load or reload one of the extensions."""
         loaded = extension in ctx.bot.extensions
         if loaded:
