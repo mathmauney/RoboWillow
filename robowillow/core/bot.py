@@ -6,7 +6,7 @@ from discord.utils import cached_property
 import logging
 
 from robowillow import config
-from robowillow.utils import pagination
+# from robowillow.utils import pagination
 # from meowth.core.context import Context
 # from meowth.core.data_manager import DatabaseInterface, DataManager
 # from meowth.utils import ExitCodes, fuzzymatch, make_embed, pagination
