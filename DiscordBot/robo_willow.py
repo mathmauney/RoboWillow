@@ -236,7 +236,7 @@ async def deleteoffer(ctx, *offer_names):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
         user = tf.add_user(ctx.message.author.id)
-    for offer in offer_names:
+    for offer_name in offer_names:
         offer = tf.find_offer(user, offer_name)
         if offer is not None:
             tf.delete_offer(offer)
@@ -245,7 +245,7 @@ async def deleteoffer(ctx, *offer_names):
             await bot_respond(ctx.message, 'Unable to find offer')
 
 
-@client.command(pass_context=True, aliases=['deletewants'])
+@client.command(pass_context=True, aliases=['deletewants, removewant, removewants'])
 async def deletewant(ctx, offer_name, *pokemon):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
@@ -265,7 +265,7 @@ async def deletewant(ctx, offer_name, *pokemon):
         await bot_respond(ctx.message, 'Removed: ' + ', '.join(cleaned_list))
 
 
-@client.command(pass_context=True, aliases=['deletehaves'])
+@client.command(pass_context=True, aliases=['deletehaves, removehave, removehaves'])
 async def deletehave(ctx, offer_name, *pokemon):
     user = tf.get_user(ctx.message.author.id)
     if user is None:
