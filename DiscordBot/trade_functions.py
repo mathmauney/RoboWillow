@@ -181,7 +181,7 @@ def find_matches(offer):
     _communities = _offer['communities']
     search_dict = {'wants': {'$in': _haves},
                    'haves': {'$in': _wants},
-                   '$not': {'user': _offer['user']},
+                   'user': {'$ne': offer['user']},
                    '$or': [{'friends': _user_id},
                            {'communities': {'$in': _communities}}]}
     matches = offers.find(search_dict)
