@@ -96,7 +96,7 @@ def add_offer(user, offer_name):
     user_communities = user_dict['communities']
     user_friends = user_dict['friends']
     offer_dict = {"offer_name": offer_name.lower(),
-                  "user": user,
+                  "user": user['_id'],
                   "name": user_dict['name'],
                   "haves": [],
                   "wants": [],
