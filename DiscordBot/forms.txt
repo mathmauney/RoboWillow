@@ -1,6 +1,6 @@
-Squirtle Squad Squirtle, Glasses Squirtle, 7_05
-Squirtle Squad Wartortle, Glasses Wartortle, 8_05
-Squirtle Squad Blastoise, Glasses Blastoise, 9_05
+Squirtle Squad Squirtle, Glasses Squirtle, Sunglasses Squirtle, 7_05
+Squirtle Squad Wartortle, Glasses Wartortle, Sunglasses Wartortle, 8_05
+Squirtle Squad Blastoise, Glasses Blastoise, Sunglasses Blastoise, 9_05
 Shedinja Costume Bulbasaur, Halloween Bulbasaur, 1Fall2019
 Cubone Costume Charmander, Halloween Charmander, 4Fall2019
 Yamask Costume Squirtle, Halloween Squirtle, 7Fall2019
