@@ -345,11 +345,11 @@ def match_pokemon(input_):
     if isinstance(input_, str):
         name = input_
         with open('pokemon.txt') as file:
-            if name.title == 'Bulbasaur':
+            if name.title() == 'Bulbasaur':
                 return name.title()
             elif '\n' + name.title() + '\n' in file.read():
                 return name.title()
-        current_best = (None, 90)
+        current_best = (None, 75)
         with open('pokemon.txt') as file:
             line = file.readline().strip('\n')
             while line:
