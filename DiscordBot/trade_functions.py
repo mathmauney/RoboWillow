@@ -236,17 +236,15 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
             matched_poke = pokemap.match_pokemon(poke)
             if all_shinies is True:
                 shiny = True
-            if matched_poke is None and prev_space is False:
+            if prev_space is False:
                 with open('pokemonwithspaces.txt') as file:
                     if poke.title() in file.read():
                         prev_space = True
-                        print('Found spacey boi')
-                        new_poke = pokemon_list[i-1] + ' ' + poke
-                        print('Trying to match %s' % new_poke)
-                        matched_poke = pokemap.match_pokemon(new_poke)
+                        if i != 0:
+                            new_poke = pokemon_list[i-1] + ' ' + poke
+                            matched_poke = pokemap.match_pokemon(new_poke)
                         if matched_poke is None:
                             new_poke = poke + ' ' + pokemon_list[i+1]
-                            print('Trying to match %s' % new_poke)
                             matched_poke = pokemap.match_pokemon(new_poke)
             else:
                 prev_space = False
