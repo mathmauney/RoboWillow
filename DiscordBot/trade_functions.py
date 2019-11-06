@@ -241,8 +241,12 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                     if poke.title() in file.read():
                         prev_space = True
                         if i != 0:
-                            new_poke = pokemon_list[i-1] + ' ' + poke
-                            matched_poke = pokemap.match_pokemon(new_poke)
+                            descriptor = pokemon_list[i-1].title()
+                            if descriptor == 'Shiny' or descriptor == 'Alolan' or descriptor == 'Shinies':
+                                pass
+                            else:
+                                new_poke = descriptor + ' ' + poke
+                                matched_poke = pokemap.match_pokemon(new_poke)
                         if matched_poke is None:
                             new_poke = poke + ' ' + pokemon_list[i+1]
                             matched_poke = pokemap.match_pokemon(new_poke)
