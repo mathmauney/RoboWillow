@@ -13,6 +13,7 @@ class Trader(Cog):
         self.prev_matches = {}
         self.prev_views = {}
         self.prev_search = {}
+        print("Trader loaded")
 
     async def process_matches(self, ctx, message, offer, reply=False):
         """Check for matches on an offer and notify both parties if there are matches."""
