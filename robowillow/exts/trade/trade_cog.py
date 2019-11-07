@@ -91,9 +91,9 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
-            await ctx.message.author.send("Adding you to community: " + str(ctx.message.server.id))
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
+            await ctx.message.author.send("Adding you to community: " + str(ctx.message.guild.id))
 
     @command(pass_context=True, aliases=['newoffer'])
     async def addoffer(self, ctx, offer_name):
@@ -101,8 +101,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         if tf.find_offer(user, offer_name) is None:
             tf.add_offer(user, offer_name)
             await ctx.message.add_reaction('👍')
@@ -127,8 +127,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
@@ -146,8 +146,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
@@ -165,8 +165,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
@@ -184,8 +184,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
@@ -203,8 +203,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
@@ -221,8 +221,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
@@ -239,8 +239,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
@@ -258,8 +258,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
@@ -277,8 +277,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send('Offer not found')
@@ -336,8 +336,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         if offer_name is None:
             await ctx.send("No offer group supplied")
             return
@@ -352,8 +352,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         offer_names = tf.find_offers(user)
         if offer_names == []:
             await ctx.send('No offers found')
@@ -368,8 +368,8 @@ class Trader(Cog):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
-        if ctx.message.server is not None:
-            tf.add_community(user, ctx.message.server.id)
+        if ctx.message.guild is not None:
+            tf.add_community(user, ctx.message.guild.id)
         try:
             tf.set_name(user, pogo_name.title())
             await ctx.message.add_reaction('👍')
