@@ -1,5 +1,5 @@
 import pymongo
-import pokemap
+from robowillow.utils import pokemap
 import urllib.parse as urlparse
 
 host = "mongodb://localhost:27017/"

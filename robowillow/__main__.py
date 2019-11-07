@@ -1,3 +1,4 @@
+"""Main runner for robowillow."""
 import discord
 import asyncio
 import sys
@@ -5,8 +6,7 @@ from robowillow.core import Bot
 
 
 def run_bot(debug=False):
-    """Sets up the bot, runs it and handles exit codes."""
-
+    """Set up the bot, run it and handle exit codes."""
     bot = Bot(debug=debug)
 
     # create async loop and setup contextvar
@@ -37,6 +37,7 @@ def run_bot(debug=False):
 
 
 def main():
+    """Run the bot."""
     run_bot(debug=True)
 
 
