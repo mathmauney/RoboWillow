@@ -457,6 +457,9 @@ async def view(ctx, *args):
             if len(search_terms) == 1:
                 offer_name = search_terms[0]
                 offer = tf.find_offer(user, offer_name)
+                if offer is None:
+                    await bot_respond(ctx.message, 'Offer not found')
+                    return
                 (wants, haves) = tf.get_offer_contents(offer)
                 if haves == []:
                     have_strs = ['None']

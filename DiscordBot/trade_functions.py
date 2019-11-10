@@ -169,6 +169,8 @@ def remove_wants(offer, pokemon):
 
 
 def get_offer_contents(offer):
+    if offer is None:
+        return
     _offer = offers.find_one(offer)
     return (_offer['wants'], _offer['haves'])
 
