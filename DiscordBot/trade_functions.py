@@ -258,6 +258,8 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                 matched_form = pokemap.match_form(matched_poke, form)
                 if matched_form is not None:
                     matched_poke = matched_form
+            if matched_poke in ['Mimikyu', 'Yamask', 'Shedinja', 'Cubone'] and pokemon_list[i+1].title() == 'Costume':
+                matched_poke = None
             if matched_poke is not None:
                 if matched_poke in numbered_pokemon:
                     if '-' in poke:
@@ -277,6 +279,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                         matched_poke = 'Origin Forme Giratina'
                     elif modifier.startswith('A'):
                         matched_poke = 'Altered Forme Giratina'
+
                 elif i+1 != len(pokemon_list):
                     with open('forms.txt') as file:
                         if matched_poke in file.read():
