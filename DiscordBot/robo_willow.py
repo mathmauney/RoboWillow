@@ -224,6 +224,8 @@ async def addoffer(ctx, offer_name):
         user = tf.add_user(ctx.message.author.id)
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
+    if ('<:') in offer_name:
+        offer_name = offer_name.split(":")[1]
     if tf.find_offer(user, offer_name) is None:
         tf.add_offer(user, offer_name)
         await bot_thumbsup(ctx.message)
@@ -413,6 +415,9 @@ async def view(ctx, *args):
         if ctx.message.server is not None:
             tf.add_community(user, ctx.message.server.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await bot_respond(ctx.message, 'Offer not found')
             return
