@@ -20,10 +20,10 @@ class Core(Cog):
 
     @command()
     async def echo(self, ctx, *args):
-        return_str = (' ').join(args).strip(':')
         for arg in args:
-            print(type(arg))
-        await ctx.send(return_str)
+            if ('<:') in arg:
+                arg = arg.split(":")[1]
+                await ctx.send(arg)
 
 
 def setup(bot):
