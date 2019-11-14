@@ -21,7 +21,8 @@ class Core(Cog):
     @command()
     async def echo(self, ctx, *args):
         return_str = (' ').join(args).strip(':')
-        print(return_str)
+        for arg in args:
+            print(type(arg))
         await ctx.send(return_str)
 
 
