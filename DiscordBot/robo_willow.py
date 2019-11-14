@@ -255,8 +255,11 @@ async def deletewant(ctx, offer_name, *pokemon):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     if len(pokemon) == 0 or pokemon[0] == 'all':
         tf.remove_wants(offer, 'all')
@@ -275,8 +278,11 @@ async def deletehave(ctx, offer_name, *pokemon):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     if len(pokemon) == 0 or pokemon[0] == 'all':
         tf.remove_haves(offer, 'all')
@@ -295,8 +301,11 @@ async def addwant(ctx, offer_name, *pokemon):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     cleaned_list = tf.clean_pokemon_list(pokemon)
     tf.add_wants(offer, cleaned_list)
@@ -315,8 +324,11 @@ async def addhave(ctx, offer_name, *pokemon):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     cleaned_list = tf.clean_pokemon_list(pokemon)
     tf.add_haves(offer, cleaned_list)
@@ -335,8 +347,11 @@ async def deleteshinywant(ctx, offer_name, *pokemon):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     cleaned_list = tf.clean_pokemon_list(pokemon, True)
     tf.remove_wants(offer, cleaned_list)
@@ -354,8 +369,11 @@ async def deleteshinyhave(ctx, offer_name, *pokemon):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     cleaned_list = tf.clean_pokemon_list(pokemon, True)
     tf.remove_haves(offer, cleaned_list)
@@ -373,8 +391,11 @@ async def addshinywant(ctx, offer_name, *pokemon):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     cleaned_list = tf.clean_pokemon_list(pokemon, True)
     tf.add_wants(offer, cleaned_list)
@@ -393,8 +414,11 @@ async def addshinyhave(ctx, offer_name, *pokemon):
     if ctx.message.server is not None:
         tf.add_community(user, ctx.message.server.id)
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     cleaned_list = tf.clean_pokemon_list(pokemon, True)
     tf.add_haves(offer, cleaned_list)
@@ -462,6 +486,9 @@ async def view(ctx, *args):
             if len(search_terms) == 1:
                 offer_name = search_terms[0]
                 offer = tf.find_offer(user, offer_name)
+                if ('<:') in offer_name and offer is None:
+                    offer_name = offer_name.split(":")[1]
+                    offer = tf.find_offer(user, offer_name)
                 if offer is None:
                     await bot_respond(ctx.message, 'Offer not found')
                     return
@@ -528,8 +555,11 @@ async def check(ctx, offer_name=None):
         await bot_respond(ctx.message, "No offer group supplied")
         return
     offer = tf.find_offer(user, offer_name)
+    if ('<:') in offer_name and offer is None:
+        offer_name = offer_name.split(":")[1]
+        offer = tf.find_offer(user, offer_name)
     if offer is None:
-        await bot_respond(ctx.message, "Offer group not found.")
+        await bot_respond(ctx.message, 'Offer not found')
         return
     await process_matches(ctx.message, offer, True)
 
