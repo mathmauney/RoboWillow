@@ -12,5 +12,6 @@ class Core(Cog):
         return_str = (' ').join(args).strip(':')
         await ctx.send(return_str)
 
+
 def setup(bot):
     bot.add_cog(Core(bot))
