@@ -258,8 +258,9 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                 matched_form = pokemap.match_form(matched_poke, form)
                 if matched_form is not None:
                     matched_poke = matched_form
-            if matched_poke in ['Mimikyu', 'Yamask', 'Shedinja', 'Cubone'] and pokemon_list[i+1].title() == 'Costume':
-                matched_poke = None
+            if matched_poke in ['Mimikyu', 'Yamask', 'Shedinja', 'Cubone'] and len(pokemon_list) > i+1:
+                if pokemon_list[i+1].title() == 'Costume':
+                    matched_poke = None
             if matched_poke is not None:
                 if matched_poke in numbered_pokemon:
                     if '-' in poke:
