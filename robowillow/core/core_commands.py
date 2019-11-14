@@ -24,6 +24,8 @@ class Core(Cog):
             if ('<:') in arg:
                 arg = arg.split(":")[1]
                 await ctx.send(arg)
+            else:
+                await ctx.send(arg)
 
 
 def setup(bot):
