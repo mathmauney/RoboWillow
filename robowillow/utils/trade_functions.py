@@ -92,6 +92,8 @@ def delete_user(discord_id):
 def add_offer(user, offer_name):
     if isinstance(user, int):
         user = get_user(user)
+    if ('<:') in offer_name:
+        offer_name = offer_name.split(":")[1]
     user_dict = users.find_one(user)
     user_communities = user_dict['communities']
     user_friends = user_dict['friends']
@@ -113,6 +115,8 @@ def add_offer(user, offer_name):
 def find_offer(user, offer_name):
     if isinstance(user, int):
         user = get_user(user)
+    if ('<:') in offer_name:
+        offer_name = offer_name.split(":")[1]
     find_dict = {'offer_name': offer_name.lower(),
                  'user': user}
     return_dict = {}

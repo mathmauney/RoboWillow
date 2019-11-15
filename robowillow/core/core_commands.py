@@ -18,6 +18,15 @@ class Core(Cog):
             ctx.bot.load_extension(extension)
         await ctx.message.add_reaction('👍')
 
+    @command()
+    async def echo(self, ctx, *args):
+        for arg in args:
+            if ('<:') in arg:
+                arg = arg.split(":")[1]
+                await ctx.send(arg)
+            else:
+                await ctx.send(arg)
+
 
 def setup(bot):
     bot.add_cog(Core(bot))
