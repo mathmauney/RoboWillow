@@ -2,6 +2,8 @@
 from discord.ext.commands import Cog, command, has_permissions
 import urllib.parse as urlparse
 from robowillow.utils import pokemap
+from robowillow.utils import database as db
+from . import map_checks
 from datetime import datetime
 import discord
 
@@ -27,6 +29,7 @@ class Mapper(Cog):
             self.prev_message_stop[guild.id] = None
 
     @command()
+    @map_checks.map_channel()
     async def addstop(self, ctx, *args):
         """Add a stop to the map, contains multiple ways of doing so.
 
@@ -71,6 +74,7 @@ class Mapper(Cog):
             await ctx.send(e.message)
 
     @command()
+    @map_checks.map_channel()
     async def settask(self, ctx, *args):
         """Set a task to a stop."""
         taskmap = self.maps[ctx.message.guild.id]
@@ -94,6 +98,7 @@ class Mapper(Cog):
             await ctx.send('Not enough arguments.')
 
     @command()
+    @map_checks.map_channel()
     async def resetstop(self, ctx, *args):
         """Reset the task associated with a stop."""
         taskmap = self.maps[ctx.message.guild.id]
@@ -105,6 +110,7 @@ class Mapper(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
+    @map_checks.map_channel()
     async def addtask(self, ctx, reward, quest, shiny=False):
         """Add a task to a stop."""
         self.tasklist.add_task(pokemap.Task(reward, quest, shiny))
@@ -112,6 +118,7 @@ class Mapper(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
+    @map_checks.map_channel()
     async def resettasklist(self, ctx):
         """Backup and reset the self.tasklist."""
         backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
@@ -120,6 +127,7 @@ class Mapper(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
+    @map_checks.map_channel()
     async def pulltasklist(self, ctx):
         """Pull tasks from TheSilphRoad."""
         new_tasklist = pokemap.fetch_tasklist()
@@ -133,6 +141,7 @@ class Mapper(Cog):
             await ctx.message.add_reaction('👍')
 
     @command(aliases=['tasklist'])
+    @map_checks.map_channel()
     async def listtasks(self, ctx):
         """List the known tasks."""
         value_str = []
@@ -158,6 +167,7 @@ class Mapper(Cog):
                 await ctx.send(embed=msg)
 
     @command()
+    @map_checks.map_channel()
     async def deletestop(self, ctx, *args):
         """Delete a stop."""
         taskmap = self.maps[ctx.message.guild.id]
@@ -168,6 +178,7 @@ class Mapper(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
+    @map_checks.map_channel()
     async def deletetask(self, ctx, task_str):
         """Delete a task."""
         task = self.tasklist.find_task(task_str)
@@ -176,6 +187,7 @@ class Mapper(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
+    @map_checks.map_channel()
     async def nicknamestop(self, ctx, stop_name, nickname):
         """Add a nickname to a stop."""
         taskmap = self.maps[ctx.message.guild.id]
@@ -185,6 +197,7 @@ class Mapper(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
+    @map_checks.map_channel()
     async def nicknametask(self, ctx, task_name, nickname):
         """Add a nickname to a task."""
         task = self.tasklist.find_task(task_name)
@@ -193,6 +206,7 @@ class Mapper(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
+    @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def setlocation(self, ctx, lat, long):
         """Set the location of the map for the web view."""
@@ -205,6 +219,7 @@ class Mapper(Cog):
             pass
 
     @command()
+    @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def resetall(self, ctx):
         """Set the location of the map for the web view."""
@@ -213,6 +228,7 @@ class Mapper(Cog):
         taskmap.save()
 
     @command()
+    @map_checks.map_channel()
     async def resetmap(self, ctx, guild_id):
         """Allow bot owner to reset any map remotely."""
         if int(self, ctx.message.author.id) == int(self.maintainer_id):
@@ -224,6 +240,7 @@ class Mapper(Cog):
             await ctx.send("Sorry you can't do that" + ctx.message.author.id)
 
     @command()
+    @map_checks.map_channel()
     async def resetallmaps(self, ctx):
         """Allow bot owner to reset any map remotely."""
         if int(self, ctx.message.author.id) == int(self.maintainer_id):
@@ -235,6 +252,7 @@ class Mapper(Cog):
             await ctx.send("Sorry you can't do that" + ctx.message.author.id)
 
     @command()
+    @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def setbounds(self, ctx, lat1, long1, lat2, long2):
         """Set the boundaries of the maps for checking when pokestops are added."""
@@ -249,6 +267,7 @@ class Mapper(Cog):
             pass
 
     @command()
+    @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def settimezone(self, ctx, tz_str):
         """Set the timezone of the map so it resets itself correctly."""
@@ -259,6 +278,20 @@ class Mapper(Cog):
             await ctx.message.add_reaction('👍')
         except ValueError:
             pass
+
+    @command()
+    @has_permissions(administrator=True)
+    async def researchhere(self, ctx, arg=True):
+        if arg.lower in ['t', 'yes', 'on', 'true']:
+            arg = True
+        elif arg.lower in ['n', 'no', 'off', 'false']:
+            arg = False
+        if arg is True or arg == 1:
+            db.set_permission(ctx.channel.id, 'research', True)
+        elif arg is False or arg == 0:
+            db.set_permission(ctx.channel.id, 'research', False)
+        else:
+            ctx.send("Unable to understand. Use on or off as arguement for clarity.")
 
     @Cog.listener()
     async def on_message(self, message):
@@ -275,6 +308,8 @@ class Mapper(Cog):
         if message.guild is not None:
             taskmap = self.maps[message.guild.id]
         else:
+            return
+        if db.check_permission(message.channel.id, 'research') is False:
             return
         if message.guild.id not in self.prev_message_was_stop:
             self.prev_message_was_stop[message.guild.id] = False
@@ -352,7 +387,3 @@ class Mapper(Cog):
                             pass
                     except pokemap.PokemapException:
                         pass
-
-        @Cog.listener()
-        async def on_ready(self):
-            """Take actions on login."""
