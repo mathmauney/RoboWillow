@@ -21,7 +21,7 @@ def set_permission(channel_id, permission, value):
     if channel is None:
         add_channel(channel_id)
     update_dict = {'$set': {permission: value}}
-    permission.update_one(find_dict, update_dict)
+    permissions.update_one(find_dict, update_dict)
 
 
 def check_permission(channel_id, permission):
