@@ -1,6 +1,7 @@
 """Commands to deal with arranging trades."""
-from discord.ext.commands import Cog, command
+from discord.ext.commands import Cog, command, has_permissions
 from robowillow.utils import trade_functions as tf
+from . import trade_checks
 import discord
 
 
@@ -62,6 +63,7 @@ class Trader(Cog):
             await ctx.send('No matches found')
 
     @command(pass_context=True)
+    @trade_checks.trade_channel()
     async def morematches(self, ctx, page):
         """Return page n of a previous match result."""
         embed_strs = self.prev_matches.get(ctx.message.author.id, None)
@@ -74,6 +76,7 @@ class Trader(Cog):
             await ctx.send(embed=embed)
 
     @command(pass_context=True)
+    @trade_checks.trade_channel()
     async def moreresults(self, ctx, page):
         """Return page n of a previous search result."""
         embed_strs = self.prev_search.get(ctx.message.author.id, None)
@@ -85,17 +88,8 @@ class Trader(Cog):
             embed.set_footer(text='Page %s of %s. Use %smoreresults n to see page n.' % (page, len(embed_strs), self.bot.default_prefix))
             await ctx.send(embed=embed)
 
-    @command(pass_context=True)
-    async def tradehere(self, ctx):
-        """Add a community_id to a user."""
-        user = tf.get_user(ctx.message.author.id)
-        if user is None:
-            user = tf.add_user(ctx.message.author.id)
-        if ctx.message.guild is not None:
-            tf.add_community(user, ctx.message.guild.id)
-            await ctx.message.author.send("Adding you to community: " + str(ctx.message.guild.id))
-
     @command(pass_context=True, aliases=['newoffer'])
+    @trade_checks.trade_channel()
     async def addoffer(self, ctx, offer_name):
         """Make a new offer."""
         user = tf.get_user(ctx.message.author.id)
@@ -110,6 +104,7 @@ class Trader(Cog):
             await ctx.send("Offer group already exists.")
 
     @command(pass_context=True)
+    @trade_checks.trade_channel()
     async def deleteoffer(self, ctx, offer_name):
         """Delete an offer or offers."""
         user = tf.get_user(ctx.message.author.id)
@@ -123,6 +118,7 @@ class Trader(Cog):
             await ctx.send('Unable to find offer')
 
     @command(pass_context=True, aliases=['deletewants'])
+    @trade_checks.trade_channel()
     async def deletewant(self, ctx, offer_name, *pokemon):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -142,6 +138,7 @@ class Trader(Cog):
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
     @command(pass_context=True, aliases=['deletehaves'])
+    @trade_checks.trade_channel()
     async def deletehave(self, ctx, offer_name, *pokemon):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -161,6 +158,7 @@ class Trader(Cog):
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
     @command(pass_context=True, aliases=['addwants'])
+    @trade_checks.trade_channel()
     async def addwant(self, ctx, offer_name, *pokemon):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -180,6 +178,7 @@ class Trader(Cog):
             await self.process_matches(ctx, ctx.message, offer)
 
     @command(pass_context=True, aliases=['addhaves'])
+    @trade_checks.trade_channel()
     async def addhave(self, ctx, offer_name, *pokemon):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -199,6 +198,7 @@ class Trader(Cog):
             await self.process_matches(ctx, ctx.message, offer)
 
     @command(pass_context=True, aliases=['deleteshinywants'])
+    @trade_checks.trade_channel()
     async def deleteshinywant(self, ctx, offer_name, *pokemon):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -217,6 +217,7 @@ class Trader(Cog):
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
     @command(pass_context=True, aliases=['deleteshinyhaves'])
+    @trade_checks.trade_channel()
     async def deleteshinyhave(self, ctx, offer_name, *pokemon):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -235,6 +236,7 @@ class Trader(Cog):
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
     @command(pass_context=True, aliases=['addshinywants'])
+    @trade_checks.trade_channel()
     async def addshinywant(self, ctx, offer_name, *pokemon):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -254,6 +256,7 @@ class Trader(Cog):
             await self.process_matches(ctx, ctx.message, offer)
 
     @command(pass_context=True, aliases=['addshinyhaves'])
+    @trade_checks.trade_channel()
     async def addshinyhave(self, ctx, offer_name, *pokemon):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -273,6 +276,7 @@ class Trader(Cog):
             await self.process_matches(ctx, ctx.message, offer)
 
     @command(pass_context=True, aliases=['viewoffer'])
+    @trade_checks.trade_channel()
     async def view(self, ctx, offer_name):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -316,6 +320,7 @@ class Trader(Cog):
         await ctx.send(embed=embed)
 
     @command(pass_context=True)
+    @trade_checks.trade_channel()
     async def viewmore(self, ctx, page):
         (have_strs, want_strs) = self.prev_views.get(ctx.message.author.id, (None, None))
         if int(page) > len(have_strs):
@@ -332,6 +337,7 @@ class Trader(Cog):
             await ctx.send(embed=embed)
 
     @command(pass_context=True)
+    @trade_checks.trade_channel()
     async def check(self, ctx, offer_name=None):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -348,6 +354,7 @@ class Trader(Cog):
         await self.process_matches(ctx, ctx.message, offer, True)
 
     @command(pass_context=True, aliases=['viewoffers'])
+    @trade_checks.trade_channel()
     async def listoffers(self, ctx):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -364,6 +371,7 @@ class Trader(Cog):
             await ctx.send(embed=embed)
 
     @command(pass_context=True)
+    @trade_checks.trade_channel()
     async def setname(self, ctx, pogo_name):
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -377,6 +385,7 @@ class Trader(Cog):
             await ctx.send('Name already in use, please contact <@%s> if you think this is in error.' % self.bot.owner)
 
     @command(pass_context=True, aliases=['viewuseroffer'])
+    @trade_checks.trade_channel()
     async def viewuseroffers(self, ctx, pogo_name, *search_terms):
         user = tf.find_user(pogo_name.title())
         if user is None:
@@ -429,6 +438,7 @@ class Trader(Cog):
                 await ctx.send('Too many arguments')
 
     @command(pass_context=True, aliases=['searchhaves'])
+    @trade_checks.trade_channel()
     async def searchhave(self, ctx, *search_terms):
         cleaned_list = tf.clean_pokemon_list(search_terms)
         user = tf.get_user(ctx.message.author.id)
@@ -456,6 +466,7 @@ class Trader(Cog):
         await ctx.send(embed=embed)
 
     @command(pass_context=True, aliases=['searchwants'])
+    @trade_checks.trade_channel()
     async def searchwant(self, ctx, *search_terms):
         cleaned_list = tf.clean_pokemon_list(search_terms)
         user = tf.get_user(ctx.message.author.id)
@@ -481,3 +492,18 @@ class Trader(Cog):
         embed.add_field(name='Search Results', value=embed_strs[0], inline=False)
         embed.set_footer(text='Page 1 of %s. Use %smoreresults n to see page n.' % (len(embed_strs), self.bot.default_prefix))
         await ctx.send(embed=embed)
+
+    @command()
+    @has_permissions(administrator=True)
+    async def tradehere(self, ctx, arg=True):
+        if isinstance(arg, str):
+            if arg.lower in ['t', 'yes', 'on', 'true']:
+                arg = True
+            elif arg.lower in ['n', 'no', 'off', 'false']:
+                arg = False
+        if arg is True or arg == 1:
+            db.set_permission(ctx.channel.id, 'trade', True)
+        elif arg is False or arg == 0:
+            db.set_permission(ctx.channel.id, 'trade', False)
+        else:
+            ctx.send("Unable to understand. Use on or off as arguement for clarity.")
