@@ -282,10 +282,11 @@ class Mapper(Cog):
     @command()
     @has_permissions(administrator=True)
     async def researchhere(self, ctx, arg=True):
-        if arg.lower in ['t', 'yes', 'on', 'true']:
-            arg = True
-        elif arg.lower in ['n', 'no', 'off', 'false']:
-            arg = False
+        if isinstance(arg, str):
+            if arg.lower in ['t', 'yes', 'on', 'true']:
+                arg = True
+            elif arg.lower in ['n', 'no', 'off', 'false']:
+                arg = False
         if arg is True or arg == 1:
             db.set_permission(ctx.channel.id, 'research', True)
         elif arg is False or arg == 0:
