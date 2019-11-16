@@ -225,6 +225,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
     form = None
     shiny = False
     alolan = False
+    galarian = False
     prev_space = False
     for (i, poke) in enumerate(pokemon_list):
         poke = poke.strip(',')
@@ -232,6 +233,8 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
             shiny = True
         elif poke.title() == 'Alolan':
             alolan = True
+        elif poke.title() == 'Galarian':
+            galarian = True
         elif poke.title() == 'Shinies':
             all_shinies = True
         else:
@@ -288,22 +291,17 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                             if matched_form != matched_poke and matched_form is not None:
                                 matched_poke = matched_form
                                 prev_space = True
-                if shiny is True and alolan is True:
-                    cleaned_list.append('Shiny Alolan ' + matched_poke)
-                    shiny = False
+                if alolan is True:
+                    matched_poke = "Alolan " + matched_poke
                     alolan = False
-                    form = None
-                elif shiny is True:
-                    cleaned_list.append('Shiny ' + matched_poke)
+                if galarian is True:
+                    matched_poke = "Galarian " + matched_poke
+                    galarian = False
+                if shiny is True:
+                    matched_poke = "Shiny " + matched_poke
                     shiny = False
-                    form = None
-                elif alolan is True:
-                    cleaned_list.append('Alolan ' + matched_poke)
-                    alolan = False
-                    form = None
-                else:
-                    cleaned_list.append(matched_poke)
-                    form = None
+                cleaned_list.append(matched_poke)
+                form = None
             else:
                 if form is None:
                     form = poke
