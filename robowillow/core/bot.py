@@ -121,4 +121,4 @@ class Bot(commands.Bot):
         if isinstance(error, commands.errors.CheckFailure):
             pass
         else:
-            Bot.on_command_error(ctx, error)
+            commands.Bot.on_command_error(ctx, error)
