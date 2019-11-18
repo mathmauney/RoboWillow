@@ -20,9 +20,11 @@ class Core(Cog):
 
     @command()
     async def test(self, ctx):
+        test = False
         from_trade = self.bot.get_command("tradetest")
         test = await ctx.invoke(from_trade)
-        print(test)
+        if test is False:
+            await ctx.send("No active cogs in this channel.")
 
 
 def setup(bot):
