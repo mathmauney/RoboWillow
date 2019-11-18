@@ -97,6 +97,8 @@ class Trader(Cog):
             user = tf.add_user(ctx.message.author.id)
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
+        if ('<:') in offer_name:
+            offer_name = offer_name.split(":")[1]
         if tf.find_offer(user, offer_name) is None:
             tf.add_offer(user, offer_name)
             await ctx.message.add_reaction('👍')
@@ -126,6 +128,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -146,6 +151,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -166,6 +174,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -186,6 +197,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -206,6 +220,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -225,6 +242,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -244,6 +264,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -264,6 +287,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -284,6 +310,9 @@ class Trader(Cog):
         if ctx.message.guild is not None:
             tf.add_community(user, ctx.message.guild.id)
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send('Offer not found')
             return
@@ -348,6 +377,9 @@ class Trader(Cog):
             await ctx.send("No offer group supplied")
             return
         offer = tf.find_offer(user, offer_name)
+        if ('<:') in offer_name and offer is None:
+            offer_name = offer_name.split(":")[1]
+            offer = tf.find_offer(user, offer_name)
         if offer is None:
             await ctx.send("Offer group not found.")
             return
@@ -507,3 +539,9 @@ class Trader(Cog):
             db.set_permission(ctx.channel.id, 'trade', False)
         else:
             ctx.send("Unable to understand. Use on or off as arguement for clarity.")
+
+    @command()
+    @trade_checks.trade_channel
+    async def tradetest(self, ctx):
+        ctx.send("Can trade here.")
+        return True

@@ -19,13 +19,10 @@ class Core(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
-    async def echo(self, ctx, *args):
-        for arg in args:
-            if ('<:') in arg:
-                arg = arg.split(":")[1]
-                await ctx.send(arg)
-            else:
-                await ctx.send(arg)
+    async def test(self, ctx):
+        from_trade = self.bot.get_command("tradetest")
+        test = await ctx.invoke(from_trade)
+        print(test)
 
 
 def setup(bot):
