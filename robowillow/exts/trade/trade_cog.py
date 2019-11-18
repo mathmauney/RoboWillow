@@ -3,6 +3,7 @@ from discord.ext.commands import Cog, command, has_permissions
 from robowillow.utils import trade_functions as tf
 from . import trade_checks
 import discord
+from robowillow.utils import database as db
 
 
 class Trader(Cog):
@@ -15,6 +16,11 @@ class Trader(Cog):
         self.prev_views = {}
         self.prev_search = {}
         print("Trader loaded")
+
+    async def cog_check(self, ctx):
+        """Check that the channel is set up for this cog."""
+        channel_id = ctx.channel.id
+        return db.check_permission(channel_id, 'trade')
 
     async def process_matches(self, ctx, message, offer, reply=False):
         """Check for matches on an offer and notify both parties if there are matches."""
@@ -540,8 +546,8 @@ class Trader(Cog):
         else:
             ctx.send("Unable to understand. Use on or off as arguement for clarity.")
 
-    @command()
-    async def tradetest(self, ctx):
+    @command(hidden=True)
+    async def tradehelp(self, ctx):
         if await trade_checks.is_trade_channel(ctx):
             await ctx.send("Can trade here.")
             return True
