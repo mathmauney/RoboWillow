@@ -542,7 +542,7 @@ class Trader(Cog):
 
     @command()
     async def tradetest(self, ctx):
-        if trade_checks.is_trade_channel(ctx):
+        if await trade_checks.is_trade_channel(ctx):
             await ctx.send("Can trade here.")
             return True
         else:
