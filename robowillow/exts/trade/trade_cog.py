@@ -1,7 +1,7 @@
 """Commands to deal with arranging trades."""
 from discord.ext.commands import Cog, command, has_permissions
 from robowillow.utils import trade_functions as tf
-from . import trade_checks, is_trade_channel
+from . import trade_checks
 import discord
 
 
@@ -542,7 +542,7 @@ class Trader(Cog):
 
     @command()
     async def tradetest(self, ctx):
-        if is_trade_channel(ctx):
+        if trade_checks.is_trade_channel(ctx):
             await ctx.send("Can trade here.")
             return True
         else:
