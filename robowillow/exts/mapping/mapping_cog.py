@@ -293,7 +293,7 @@ class Mapper(Cog):
         Contains the help commands, and the bots ability to parse language.
 
         """
-        if map_checks.is_map_ready(message) is False:
+        if await map_checks.is_map_ready(message) is False:
             return
         message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
         message.content = message.content.replace(u"\u201D", '"')
