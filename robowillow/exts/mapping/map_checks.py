@@ -7,9 +7,11 @@ async def is_map_channel(ctx):
     return db.check_permission(channel_id, 'research')
 
 
-async def is_map_ready(ctx):
+async def is_map_ready(ctx, map=None):
     channel_id = ctx.channel.id
-    return db.check_permission(channel_id, 'research') and ctx.bot.maps[channel_id].check_ready()
+    if map is None:
+        map = ctx.bot.maps[channel_id]
+    return db.check_permission(channel_id, 'research') and map.check_ready()
 
 
 def map_channel():

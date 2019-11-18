@@ -7,7 +7,7 @@ class Admin(Cog):
 
     def __init__(self, bot):
         self.bot = bot
-        print("Core loaded")
+        print("Admin loaded")
 
     @command()
     @has_permissions(administrator=True)

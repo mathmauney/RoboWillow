@@ -293,8 +293,7 @@ class Mapper(Cog):
         Contains the help commands, and the bots ability to parse language.
 
         """
-        if await map_checks.is_map_ready(message) is False:
-            return
+
         message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
         message.content = message.content.replace(u"\u201D", '"')
         for role in message.role_mentions:
@@ -304,7 +303,7 @@ class Mapper(Cog):
             taskmap = self.maps[message.guild.id]
         else:
             return
-        if db.check_permission(message.channel.id, 'research') is False:
+        if await map_checks.is_map_ready(message, taskmap) is False:
             return
         if message.guild.id not in self.prev_message_was_stop:
             self.prev_message_was_stop[message.guild.id] = False
