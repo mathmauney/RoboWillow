@@ -3,6 +3,7 @@ from discord.ext.commands import Cog, command, has_permissions
 import urllib.parse as urlparse
 from robowillow.utils import pokemap
 from robowillow.utils import database as db
+from robowillow.core.checks import check_is_owner
 from . import map_checks
 from datetime import datetime
 import discord
@@ -233,7 +234,7 @@ class Mapper(Cog):
 
     @command()
     @map_checks.map_channel()
-    @has_permissions(administrator=True)
+    @check_is_owner()
     async def resetmap(self, ctx, guild_id):
         """Allow bot owner to reset any map remotely."""
         if int(self, ctx.message.author.id) == int(self.maintainer_id):
@@ -246,7 +247,7 @@ class Mapper(Cog):
 
     @command()
     @map_checks.map_channel()
-    @has_permissions(administrator=True)
+    @check_is_owner()
     async def resetallmaps(self, ctx):
         """Allow bot owner to reset any map remotely."""
         if int(self, ctx.message.author.id) == int(self.maintainer_id):

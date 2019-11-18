@@ -1,5 +1,5 @@
 from discord.ext.commands import Cog, command
-
+from .checks import check_is_owner
 
 class Core(Cog):
     """General bot functions."""
@@ -9,6 +9,7 @@ class Core(Cog):
         print("Core loaded")
 
     @command()
+    @check_is_owner()
     async def load(self, ctx, extension):
         """Load or reload one of the extensions."""
         loaded = extension in ctx.bot.extensions
@@ -17,15 +18,6 @@ class Core(Cog):
         else:
             ctx.bot.load_extension(extension)
         await ctx.message.add_reaction('👍')
-
-    @command()
-    async def test(self, ctx):
-        test = False
-        from_trade = self.bot.get_command("tradetest")
-        test = await ctx.invoke(from_trade)
-        if test is False:
-            await ctx.send("No active cogs in this channel.")
-
 
 def setup(bot):
     bot.add_cog(Core(bot))
