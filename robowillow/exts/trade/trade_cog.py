@@ -3,7 +3,6 @@ from discord.ext.commands import Cog, command, has_permissions
 from robowillow.utils import trade_functions as tf
 from . import trade_checks
 import discord
-from robowillow.utils import database as db
 
 
 class Trader(Cog):
@@ -16,11 +15,6 @@ class Trader(Cog):
         self.prev_views = {}
         self.prev_search = {}
         print("Trader loaded")
-
-    async def cog_check(self, ctx):
-        """Check that the channel is set up for this cog."""
-        channel_id = ctx.channel.id
-        return db.check_permission(channel_id, 'trade')
 
     async def process_matches(self, ctx, message, offer, reply=False):
         """Check for matches on an offer and notify both parties if there are matches."""
@@ -530,21 +524,6 @@ class Trader(Cog):
         embed.add_field(name='Search Results', value=embed_strs[0], inline=False)
         embed.set_footer(text='Page 1 of %s. Use %smoreresults n to see page n.' % (len(embed_strs), self.bot.default_prefix))
         await ctx.send(embed=embed)
-
-    @command()
-    @has_permissions(administrator=True)
-    async def tradehere(self, ctx, arg=True):
-        if isinstance(arg, str):
-            if arg.lower in ['t', 'yes', 'on', 'true']:
-                arg = True
-            elif arg.lower in ['n', 'no', 'off', 'false']:
-                arg = False
-        if arg is True or arg == 1:
-            db.set_permission(ctx.channel.id, 'trade', True)
-        elif arg is False or arg == 0:
-            db.set_permission(ctx.channel.id, 'trade', False)
-        else:
-            ctx.send("Unable to understand. Use on or off as arguement for clarity.")
 
     @command(hidden=True)
     async def tradehelp(self, ctx):

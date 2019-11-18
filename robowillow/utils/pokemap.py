@@ -329,6 +329,13 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             filename = self._data['path']
         super().save(filename)
 
+    def check_ready(self):
+        """Check if the map has the required fields."""
+        if 'bounds' in self._data and 'loc' in self._data and 'timezone' in self._data:
+            return True
+        else:
+            return False
+
 
 # Custom functions
 def load(filepath=None, data=None, **kwargs):

@@ -122,5 +122,3 @@ class Bot(commands.Bot):
             pass
         else:
             await commands.Bot.on_command_error(self, ctx, error)
-            # print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
-            # traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
