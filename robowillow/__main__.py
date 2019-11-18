@@ -13,6 +13,7 @@ def run_bot(debug=False):
     loop = asyncio.get_event_loop()
 
     bot.load_extension("robowillow.core.core_commands")
+    bot.load_extension("robowillow.exts.admin")
     bot.load_extension("robowillow.exts.mapping")
     bot.load_extension("robowillow.exts.trade")
 
