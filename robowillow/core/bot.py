@@ -121,4 +121,6 @@ class Bot(commands.Bot):
         if isinstance(error, commands.errors.CheckFailure):
             pass
         else:
-            commands.Bot.on_command_error(ctx, error)
+            commands.Bot.on_command_error(self, ctx, error)
+            # print('Ignoring exception in command {}:'.format(ctx.command), file=sys.stderr)
+            # traceback.print_exception(type(error), error, error.__traceback__, file=sys.stderr)
