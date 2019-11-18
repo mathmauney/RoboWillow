@@ -541,7 +541,7 @@ class Trader(Cog):
             ctx.send("Unable to understand. Use on or off as arguement for clarity.")
 
     @command()
-    @trade_checks.trade_channel
+    @trade_checks.trade_channel()
     async def tradetest(self, ctx):
         ctx.send("Can trade here.")
         return True
