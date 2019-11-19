@@ -525,10 +525,64 @@ class Trader(Cog):
         embed.set_footer(text='Page 1 of %s. Use %smoreresults n to see page n.' % (len(embed_strs), self.bot.default_prefix))
         await ctx.send(embed=embed)
 
-    @command(hidden=True)
-    async def tradehelp(self, ctx):
-        if await trade_checks.is_trade_channel(ctx):
-            await ctx.send("Can trade here.")
-            return True
-        else:
-            return False
+    @command()
+    @trade_checks.trade_channel()
+    async def tutorial(self, ctx):
+        """Shows a tutorial on how to use the trade functions of the bot."""
+        msg = discord.Embed(colour=discord.Colour(0x186a0))
+        intro_text = """This bot allows you to create trade offers.
+- You can offer pokemon A,B,C.. for pokemon X,Y,Z... (no limits!)
+- You can have multiple offers (for shinies, regionals, pvp wishlists, unowns, etc)
+- You can search and view other people offers!
+- You will receive notifications when you and another person match!"""
+        instruction_text = """All messages must be sent in the form of a (?) command. To begin, add your pogo-username using:
+?setname <pogo_name>
+- Replace <pogo_name> with your in-game username
+
+Now you can create trade offers using:
+?addoffer <offer_name>
+- Replace <offer_name> with any word. This will be the title of your trade offer.
+
+Add pokemon to your offer using:
+?addwant <offer_name> <pokemon>
+?addhave <offer_name> <pokemon>
+- Replace <offer_name> with the offer you want to edit
+- Replace <pokemon> with the pokemon you want/have
+- Both commands can take multiple pokemon seperated by spaces
+
+- Modifiers can be added to the pokemon names if needed
+- Shiny can be added before the pokemon name (ex. Shiny Pikachu)
+- Forms can be added before the pokemon name (ex. Altered Giratina or Shedinja Costume Bulbasaur)
+- Unown letters and Spinda numbers can be added after the pokemon name (ex. Unown A or Spinda 1)"""
+        instruction_text2 = """Remove pokemon from your offer using:\n
+?deletewant <offer_name> <pokemon>
+?deletehave <offer_name> <pokemon>
+- Delete all pokemon by not listing any after the offer name
+
+To add or remove multiple shinies at once use:
+?addshinywant, ?addshinyhave, ?deleteshinywant or ?deleteshinyhave
+- These are the same as the normal commands will assume all pokemon listed are shiny
+
+Remove an offer completely using:
+?deleteoffer <offer_name>
+
+To view a list of all your offers, use:
+?listoffers
+
+To view the contents of one of your offers use:
+?viewoffer <offer_name>
+
+To search everyone else's offers for a specific pokemon use:
+?searchwant <pokemon>
+?searchhave <pokemon>
+- These will return a list of each person that has the pokemon and the name of their offer
+
+To view someone else's offer(s) use:
+?listoffers <pogo_name>
+?viewoffer <pogo_name> <offer_name>
+
+When you and someone else match you will be notified automatically. You can view all your matches using ?check"""
+        msg.add_field(name='Tutorial', value=intro_text, inline=False)
+        msg.add_field(name='Tutorial', value=instruction_text, inline=False)
+        msg.add_field(name='Tutorial cont.', value=instruction_text2, inline=False)
+        await bot_embed_respond(message, msg)
