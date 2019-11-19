@@ -13,6 +13,7 @@ class Core(Cog):
     @check_is_owner()
     async def load(self, ctx, extension_name):
         """Load or reload one of the extensions."""
+        subprocess.run("git pull", shell=True, check=True)
         extension = 'robowillow.exts.' + extension_name
         loaded = extension in ctx.bot.extensions
         if loaded:
