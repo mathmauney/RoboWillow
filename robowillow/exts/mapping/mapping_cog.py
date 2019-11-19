@@ -114,7 +114,7 @@ class Mapper(Cog):
     @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def addtask(self, ctx, reward, quest, shiny=False):
-        """Add a task to a stop."""
+        """Add a new task to the tasklist."""
         self.tasklist.add_task(pokemap.Task(reward, quest, shiny))
         self.tasklist.save(self.bot.task_path)
         await ctx.message.add_reaction('👍')
@@ -123,7 +123,7 @@ class Mapper(Cog):
     @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def resettasklist(self, ctx):
-        """Backup and reset the self.tasklist."""
+        """Backup and reset the tasklist."""
         backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
         self.tasklist.save(backup_name)
         self.tasklist.clear()

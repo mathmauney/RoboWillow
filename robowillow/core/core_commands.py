@@ -1,6 +1,7 @@
 from discord.ext.commands import Cog, command
 from .checks import check_is_owner
 
+
 class Core(Cog):
     """General bot functions."""
 
@@ -18,6 +19,7 @@ class Core(Cog):
         else:
             ctx.bot.load_extension(extension)
         await ctx.message.add_reaction('👍')
+
 
 def setup(bot):
     bot.add_cog(Core(bot))

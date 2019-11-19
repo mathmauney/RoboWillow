@@ -17,7 +17,6 @@ async def is_map_ready(ctx, _map=None):
             return False
 
 
-
 def map_channel():
     return check(is_map_channel)
 
