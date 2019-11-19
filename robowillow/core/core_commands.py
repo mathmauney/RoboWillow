@@ -1,4 +1,5 @@
 from discord.ext.commands import Cog, command
+import subprocess
 from .checks import check_is_owner
 
 
