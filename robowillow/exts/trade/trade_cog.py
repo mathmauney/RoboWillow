@@ -585,4 +585,4 @@ When you and someone else match you will be notified automatically. You can view
         msg.add_field(name='Tutorial', value=intro_text, inline=False)
         msg.add_field(name='Tutorial', value=instruction_text, inline=False)
         msg.add_field(name='Tutorial cont.', value=instruction_text2, inline=False)
-        await ctx.sent(embed=msg)
+        await ctx.send(embed=msg)
