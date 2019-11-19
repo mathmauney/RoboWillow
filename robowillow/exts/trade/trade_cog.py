@@ -62,7 +62,7 @@ class Trader(Cog):
         elif reply is True:
             await ctx.send('No matches found')
 
-    @command(pass_context=True)
+    @command()
     @trade_checks.trade_channel()
     async def morematches(self, ctx, page):
         """Return page n of a previous match result."""
@@ -75,7 +75,7 @@ class Trader(Cog):
             embed.set_footer(text='Page %s of %s. Use %smorematches n to see page n.' % (page, len(embed_strs), self.bot.default_prefix))
             await ctx.send(embed=embed)
 
-    @command(pass_context=True)
+    @command(hidden=True)
     @trade_checks.trade_channel()
     async def moreresults(self, ctx, page):
         """Return page n of a previous search result."""
@@ -88,7 +88,7 @@ class Trader(Cog):
             embed.set_footer(text='Page %s of %s. Use %smoreresults n to see page n.' % (page, len(embed_strs), self.bot.default_prefix))
             await ctx.send(embed=embed)
 
-    @command(pass_context=True, aliases=['newoffer'])
+    @command(aliases=['newoffer'])
     @trade_checks.trade_channel()
     async def addoffer(self, ctx, offer_name):
         """Make a new offer."""
@@ -105,10 +105,10 @@ class Trader(Cog):
         else:
             await ctx.send("Offer group already exists.")
 
-    @command(pass_context=True)
+    @command()
     @trade_checks.trade_channel()
     async def deleteoffer(self, ctx, offer_name):
-        """Delete an offer or offers."""
+        """Delete an offer."""
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -119,9 +119,13 @@ class Trader(Cog):
         else:
             await ctx.send('Unable to find offer')
 
-    @command(pass_context=True, aliases=['deletewants'])
+    @command(aliases=['deletewants'])
     @trade_checks.trade_channel()
     async def deletewant(self, ctx, offer_name, *pokemon):
+        """Remove pokemon from a want list.
+
+        Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -142,9 +146,13 @@ class Trader(Cog):
             tf.remove_wants(offer, cleaned_list)
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
-    @command(pass_context=True, aliases=['deletehaves'])
+    @command(aliases=['deletehaves'])
     @trade_checks.trade_channel()
     async def deletehave(self, ctx, offer_name, *pokemon):
+        """Remove pokemon from a have list.
+
+        Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -165,9 +173,13 @@ class Trader(Cog):
             tf.remove_haves(offer, cleaned_list)
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
-    @command(pass_context=True, aliases=['addwants'])
+    @command(aliases=['addwants'])
     @trade_checks.trade_channel()
     async def addwant(self, ctx, offer_name, *pokemon):
+        """Add pokemon to a want list.
+
+        Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -188,9 +200,13 @@ class Trader(Cog):
             await ctx.send('Added: ' + ', '.join(cleaned_list))
             await self.process_matches(ctx, ctx.message, offer)
 
-    @command(pass_context=True, aliases=['addhaves'])
+    @command(aliases=['addhaves'])
     @trade_checks.trade_channel()
     async def addhave(self, ctx, offer_name, *pokemon):
+        """Add pokemon to a have list.
+
+        Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -211,9 +227,13 @@ class Trader(Cog):
             await ctx.send('Added: ' + ', '.join(cleaned_list))
             await self.process_matches(ctx, ctx.message, offer)
 
-    @command(pass_context=True, aliases=['deleteshinywants'])
+    @command(aliases=['deleteshinywants'])
     @trade_checks.trade_channel()
     async def deleteshinywant(self, ctx, offer_name, *pokemon):
+        """Remove pokemon from a want list, assumming all are shiny.
+
+        Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -233,9 +253,13 @@ class Trader(Cog):
         else:
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
-    @command(pass_context=True, aliases=['deleteshinyhaves'])
+    @command(aliases=['deleteshinyhaves'])
     @trade_checks.trade_channel()
     async def deleteshinyhave(self, ctx, offer_name, *pokemon):
+        """Remove pokemon from a have list, assumming all are shiny.
+
+        Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -255,9 +279,13 @@ class Trader(Cog):
         else:
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
-    @command(pass_context=True, aliases=['addshinywants'])
+    @command(aliases=['addshinywants'])
     @trade_checks.trade_channel()
     async def addshinywant(self, ctx, offer_name, *pokemon):
+        """Add pokemon to a want list, assumming all are shiny.
+
+        Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -278,9 +306,13 @@ class Trader(Cog):
             await ctx.send('Added: ' + ', '.join(cleaned_list))
             await self.process_matches(ctx, ctx.message, offer)
 
-    @command(pass_context=True, aliases=['addshinyhaves'])
+    @command(aliases=['addshinyhaves'])
     @trade_checks.trade_channel()
     async def addshinyhave(self, ctx, offer_name, *pokemon):
+        """Add pokemon to a have list, assumming all are shiny.
+
+        Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -301,56 +333,114 @@ class Trader(Cog):
             await ctx.send('Added: ' + ', '.join(cleaned_list))
             await self.process_matches(ctx, ctx.message, offer)
 
-    @command(pass_context=True, aliases=['viewoffer'])
+    @command(aliases=['viewoffer'])
     @trade_checks.trade_channel()
-    async def view(self, ctx, offer_name):
-        user = tf.get_user(ctx.message.author.id)
-        if user is None:
-            user = tf.add_user(ctx.message.author.id)
-        if ctx.message.guild is not None:
-            tf.add_community(user, ctx.message.guild.id)
-        offer = tf.find_offer(user, offer_name)
-        if ('<:') in offer_name and offer is None:
-            offer_name = offer_name.split(":")[1]
+    async def view(self, ctx, *args):
+        """View an offer.
+
+        Can be used in two ways:
+        'view <offer_name>' for a user's own offer.
+        'view <pogo_username> <offer_name>' for another user's offer.
+        """
+        if len(args) == 1:
+            offer_name = args[0]
+            user = tf.get_user(ctx.message.author.id)
+            if user is None:
+                user = tf.add_user(ctx.message.author.id)
+            if ctx.message.server is not None:
+                tf.add_community(user, ctx.message.server.id)
             offer = tf.find_offer(user, offer_name)
-        if offer is None:
-            await ctx.send('Offer not found')
-            return
-        (wants, haves) = tf.get_offer_contents(offer)
-        if haves == []:
-            have_strs = ['None']
-            want_strs = ['']
-        else:
-            i = 0
-            have_strs = ['']
-            want_strs = ['']
-            for have in haves:
-                if len(have_strs[i]) > 500:
-                    i = i + 1
-                    have_strs.append('')
-                    want_strs.append('')
-                have_strs[i] = have_strs[i] + have + '\n'
-        if wants == []:
-            want_strs[0] = 'None'
-        else:
-            i = 0
-            for want in wants:
-                if len(want_strs[i]) > 500:
-                    i = i + 1
-                    if i >= len(have_strs):
+            if ('<:') in offer_name and offer is None:
+                offer_name = offer_name.split(":")[1]
+                offer = tf.find_offer(user, offer_name)
+            if offer is None:
+                await bot_respond(ctx.message, 'Offer not found')
+                return
+            (wants, haves) = tf.get_offer_contents(offer)
+            if haves == []:
+                have_strs = ['None']
+                want_strs = ['']
+            else:
+                i = 0
+                have_strs = ['']
+                want_strs = ['']
+                for have in haves:
+                    if len(have_strs[i]) > 500:
+                        i = i + 1
                         have_strs.append('')
                         want_strs.append('')
-                want_strs[i] = want_strs[i] + want + '\n'
-        self.prev_views[ctx.message.author.id] = (have_strs, want_strs)
-        embed = discord.Embed(colour=discord.Colour(0x186a0))
-        embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), self.bot.default_prefix))
-        embed.add_field(name='Have', value=have_strs[0], inline=False)
-        embed.add_field(name='Want', value=want_strs[0], inline=False)
-        await ctx.send(embed=embed)
+                    have_strs[i] = have_strs[i] + have + '\n'
+            if wants == []:
+                want_strs[0] = 'None'
+            else:
+                i = 0
+                for want in wants:
+                    if len(want_strs[i]) > 500:
+                        i = i + 1
+                        if i >= len(have_strs):
+                            have_strs.append('')
+                            want_strs.append('')
+                    want_strs[i] = want_strs[i] + want + '\n'
+            prev_views[ctx.message.author.id] = (have_strs, want_strs)
+            embed = discord.Embed(colour=discord.Colour(0x186a0))
+            embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), bot_prefix[0]))
+            embed.add_field(name='Have', value=have_strs[0], inline=False)
+            embed.add_field(name='Want', value=want_strs[0], inline=False)
+            await bot_embed_respond(ctx.message, embed)
+        elif len(args) >= 2:
+            pogo_name = args[0]
+            user = tf.find_user(pogo_name.title())
+            if user is None:
+                await bot_respond(ctx.message, 'User not found')
+            else:
+                search_terms = args[1:]
+                if len(search_terms) == 1:
+                    offer_name = search_terms[0]
+                    offer = tf.find_offer(user, offer_name)
+                    if ('<:') in offer_name and offer is None:
+                        offer_name = offer_name.split(":")[1]
+                        offer = tf.find_offer(user, offer_name)
+                    if offer is None:
+                        await bot_respond(ctx.message, 'Offer not found')
+                        return
+                    (wants, haves) = tf.get_offer_contents(offer)
+                    if haves == []:
+                        have_strs = ['None']
+                        want_strs = ['']
+                    else:
+                        i = 0
+                        have_strs = ['']
+                        want_strs = ['']
+                        for have in haves:
+                            if len(have_strs[i]) > 500:
+                                i = i + 1
+                                have_strs.append('')
+                                want_strs.append('')
+                            have_strs[i] = have_strs[i] + have + '\n'
+                    if wants == []:
+                        want_strs[0] = 'None'
+                    else:
+                        i = 0
+                        for want in wants:
+                            if len(want_strs[i]) > 500:
+                                i = i + 1
+                                if i >= len(have_strs):
+                                    have_strs.append('')
+                                    want_strs.append('')
+                            want_strs[i] = want_strs[i] + want + '\n'
+                    prev_views[ctx.message.author.id] = (have_strs, want_strs)
+                    embed = discord.Embed(colour=discord.Colour(0x186a0))
+                    embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), bot_prefix[0]))
+                    embed.add_field(name='Haves', value=have_strs[0], inline=False)
+                    embed.add_field(name='Wants', value=want_strs[0], inline=False)
+                    await bot_embed_respond(ctx.message, embed)
+                else:
+                    await bot_respond(ctx.message, 'Too many arguments')
 
-    @command(pass_context=True)
+    @command(hidden=True)
     @trade_checks.trade_channel()
     async def viewmore(self, ctx, page):
+        """View page n of a previous result."""
         (have_strs, want_strs) = self.prev_views.get(ctx.message.author.id, (None, None))
         if int(page) > len(have_strs):
             await ctx.send('Page out of range')
@@ -365,9 +455,10 @@ class Trader(Cog):
             embed.set_footer(text='Page %s of %s. Use %sviewmore n to see page n.' % (page, len(want_strs), self.bot.default_prefix))
             await ctx.send(embed=embed)
 
-    @command(pass_context=True)
+    @command()
     @trade_checks.trade_channel()
     async def check(self, ctx, offer_name=None):
+        """Manually check for matches for an offer."""
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -385,26 +476,47 @@ class Trader(Cog):
             return
         await self.process_matches(ctx, ctx.message, offer, True)
 
-    @command(pass_context=True, aliases=['viewoffers'])
+    @command(aliases=['viewoffers'])
     @trade_checks.trade_channel()
-    async def listoffers(self, ctx):
-        user = tf.get_user(ctx.message.author.id)
-        if user is None:
-            user = tf.add_user(ctx.message.author.id)
-        if ctx.message.guild is not None:
-            tf.add_community(user, ctx.message.guild.id)
-        offer_names = tf.find_offers(user)
-        if offer_names == []:
-            await ctx.send('No offers found')
-        else:
-            offer_str = '\n'.join(offer_names)
-            embed = discord.Embed(colour=discord.Colour(0x186a0))
-            embed.add_field(name='Offer Names', value=offer_str, inline=False)
-            await ctx.send(embed=embed)
+    async def listoffers(self, ctx, username=None):
+        """List known offers.
 
-    @command(pass_context=True)
+        Can be used without argument to list your own offers, or another username may be specified.
+        """
+        if username is None:
+            user = tf.get_user(ctx.message.author.id)
+            if user is None:
+                user = tf.add_user(ctx.message.author.id)
+            if ctx.message.server is not None:
+                tf.add_community(user, ctx.message.server.id)
+            offer_names = tf.find_offers(user)
+            if offer_names == []:
+                await bot_respond(ctx.message, 'No offers found')
+            else:
+                offer_str = '\n'.join(offer_names)
+                embed = discord.Embed(colour=discord.Colour(0x186a0))
+                embed.add_field(name='Offer Names', value=offer_str, inline=False)
+                await bot_embed_respond(ctx.message, embed)
+        else:
+            pogo_name = username
+            user = tf.find_user(pogo_name.title())
+            if user is None:
+                await bot_respond(ctx.message, 'User not found')
+                return
+            offer_names = tf.find_offers(user)
+            if offer_names == []:
+                await bot_respond(ctx.message, 'No offers found')
+                return
+            else:
+                offer_str = '\n'.join(offer_names)
+                embed = discord.Embed(colour=discord.Colour(0x186a0))
+                embed.add_field(name='Offer Names', value=offer_str, inline=False)
+                await bot_embed_respond(ctx.message, embed)
+
+    @command()
     @trade_checks.trade_channel()
     async def setname(self, ctx, pogo_name):
+        """Set your pokemon go username."""
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -416,63 +528,11 @@ class Trader(Cog):
         except ValueError:
             await ctx.send('Name already in use, please contact <@%s> if you think this is in error.' % self.bot.owner)
 
-    @command(pass_context=True, aliases=['viewuseroffer'])
+    @command(aliases=['searchhaves'])
     @trade_checks.trade_channel()
-    async def viewuseroffers(self, ctx, pogo_name, *search_terms):
-        user = tf.find_user(pogo_name.title())
-        if user is None:
-            await ctx.send('User not found')
-        else:
-            if len(search_terms) == 0:
-                offer_names = tf.find_offers(user)
-                if offer_names == []:
-                    await ctx.send('No offers found')
-                else:
-                    offer_str = '\n'.join(offer_names)
-                    embed = discord.Embed(colour=discord.Colour(0x186a0))
-                    embed.add_field(name='Offer Names', value=offer_str, inline=False)
-                    await ctx.send(embed=embed)
-            elif len(search_terms) == 1:
-                offer_name = search_terms[0]
-                offer = tf.find_offer(user, offer_name)
-                (wants, haves) = tf.get_offer_contents(offer)
-                if haves == []:
-                    have_strs = ['None']
-                    want_strs = ['']
-                else:
-                    i = 0
-                    have_strs = ['']
-                    want_strs = ['']
-                    for have in haves:
-                        if len(have_strs[i]) > 500:
-                            i = i + 1
-                            have_strs.append('')
-                            want_strs.append('')
-                        have_strs[i] = have_strs[i] + have + '\n'
-                if wants == []:
-                    want_strs[0] = 'None'
-                else:
-                    i = 0
-                    for want in wants:
-                        if len(want_strs[i]) > 500:
-                            i = i + 1
-                            if i >= len(have_strs):
-                                have_strs.append('')
-                                want_strs.append('')
-                        want_strs[i] = want_strs[i] + want + '\n'
-                self.prev_views[ctx.message.author.id] = (have_strs, want_strs)
-                embed = discord.Embed(colour=discord.Colour(0x186a0))
-                embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), self.bot.default_prefix))
-                embed.add_field(name='Haves', value=have_strs[0], inline=False)
-                embed.add_field(name='Wants', value=want_strs[0], inline=False)
-                await ctx.send(embed=embed)
-            else:
-                await ctx.send('Too many arguments')
-
-    @command(pass_context=True, aliases=['searchhaves'])
-    @trade_checks.trade_channel()
-    async def searchhave(self, ctx, *search_terms):
-        cleaned_list = tf.clean_pokemon_list(search_terms)
+    async def searchhave(self, ctx, *pokemon):
+        """Search for offers that have a given pokemon."""
+        cleaned_list = tf.clean_pokemon_list(pokemon)
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -497,10 +557,11 @@ class Trader(Cog):
         embed.set_footer(text='Page 1 of %s. Use %smoreresults n to see page n.' % (len(embed_strs), self.bot.default_prefix))
         await ctx.send(embed=embed)
 
-    @command(pass_context=True, aliases=['searchwants'])
+    @command(aliases=['searchwants'])
     @trade_checks.trade_channel()
-    async def searchwant(self, ctx, *search_terms):
-        cleaned_list = tf.clean_pokemon_list(search_terms)
+    async def searchwant(self, ctx, *pokemon):
+        """Search for offers that want a given pokemon."""
+        cleaned_list = tf.clean_pokemon_list(pokemon)
         user = tf.get_user(ctx.message.author.id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
@@ -528,7 +589,7 @@ class Trader(Cog):
     @command()
     @trade_checks.trade_channel()
     async def tutorial(self, ctx):
-        """Shows a tutorial on how to use the trade functions of the bot."""
+        """Show a tutorial on how to use the trade functions of the bot."""
         msg = discord.Embed(colour=discord.Colour(0x186a0))
         intro_text = """This bot allows you to create trade offers.
 - You can offer pokemon A,B,C.. for pokemon X,Y,Z... (no limits!)
