@@ -14,7 +14,7 @@ class Core(Cog):
     async def load(self, ctx, extension_name):
         """Load or reload one of the extensions."""
         extension = 'robowillow.exts.' + extension_name
-        loaded = extetsion in ctx.bot.extensions
+        loaded = extension in ctx.bot.extensions
         if loaded:
             ctx.bot.reload_extension(extension)
         else:
