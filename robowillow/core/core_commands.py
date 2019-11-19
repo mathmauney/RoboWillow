@@ -11,8 +11,9 @@ class Core(Cog):
 
     @command()
     @check_is_owner()
-    async def load(self, ctx, extension):
+    async def load(self, ctx, extension_name):
         """Load or reload one of the extensions."""
+        extention = 'robowillow.exts.' + extension_name
         loaded = extension in ctx.bot.extensions
         if loaded:
             ctx.bot.reload_extension(extension)
