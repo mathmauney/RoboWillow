@@ -125,6 +125,7 @@ class Trader(Cog):
         """Remove pokemon from a want list.
 
         Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        If all pokemon are shiny consider you can use deleteshinywant to not need to specity shiny for each.
         """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -152,6 +153,7 @@ class Trader(Cog):
         """Remove pokemon from a have list.
 
         Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        If all pokemon are shiny consider you can use deleteshinyhave to not need to specity shiny for each.
         """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -179,6 +181,7 @@ class Trader(Cog):
         """Add pokemon to a want list.
 
         Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        If all pokemon are shiny consider you can use addshinywant to not need to specity shiny for each.
         """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -206,6 +209,7 @@ class Trader(Cog):
         """Add pokemon to a have list.
 
         Pokemon can be specified as a list of pokemon or with a leekduck shiny checklist URL.
+        If all pokemon are shiny consider you can use addshinyhave to not need to specity shiny for each.
         """
         user = tf.get_user(ctx.message.author.id)
         if user is None:
@@ -227,7 +231,7 @@ class Trader(Cog):
             await ctx.send('Added: ' + ', '.join(cleaned_list))
             await self.process_matches(ctx, ctx.message, offer)
 
-    @command(aliases=['deleteshinywants'])
+    @command(aliases=['deleteshinywants'], hidden=True)
     @trade_checks.trade_channel()
     async def deleteshinywant(self, ctx, offer_name, *pokemon):
         """Remove pokemon from a want list, assumming all are shiny.
@@ -253,7 +257,7 @@ class Trader(Cog):
         else:
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
-    @command(aliases=['deleteshinyhaves'])
+    @command(aliases=['deleteshinyhaves'], hidden=True)
     @trade_checks.trade_channel()
     async def deleteshinyhave(self, ctx, offer_name, *pokemon):
         """Remove pokemon from a have list, assumming all are shiny.
@@ -279,7 +283,7 @@ class Trader(Cog):
         else:
             await ctx.send('Removed: ' + ', '.join(cleaned_list))
 
-    @command(aliases=['addshinywants'])
+    @command(aliases=['addshinywants'], hidden=True)
     @trade_checks.trade_channel()
     async def addshinywant(self, ctx, offer_name, *pokemon):
         """Add pokemon to a want list, assumming all are shiny.
@@ -306,7 +310,7 @@ class Trader(Cog):
             await ctx.send('Added: ' + ', '.join(cleaned_list))
             await self.process_matches(ctx, ctx.message, offer)
 
-    @command(aliases=['addshinyhaves'])
+    @command(aliases=['addshinyhaves'], hidden=True)
     @trade_checks.trade_channel()
     async def addshinyhave(self, ctx, offer_name, *pokemon):
         """Add pokemon to a have list, assumming all are shiny.
