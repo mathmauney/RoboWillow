@@ -30,7 +30,7 @@ class Notifier(Cog):
         if all_pokemon:
             await ctx.message.add_reaction('👍')
         else:
-            await ctx.send.say('Not all requests matched known pokemon. Unable to match:' + bad)
+            await ctx.send('Not all requests matched known pokemon. Unable to match:' + bad)
 
     @command()
     async def unwant(self, ctx, *roles):
