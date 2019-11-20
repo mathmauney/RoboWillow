@@ -76,14 +76,16 @@ class Mapper(Cog):
 
     @command()
     @map_checks.map_ready()
-    async def settask(self, ctx, *args):
-        """Set a task to a stop."""
+    async def settask(self, ctx, task, *stop):
+        """Set a task to a stop.
+
+        """
         taskmap = self.maps[ctx.message.guild.id]
-        n_args = len(args)
-        if n_args > 1:
+        n_args = len(stop)
+        if n_args > 0:
             try:
-                task_str = args[0]
-                stop_args = args[1:]
+                task_str = task
+                stop_args = stop
                 stop_name = ' '.join(stop_args)
                 stop_name = stop_name.title()
                 stop = taskmap.find_stop(stop_name)
@@ -203,6 +205,7 @@ class Mapper(Cog):
 
     @command()
     @map_checks.map_ready()
+    @check_is_owner()
     async def nicknametask(self, ctx, task_name, nickname):
         """Add a nickname to a task."""
         task = self.tasklist.find_task(task_name)
