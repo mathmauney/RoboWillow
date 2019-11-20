@@ -174,10 +174,10 @@ class Mapper(Cog):
 
     @command()
     @map_checks.map_ready()
-    async def deletestop(self, ctx, *stop):
+    async def deletestop(self, ctx, *stop_name):
         """Delete a stop."""
         taskmap = self.maps[ctx.message.guild.id]
-        stop_str = ' '.join(stop)
+        stop_str = ' '.join(stop_name)
         stop = taskmap.find_stop(stop_str)
         taskmap.remove_stop(stop)
         taskmap.save()
@@ -186,9 +186,9 @@ class Mapper(Cog):
     @command()
     @map_checks.map_channel()
     @has_permissions(administrator=True)
-    async def deletetask(self, ctx, task):
+    async def deletetask(self, ctx, task_name):
         """Delete a task."""
-        task = self.tasklist.find_task(task)
+        task = self.tasklist.find_task(task_name)
         self.tasklist.remove_task(task)
         self.tasklist.save(self.task_path)
         await ctx.message.add_reaction('👍')
