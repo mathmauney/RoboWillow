@@ -18,12 +18,13 @@ async def is_map_ready(ctx, _map=None):
         else:
             print("False")
             return False
-    if map is None:
+    if _map is None:
         try:
             _map = ctx.bot.maps[channel_id]
             return db.check_permission(channel_id, 'research') and check_ready(_map)
         except (KeyError):
             return False
+    return db.check_permission(channel_id, 'research') and check_ready(_map)
 
 
 def map_channel():
