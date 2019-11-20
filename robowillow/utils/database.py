@@ -32,4 +32,7 @@ def check_permission(channel_id, permission):
     if channel is None:
         add_channel(channel_id)
         return False
-    return channel[permission]
+    try:
+        return channel[permission]
+    except KeyError:
+        return False
