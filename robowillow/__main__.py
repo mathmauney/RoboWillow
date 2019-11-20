@@ -16,6 +16,7 @@ def run_bot(debug=False):
     bot.load_extension("robowillow.exts.admin")
     bot.load_extension("robowillow.exts.mapping")
     bot.load_extension("robowillow.exts.trade")
+    bot.load_extension("robowillow.exts.notifier")
 
     if bot.token is None or not bot.default_prefix:
         bot.logger.critical("Token and prefix must be set in order to login.")
