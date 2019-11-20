@@ -93,7 +93,7 @@ class Tasklist:
                         out_task.quest = quest_str.title()
                     return out_task
             for task in self.permanent_tasks:
-                if (task_str == task.reward.title()) or (task_str == task.quest.replace('é', 'e').title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames) or task.reward.title() in task_str):
+                if (task_str == task.reward.title()) or (task_str == task.quest.replace('é', 'e').title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames) or fuzz.partial_ratio(task.reward.title(), task_str) > 80):
                     out_task = task
                     task_not_found = False
                     if custom_quest:
