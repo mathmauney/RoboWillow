@@ -9,18 +9,11 @@ async def is_map_channel(ctx):
 
 async def is_map_ready(ctx, _map=None):
     channel_id = ctx.channel.id
-
-    def check_ready(_map):
-        """Check if the map has the required fields."""
-        if 'bounds' in _map._data and 'loc' in _map._data and 'timezone' in _map._data:
-            return True
-        else:
-            return False
     if map is None:
         try:
             _map = ctx.bot.maps[channel_id]
-            return db.check_permission(channel_id, 'research') and check_ready(_map)
-        except (KeyError):
+            return db.check_permission(channel_id, 'research') and _map.check_ready()
+        except (KeyError, AttributeError):
             return False
 
 
