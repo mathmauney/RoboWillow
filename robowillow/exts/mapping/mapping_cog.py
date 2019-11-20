@@ -294,7 +294,10 @@ class Mapper(Cog):
         Contains the help commands, and the bots ability to parse language.
 
         """
-
+        if message.contents.startswith(self.bot.default_prefix):
+            self.prev_message_was_stop[message.guild.id] = False
+            self.prev_message[message.guild.id] = None
+            self.prev_message_stop[message.guild.id] = None
         message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
         message.content = message.content.replace(u"\u201D", '"')
         for role in message.role_mentions:
