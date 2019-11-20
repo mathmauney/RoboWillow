@@ -775,9 +775,13 @@ async def pulltasklist(ctx):
     global tasklist
     backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
     tasklist.save(backup_name)
-    tasklist = pokemap.fetch_tasklist()
-    tasklist.save(task_path)
-    await client.add_reaction(ctx.message, '👍')
+    new_tasklist = pokemap.fetch_tasklist()
+    if len(new_tasklist.tasks) > 0:
+        tasklist = new_tasklist
+        tasklist.save(task_path)
+        await client.add_reaction(ctx.message, '👍')
+    else:
+        await client.add_reaction(ctx.message, '❌')
 
 
 @client.command(aliases=['tasklist'])
