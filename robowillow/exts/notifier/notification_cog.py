@@ -24,7 +24,7 @@ class Notifier(Cog):
                 if role_obj is None:
                     await ctx.message.guild.create_role(name=match.lower(), mentionable=True)
                     role_obj = discord.utils.get(ctx.message.guild.roles, name=match.lower())
-                await add_roles(user, role_obj)
+                await user.add_roles(role_obj)
             else:
                 bad += ' ' + role
                 all_pokemon = False
@@ -45,7 +45,7 @@ class Notifier(Cog):
                 for role in roles:
                     match = pokemap.match_pokemon(role)
                     if match is not None:
-                        await ctx.message.guild.remove_roles(user, role)
+                        await user.remove_roles(role)
                 await ctx.message.add_reaction('👍')
                 return
             else:
@@ -53,7 +53,7 @@ class Notifier(Cog):
                 if match is not None:
                     user = ctx.message.author
                     role_obj = discord.utils.get(user.guild.roles, name=match.lower())
-                    await ctx.message.guild.remove_roles(user, role_obj)
+                    await user.remove_roles(role_obj)
                 else:
                     bad += ' ' + role
         if bad == '':
