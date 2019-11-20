@@ -58,10 +58,20 @@ class Tasklist:
     def __init__(self):
         """Initialize the tasklist."""
         self.tasks = []
+        self.permanent_tasks = []
+        self.add_task(Task("Rare Candy", "Unknown"))
+        self.add_task(Task("Silver Pinap", "Unknown"))
+        self.add_task(Task("Stardust", "Unknown"))
+        self.add_task(Task("Fast TM", "Unknown"))
+        self.add_task(Task("Charged TM", "Unknown"))
 
     def add_task(self, task):
         """Add a task to the tasklist."""
         self.tasks.append(task)
+
+    def add_permanent_task(self, task):
+        """Add a task to the tasklist."""
+        self.permanent_tasks.append(task)
 
     def find_task(self, task_str):
         """Find a task in the list and return it."""
@@ -76,6 +86,14 @@ class Tasklist:
         while task_not_found:
             for task in self.tasks:
                 if (task_str == task.reward.title()) or (task_str == task.quest.replace('é', 'e').title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames)):
+                    out_task = task
+                    task_not_found = False
+                    if custom_quest:
+                        out_task = copy.copy(task)
+                        out_task.quest = quest_str.title()
+                    return out_task
+            for task in self.permanent_tasks:
+                if (task_str == task.reward.title()) or (task_str == task.quest.replace('é', 'e').title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames) or task.reward.title() in task_str):
                     out_task = task
                     task_not_found = False
                     if custom_quest:
