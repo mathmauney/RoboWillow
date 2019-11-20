@@ -1,5 +1,7 @@
 from discord.ext.commands import Cog, command
+from robowillow.utils import pokemap
 from . import notification_checks
+
 
 class Notifier(Cog):
     """Commands to deal with notification of sightings."""
