@@ -350,8 +350,10 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
     def check_ready(self):
         """Check if the map has the required fields."""
         if 'bounds' in self._data and 'loc' in self._data and 'timezone' in self._data:
+            print("True")
             return True
         else:
+            print("False")
             return False
 
 
