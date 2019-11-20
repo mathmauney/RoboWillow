@@ -10,6 +10,7 @@ class Notifier(Cog):
     def __init__(self, bot):
         """Initialize Cog variables from bot."""
         self.bot = bot
+        print("Notifier Loaded.")
 
     @command()
     async def want(self, ctx, *roles):
