@@ -16,6 +16,7 @@ class Mapper(Cog):
         """Initialize Cog variables from bot."""
         self.bot = bot
         self.maps = bot.maps
+        self.map_url = bot.config.map_url
         self.maintainer_id = bot.config.bot_owner
         self.tasklist = bot.tasklist
         self.task_path = bot.config.file_paths['tasklist']
@@ -28,6 +29,12 @@ class Mapper(Cog):
             self.prev_message_was_stop[guild.id] = False
             self.prev_message[guild.id] = None
             self.prev_message_stop[guild.id] = None
+
+    @command()
+    @map_checks.map_ready()
+    async def map(self, ctx):
+        """View the map url for this server."""
+        ctx.send('To view the current map, click [here](' + self.map_url + '/?map=' + str(ctx.message.guild.id) + ')')
 
     @command()
     @map_checks.map_ready()

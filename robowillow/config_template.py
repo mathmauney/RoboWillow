@@ -22,6 +22,8 @@ db_details = {
     'password': 'password'
 }
 
+map_url = 'site.com'
+
 file_paths = {
     'map_directory': '/var/www/html/maps/',
     'tasklist': './tasklist.pkl'
