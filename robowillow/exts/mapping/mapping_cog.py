@@ -79,7 +79,7 @@ class Mapper(Cog):
     async def settask(self, ctx, task, *stop):
         """Set a task to a stop.
 
-        """
+        Can also be done by simple typing the stop name and task in a message seperated by a return."""
         taskmap = self.maps[ctx.message.guild.id]
         n_args = len(stop)
         if n_args > 0:
@@ -174,10 +174,10 @@ class Mapper(Cog):
 
     @command()
     @map_checks.map_ready()
-    async def deletestop(self, ctx, *args):
+    async def deletestop(self, ctx, *stop):
         """Delete a stop."""
         taskmap = self.maps[ctx.message.guild.id]
-        stop_str = ' '.join(args)
+        stop_str = ' '.join(stop)
         stop = taskmap.find_stop(stop_str)
         taskmap.remove_stop(stop)
         taskmap.save()
@@ -186,9 +186,9 @@ class Mapper(Cog):
     @command()
     @map_checks.map_channel()
     @has_permissions(administrator=True)
-    async def deletetask(self, ctx, task_str):
+    async def deletetask(self, ctx, task):
         """Delete a task."""
-        task = self.tasklist.find_task(task_str)
+        task = self.tasklist.find_task(task)
         self.tasklist.remove_task(task)
         self.tasklist.save(self.task_path)
         await ctx.message.add_reaction('👍')
@@ -196,7 +196,9 @@ class Mapper(Cog):
     @command()
     @map_checks.map_ready()
     async def nicknamestop(self, ctx, stop_name, nickname):
-        """Add a nickname to a stop."""
+        """Add a nickname to a stop.
+
+        If the stop or nickname contain spaces they should be wrapped in quotes."""
         taskmap = self.maps[ctx.message.guild.id]
         stop = taskmap.find_stop(stop_name)
         stop.add_nickname(nickname)
