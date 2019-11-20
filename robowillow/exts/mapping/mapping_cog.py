@@ -209,7 +209,9 @@ class Mapper(Cog):
     @map_checks.map_ready()
     @check_is_owner()
     async def nicknametask(self, ctx, task_name, nickname):
-        """Add a nickname to a task."""
+        """Add a nickname to a task.
+
+        If the task or nickname contain spaces they should be wrapped in quotes."""
         task = self.tasklist.find_task(task_name)
         task.add_nickname(nickname)
         self.tasklist.save(self.task_path)
@@ -219,7 +221,9 @@ class Mapper(Cog):
     @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def setlocation(self, ctx, lat, long):
-        """Set the location of the map for the web view."""
+        """Set the location of the map for the web view.
+
+        This will set the center of the default map view."""
         taskmap = self.maps[ctx.message.guild.id]
         taskmap.set_location(float(lat), float(long))
         try:
@@ -267,7 +271,9 @@ class Mapper(Cog):
     @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def setbounds(self, ctx, lat1, long1, lat2, long2):
-        """Set the boundaries of the maps for checking when pokestops are added."""
+        """Set the boundaries of the maps for checking when pokestops are added.
+
+        The latitutes and longitudes will form a bounding rectangle, all stops added must fall within these coordinates."""
         taskmap = self.maps[ctx.message.guild.id]
         coords1 = [float(lat1), float(long1)]
         coords2 = [float(lat2), float(long2)]
@@ -283,7 +289,9 @@ class Mapper(Cog):
     @map_checks.map_channel()
     @has_permissions(administrator=True)
     async def settimezone(self, ctx, tz_str):
-        """Set the timezone of the map so it resets itself correctly."""
+        """Set the timezone of the map so it resets itself correctly.
+
+        The timezone list can be found at: https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones"""
         taskmap = self.maps[ctx.message.guild.id]
         taskmap.set_time_zone(tz_str)
         try:
@@ -294,11 +302,7 @@ class Mapper(Cog):
 
     @Cog.listener()
     async def on_message(self, message):
-        """Respond to messages.
-
-        Contains the help commands, and the bots ability to parse language.
-
-        """
+        """Deal with tasks and stops in plaintext messages."""
         if message.content.startswith(self.bot.default_prefix):
             self.prev_message_was_stop[message.guild.id] = False
             self.prev_message[message.guild.id] = None
