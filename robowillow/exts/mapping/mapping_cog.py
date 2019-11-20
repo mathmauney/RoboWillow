@@ -34,7 +34,7 @@ class Mapper(Cog):
     @map_checks.map_ready()
     async def map(self, ctx):
         """View the map url for this server."""
-        ctx.send('To view the current map, click [here](' + self.map_url + '/?map=' + str(ctx.message.guild.id) + ')')
+        await ctx.send('To view the current map, click [here](' + self.map_url + '/?map=' + str(ctx.message.guild.id) + ')')
 
     @command()
     @map_checks.map_ready()
