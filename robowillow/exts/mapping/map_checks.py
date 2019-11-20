@@ -24,7 +24,9 @@ async def is_map_ready(ctx, _map=None):
             return db.check_permission(channel_id, 'research') and check_ready(_map)
         except (KeyError):
             return False
-    return db.check_permission(channel_id, 'research') and check_ready(_map)
+    output = db.check_permission(channel_id, 'research') and check_ready(_map)
+    print(str(output))
+    return output
 
 
 def map_channel():
