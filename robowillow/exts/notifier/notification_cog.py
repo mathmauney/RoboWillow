@@ -1,7 +1,7 @@
 from discord.ext.commands import Cog, command
 from . import notification_checks
 
-class notifier(Cog):
+class Notifier(Cog):
     """Commands to deal with notification of sightings."""
 
     def __init__(self, bot):
