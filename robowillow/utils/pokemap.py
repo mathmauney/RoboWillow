@@ -59,11 +59,11 @@ class Tasklist:
         """Initialize the tasklist."""
         self.tasks = []
         self.permanent_tasks = []
-        self.add_task(Task("Rare Candy", "Unknown"))
-        self.add_task(Task("Silver Pinap", "Unknown"))
-        self.add_task(Task("Stardust", "Unknown"))
-        self.add_task(Task("Fast TM", "Unknown"))
-        self.add_task(Task("Charged TM", "Unknown"))
+        self.add_permanent_task(Task("Rare Candy", "Unknown"))
+        self.add_permanent_task(Task("Silver Pinap", "Unknown"))
+        self.add_permanent_task(Task("Stardust", "Unknown"))
+        self.add_permanent_task(Task("Fast TM", "Unknown"))
+        self.add_permanent_task(Task("Charged TM", "Unknown"))
 
     def add_task(self, task):
         """Add a task to the tasklist."""
