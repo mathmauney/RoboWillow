@@ -11,7 +11,8 @@ def add_channel(channel_id):
         channel_id = int(channel_id)
     perm_dict = {"discord_id": channel_id,
                  "trade": False,
-                 "research": False}
+                 "research": False,
+                 "notifier": False}
     permissions.insert_one(perm_dict)
 
 
