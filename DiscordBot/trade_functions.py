@@ -237,6 +237,11 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
             galarian = True
         elif poke.title() == 'Shinies':
             all_shinies = True
+        elif poke.title() == "Sandy":
+            if form is None:
+                form = poke
+            else:
+                form = form + ' ' + poke
         else:
             matched_poke = pokemap.match_pokemon(poke)
             if all_shinies is True:
