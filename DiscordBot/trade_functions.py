@@ -305,7 +305,8 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                 if shiny is True:
                     matched_poke = "Shiny " + matched_poke
                     shiny = False
-                cleaned_list.append(matched_poke)
+                if matched_poke not in cleaned_list:
+                    cleaned_list.append(matched_poke)
                 form = None
             else:
                 if form is None:
