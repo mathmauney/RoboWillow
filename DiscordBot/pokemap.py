@@ -38,7 +38,7 @@ class Task:
         else:
             self.rewards = [self.reward]
         if "Alolan" in self.reward[0]:
-            self.icon = self.reward[0].split(' ')[0] + '-alola'
+            self.icon = self.reward[1].split(' ')[0] + '-alola'
         else:
             self.icon = self.rewards[0]
 
@@ -52,7 +52,7 @@ class Task:
         icon = icon.title()
         if icon in self.rewards:
             if "Alolan" in icon:
-                self.icon = icon.split(' ')[0] + '-alola'
+                self.icon = icon.split(' ')[1] + '-alola'
             else:
                 self.icon = icon
 
