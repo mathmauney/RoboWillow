@@ -1223,7 +1223,11 @@ When you and someone else match you will be notified automatically. You can view
                 task = tasklist.find_task(task_name)
                 prev_message_stop[message.server.id].set_task(task)
                 if task_name.title() in task.rewards:
-                    prev_message_stop[message.server.id].properties['Icon'] = task_name.title()
+                    if "Alolan" in task_name.title():
+                        icon = task_name.title().split(' ')[1] + '-alola'
+                    else:
+                        icon = task_name.title()
+                    prev_message_stop[message.server.id].properties['Icon'] = icon
                 taskmap.save()
                 await client.add_reaction(prev_message[message.server.id], '👍')
                 await client.add_reaction(message, '👍')
