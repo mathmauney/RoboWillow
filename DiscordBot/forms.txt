@@ -13,6 +13,7 @@ Summer Hat Pikachu, 25_05
 Fragment Hat Pikachu, Black Hat Pikachu, 25_06
 Flower Crown Pikachu, 25_07
 Detective Hat Pikachu
+Winter Hat Pikachu, 25_08, Beanie Pikachu
 Straw Hat Pikachu, 25_10
 Party Hat Raichu, 26_02
 Santa Hat Raichu, 26_01
@@ -21,12 +22,14 @@ Witch Hat Raichu, 26_04
 Summer Hat Raichu, 26_05
 Fragment Hat Raichu, Black Hat Raichu, 26_06
 Flower Crown Raichu, 26_07
+Winter Hat Raichu, 26_08, Beanie Raichu
 Detective Hat Raichu
 Party Hat Pichu, 172_02
 Santa Hat Pichu, 172_01
 Ash Hat Pichu, 172_03
 Witch Hat Pichu, 172_04
 Summer Hat Pichu, 172_05
+Winter Hat Pichu, 172_08, Beanie Pichu
 Flower Crown Eevee, 133_07
 Flower Crown Vaporeon, 134_07
 Flower Crown Jolteon, 135_07
@@ -58,3 +61,4 @@ West Sea Shellos, Pink Shellos
 East Sea Shellos, Blue Shellos
 West Sea Gastrodon, Pink Gastrodon
 East Sea Gastrodon, Blue Gastrodon
+Holiday Stantler, Winter Slantler, 234_08
