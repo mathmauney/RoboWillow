@@ -41,6 +41,7 @@ class Task:
             self.icon = self.reward[1].split(' ')[0] + '-alola'
         else:
             self.icon = self.rewards[0]
+            print(self.rewards[0])
 
     def add_nickname(self, name):
         """Add a nickname to the task."""
