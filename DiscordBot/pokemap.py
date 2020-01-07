@@ -37,7 +37,10 @@ class Task:
             self.rewards = ['Bulbasaur', 'Squirtle', 'Charmander']
         else:
             self.rewards = [self.reward]
-        self.icon = self.rewards[0]
+        if "Alolan" in self.reward[0]:
+            self.icon = self.reward[0].split(' ')[0] + '-alola'
+        else:
+            self.icon = self.rewards[0]
 
     def add_nickname(self, name):
         """Add a nickname to the task."""
@@ -48,7 +51,10 @@ class Task:
         """Choose which reward to use as the icon."""
         icon = icon.title()
         if icon in self.rewards:
-            self.icon = icon
+            if "Alolan" in icon:
+                self.icon = icon.split(' ')[0] + '-alola'
+            else:
+                self.icon = icon
 
 
 class Tasklist:
