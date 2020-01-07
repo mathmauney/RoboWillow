@@ -407,11 +407,19 @@ def fetch_tasklist():
         if ':' in quest:
             quest = quest.split(':')[-1].strip()
         for img_elem in raw_task[1]:
-            img_name = match_pokemon(int(img_elem.attrib['src'].split('/')[-1].strip('.png')))
+            try:
+                img_name = int(img_elem.attrib['src'].split('/')[-1].strip('.png'))
+                poke_name = match_pokemon(img_name)
+            except ValueError:
+                img_name = img_elem.attrib['src'].split('/')[-1].strip('.png')
+                if "alola" in img_name:
+                    poke_name = "Alolan " + match_pokemon(img_name)
+                else:
+                    poke_name = match_pokemon(img_name)
             if name is None:
-                name = img_name
+                name = poke_name
             else:
-                name += ' or ' + img_name
+                name += ' or ' + poke_name
             if 'shiny' in img_elem.getparent().attrib['class']:
                 shiny = True
         if name == 'Bulbasaur or Charmander or Squirtle':
