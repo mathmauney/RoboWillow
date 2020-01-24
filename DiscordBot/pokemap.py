@@ -257,7 +257,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                 if not(stop.properties['Nicknames']):
                     stop.properties['Nicknames'].append('Temp' + str(temp_num))
                     temp_num += 1
-            raise MutlipleStopsFound(stops_found)
+            raise MutlipleStopsFound(stops_found, stop_name)
 
     def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
         """Add a new stop to the map."""
@@ -508,7 +508,7 @@ class GymTaskAssignment(PokemapException):
 class MutlipleStopsFound(PokemapException):
     """Exception for when multiple stops are found using the same stop search query."""
 
-    def __init__(self, stops=None):
+    def __init__(self, stops=None, search=None):
         """Add message based on context of error."""
         msg = "Multiple stops found with this name. Use stop nicknames to prevent this. Stops without nicknames have been given temporary nicknames, please add unique nicknames now."
         if not(stops is None):
