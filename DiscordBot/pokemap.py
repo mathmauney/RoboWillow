@@ -456,7 +456,8 @@ def fetch_tasklist():
 def iitcimport(taskmap, filename):
     """Import an IITC file to get new potential stops and gyms."""
     if '://' in filename:
-        file = requests.get(filename).json()
+        file = requests.get(filename)
+        json_dict = file.json()
     else:
         with open(filename, 'r') as file:
             json_dict = json.load(file)
