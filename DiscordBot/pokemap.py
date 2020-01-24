@@ -460,7 +460,6 @@ def iitcimport(taskmap, filename):
     else:
         with open(filename, 'r') as file:
             json_dict = json.load(file)
-
     for key in json_dict:
         if 'Ignored' in key.title():
             pass

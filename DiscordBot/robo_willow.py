@@ -1045,7 +1045,8 @@ async def serverid(context):
 async def iitcimport(ctx, filename=None):
     """Force import from IITC data upload."""
     if filename is None:
-        filename = ctx.message.attachments[0]['url']
+        print(ctx.message.attachments[0])
+        filename = ctx.message.attachments[0]['proxyurl']
     taskmap = maps[ctx.message.server.id]
     pokemap.iitcimport(taskmap, filename)
     await client.add_reaction(ctx.message, '👍')
