@@ -467,6 +467,7 @@ def iitcimport(taskmap, filename):
         else:
             for poi in json_dict[key]:
                 name = json_dict[key][poi]['name']
+                print(name)
                 lat = json_dict[key][poi]['lat']
                 long = json_dict[key][poi]['lng']
                 try:
