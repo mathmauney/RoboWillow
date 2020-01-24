@@ -222,7 +222,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             feat = Stop(geometry=geometry, properties=properties).__geo_interface__
         self._data["features"].append(feat)
 
-    def find_stop(self, stop_name):
+    def find_stop(self, stop_name, coords=None):
         """Find a stop within the map by its name or nickname."""
         stops_found = []
         stop_name = stop_name.replace('’', "'")
@@ -252,12 +252,16 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             stops_found[0]._map = self
             return stops_found[0]
         else:
+            if coords is not None:
+                for stop in stops_found:
+                    if coords[0] in stop.geometry["coordinates"] and coords[1] in stop.geometry["coordinates"]:
+                        return stop
             temp_num = 1
             for stop in stops_found:
                 if not(stop.properties['Nicknames']):
                     stop.properties['Nicknames'].append('Temp' + str(temp_num))
                     temp_num += 1
-            raise MutlipleStopsFound(stops_found, stop_name)
+            raise MultipleStopsFound(stops_found, stop_name)
 
     def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
         """Add a new stop to the map."""
@@ -414,6 +418,7 @@ def match_form(pokemon, descriptor=None):
 
 
 def fetch_tasklist():
+    """Fetch tasks from TSR and parse them."""
     page = urlopen("https://thesilphroad.com/research-tasks")
     doc = html.parse(page)
     raw_tasks = [[pkmn[0].text, pkmn.cssselect('img')] for pkmn in doc.xpath("//div[@class='task unconfirmed pkmn ' or @class='task unconfirmed pkmn long']")]
@@ -461,7 +466,7 @@ def iitcimport(taskmap, filename):
                 lat = json_dict[key][poi]['lat']
                 long = json_dict[key][poi]['lng']
                 try:
-                    stop = taskmap.find_stop(name)
+                    stop = taskmap.find_stop(name, [long, lat])
                 except StopNotFound:
                     taskmap.new_stop([long, lat], name)
                     stop = taskmap.find_stop(name)
@@ -469,7 +474,9 @@ def iitcimport(taskmap, filename):
                         stop.properties['Type'] = 'Stop'
                     else:
                         stop.properties['Type'] = 'POI'
-                if key == 'gyms':
+                except MultipleStopsFound:
+                    stop = None
+                if key == 'gyms' and stop is not None:
                     stop.properties['Type'] = 'Gym'
     taskmap.save()
 
@@ -505,7 +512,7 @@ class GymTaskAssignment(PokemapException):
         self.message = "Tasks cannot be assigned to gyms."
 
 
-class MutlipleStopsFound(PokemapException):
+class MultipleStopsFound(PokemapException):
     """Exception for when multiple stops are found using the same stop search query."""
 
     def __init__(self, stops=None, search=None):
