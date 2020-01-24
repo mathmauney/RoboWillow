@@ -223,7 +223,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             feat = Stop(geometry=geometry, properties=properties).__geo_interface__
         self._data["features"].append(feat)
 
-    def find_stop(self, stop_name, coords=None):
+    def find_stop(self, stop_name, coords=None, acc=80):
         """Find a stop within the map by its name or nickname."""
         stops_found = []
         stop_name = stop_name.replace('’', "'")
@@ -239,7 +239,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             best_stop = None
             for stop in self:
                 ratio = fuzz.partial_ratio(stop.properties['Stop Name'].title(), stop_name.title())
-                if ratio > 80 and ratio > best_ratio:
+                if ratio > acc and ratio > best_ratio:
                     best_ratio = ratio
                     best_stop = stop
                 elif ratio == 100:
@@ -469,21 +469,11 @@ def iitcimport(taskmap, filename):
                 name = json_dict[key][poi]['name']
                 lat = json_dict[key][poi]['lat']
                 long = json_dict[key][poi]['lng']
-                if 'Plant' in name:
-                    print(name)
-                    print(lat)
-                    print(long)
                 try:
-                    stop = taskmap.find_stop(name, [long, lat])
-                    if 'Plant' in name:
-                        print("Found Stop")
+                    stop = taskmap.find_stop(name, [long, lat], acc=95)
                 except StopNotFound:
-                    if 'Plant' in name:
-                        print("No Stop Found")
                     taskmap.new_stop([long, lat], name)
                     stop = taskmap.find_stop(name)
-                    if 'Plant' in name:
-                        print("Made new stop")
                     if key == 'pokestops':
                         stop.properties['Type'] = 'Stop'
                     else:
