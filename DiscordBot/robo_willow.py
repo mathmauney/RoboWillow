@@ -751,7 +751,7 @@ async def resetstop(ctx, *args):
 
 @client.command(pass_context=True)
 @pass_errors
-async def resetstop(ctx, *args):
+async def makegym(ctx, *args):
     """Reset the task associated with a stop."""
     taskmap = maps[ctx.message.server.id]
     stop_name = ' '.join(args)
