@@ -125,6 +125,8 @@ class Stop(pygeoj.Feature):
 
     def set_task(self, task):
         """Add a task to the stop."""
+        if self.properties['Type'] == 'Gym':
+            raise GymTaskAssignment()
         if self.properties['Task'] == '':
             self.properties['Task'] = task.quest
             self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
@@ -179,6 +181,7 @@ class Stop(pygeoj.Feature):
     def make_gym(self):
         """Make a stop into a gym."""
         self.properties['Type'] = 'Gym'
+        self.reset()
 
 
 class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a default one that checks for proper long/lat formating
@@ -459,6 +462,14 @@ class TaskAlreadyAssigned(PokemapException):
         else:
             msg = "Failed to assign " + task.reward + " to " + stop.properties['Stop Name'] + " as it already had task " + stop.properties['Task']
         self.message = msg
+
+
+class GymTaskAssignment(PokemapException):
+    """Exception for trying to assign a new task to a gym."""
+
+    def __init___(self):
+        """Add message based on error context."""
+        self.message = "Tasks cannot be assigned to gyms."
 
 
 class MutlipleStopsFound(PokemapException):
