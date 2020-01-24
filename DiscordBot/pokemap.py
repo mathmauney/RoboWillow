@@ -467,15 +467,23 @@ def iitcimport(taskmap, filename):
         else:
             for poi in json_dict[key]:
                 name = json_dict[key][poi]['name']
-                if 'Plant' in name:
-                    print(name)
                 lat = json_dict[key][poi]['lat']
                 long = json_dict[key][poi]['lng']
+                if 'Plant' in name:
+                    print(name)
+                    print(lat)
+                    print(long)
                 try:
                     stop = taskmap.find_stop(name, [long, lat])
+                    if 'Plant' in name:
+                        print("Found Stop")
                 except StopNotFound:
+                    if 'Plant' in name:
+                        print("No Stop Found")
                     taskmap.new_stop([long, lat], name)
                     stop = taskmap.find_stop(name)
+                    if 'Plant' in name:
+                        print("Made new stop")
                     if key == 'pokestops':
                         stop.properties['Type'] = 'Stop'
                     else:
@@ -485,6 +493,7 @@ def iitcimport(taskmap, filename):
                 if key == 'gyms' and stop is not None:
                     stop.properties['Type'] = 'Gym'
     taskmap.save()
+    print("Loaded IITC data")
 
 
 # Custom Exceptions
