@@ -1055,6 +1055,7 @@ async def iitcimport(ctx, filename):
 async def test(ctx):
     """Test function."""
     print(ctx.message.attachments)
+    ctx.message.attachments[0].save()
 
 
 @client.event
