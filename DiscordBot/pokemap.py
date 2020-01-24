@@ -254,7 +254,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
         else:
             if coords is not None:
                 for stop in stops_found:
-                    if coords[0] in stop.geometry["coordinates"] and coords[1] in stop.geometry["coordinates"]:
+                    if coords[0] in stop.geometry.coordinates and coords[1] in stop.geometry.coordinates:
                         return stop
             temp_num = 1
             for stop in stops_found:
