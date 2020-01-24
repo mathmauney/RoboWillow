@@ -2,7 +2,7 @@ token.js
 map.json
 Discord\ Bot/test.py
 Discord\ Bot/config.py
-*.json
+map.json
 *test*
 config.py
 __pycache__

@@ -1040,6 +1040,15 @@ async def serverid(context):
     await client.say(context.message.server.id)
 
 
+@client.command(pass_context=True)
+@has_permissions(administrator=True)
+async def iitcimport(context, filename):
+    """Force import from IITC data upload."""
+    taskmap = maps[ctx.message.server.id]
+    pokemap.iitcimport(taskmap, filename)
+    await client.add_reaction(ctx.message, '👍')
+
+
 @client.event
 async def on_message(message):
     """Respond to messages.

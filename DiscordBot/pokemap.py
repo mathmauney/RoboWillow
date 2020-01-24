@@ -6,6 +6,7 @@ import pygeoj
 import pickle
 import pytz
 import copy
+import json
 from fuzzywuzzy import fuzz
 
 
@@ -444,6 +445,33 @@ def fetch_tasklist():
             name = 'Gen 1 Starter'
         tasklist.add_task(Task(name, quest, shiny))
     return tasklist
+
+
+def iitcimport(taskmap, filename):
+    """Import an IITC file to get new potential stops and gyms."""
+    with open(filename, 'r') as file:
+        json_dict = json.load(file)
+
+    for key in json_dict:
+        if 'Ignored' in key.title():
+            pass
+        else:
+            for poi in json_dict[key]:
+                name = json_dict[key][poi]['name']
+                lat = json_dict[key][poi]['lat']
+                long = json_dict[key][poi]['lng']
+                try:
+                    stop = taskmap.find_stop(name)
+                except StopNotFound:
+                    taskmap.new_stop([long, lat], name)
+                    stop = taskmap.find_stop(name)
+                    if key == 'pokestops':
+                        stop.properties['Type'] = 'Stop'
+                    else:
+                        stop.properties['Type'] = 'POI'
+                if key == 'gyms':
+                    stop.properties['Type'] = 'Gym'
+    taskmap.save()
 
 
 # Custom Exceptions
