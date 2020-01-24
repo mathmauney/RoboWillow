@@ -138,7 +138,7 @@
 
 			categoryName = 'Unreported'
 			categoryArray = categories[categoryName];
-			if (Object.keys(categories).length < 3){
+			if (Object.keys(categories).length == 3){
 				categoryLG = L.layerGroup(categoryArray).addTo(map);
 			} else {
 				categoryLG = L.layerGroup(categoryArray);
