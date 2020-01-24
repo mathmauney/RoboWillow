@@ -92,10 +92,10 @@
 
 			function onEachFeature(feature, layer) {
 				// does this feature have a property named popupContent?
-				if (feature.type == 'Gym') {
+				if (feature.properties.Type == 'Gym') {
 					category = 'Gym';
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>")
-				} else if (typeof feature.type === 'undefined') {
+				} else if (typeof feature.properties.Type === 'undefined') {
 					category = 'Ingress POI';
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>")
 				} else if (feature.properties && feature.properties.Reward && (feature.properties.Category != 'Shadow')) {
