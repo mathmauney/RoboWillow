@@ -8,6 +8,7 @@ import pytz
 import copy
 import json
 from fuzzywuzzy import fuzz
+import requests
 
 
 class Task:
@@ -454,8 +455,12 @@ def fetch_tasklist():
 
 def iitcimport(taskmap, filename):
     """Import an IITC file to get new potential stops and gyms."""
-    with open(filename, 'r') as file:
-        json_dict = json.load(file)
+    if '://' in filename:
+        file = requests.get(filename)
+        json_dict = json.loads(file.content.decode('utf-8'))
+    else:
+        with open(filename, 'r') as file:
+            json_dict = json.load(file)
 
     for key in json_dict:
         if 'Ignored' in key.title():

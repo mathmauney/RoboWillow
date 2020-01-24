@@ -1042,20 +1042,13 @@ async def serverid(context):
 
 @client.command(pass_context=True)
 @pass_errors
-async def iitcimport(ctx, filename):
+async def iitcimport(ctx, filename=None):
     """Force import from IITC data upload."""
-    if int(ctx.message.author.id) == int(maintainer_id):
+    if filename is not None:
         taskmap = maps[ctx.message.server.id]
         pokemap.iitcimport(taskmap, filename)
         await client.add_reaction(ctx.message, '👍')
-
-
-@client.command(pass_context=True)
-@pass_errors
-async def test(ctx):
-    """Test function."""
-    print(ctx.message.attachments)
-    ctx.message.attachments[0].save()
+    else:
 
 
 @client.event
