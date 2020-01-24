@@ -62,8 +62,11 @@
 			}).addTo(map);
 
 
-			var categories = {},
-				category;
+			var categories = {};
+			var category;
+			categories["Ingress POI"] = [];
+			categories["Unreported"] = [];
+			categories["Gym"] = [];
 
 			var pokeIcon = L.Icon.extend({
 				options: {
@@ -89,7 +92,13 @@
 
 			function onEachFeature(feature, layer) {
 				// does this feature have a property named popupContent?
-				if (feature.properties && feature.properties.Reward && (feature.properties.Category != 'Shadow')) {
+				if (feature.type == 'Gym') {
+					category = 'Gym'
+					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>")
+				} else if (typeof feature.type === 'undefined') {
+					category = 'Ingress POI'
+					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>")
+				} else if (feature.properties && feature.properties.Reward && (feature.properties.Category != 'Shadow')) {
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +".</div>");
 					if (feature.properties.Category == 'Encounter') {
 						layer.setIcon(new pokeIcon({iconUrl: "./img/"+feature.properties.Icon.toLowerCase()+".png"}));
@@ -129,10 +138,10 @@
 
 			categoryName = 'Unreported'
 			categoryArray = categories[categoryName];
-			if (Object.keys(categories).length == 1){
+			if (Object.keys(categories).length < 3){
 				categoryLG = L.layerGroup(categoryArray).addTo(map);
 			} else {
-			categoryLG = L.layerGroup(categoryArray);
+				categoryLG = L.layerGroup(categoryArray);
 			}
 			categoryLG.categoryName = categoryName;
 			overlaysObj[categoryName] = categoryLG;
@@ -140,7 +149,7 @@
 
 			for (x in Object.keys(categories).sort()) {
 				categoryName = Object.keys(categories).sort()[x]
-				if (categoryName != 'Unreported'){
+				if (categoryName != 'Unreported') and (categoryName != 'Ingress POI') and (categoryName != 'Gym'){
 					categoryArray = categories[categoryName];
 					categoryLG = L.layerGroup(categoryArray).addTo(map);
 					categoryLG.categoryName = categoryName;

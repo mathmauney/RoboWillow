@@ -176,6 +176,10 @@ class Stop(pygeoj.Feature):
         else:
             self.properties['Nicknames'].append(nickname.title())
 
+    def make_gym(self):
+        """Make a stop into a gym."""
+        self.properties['Type'] = 'Gym'
+
 
 class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a default one that checks for proper long/lat formating
     """Class for the research map. Hopefully this will allow for multiple servers with seperate maps to be stored easily at once."""
