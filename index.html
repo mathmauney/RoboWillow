@@ -93,10 +93,10 @@
 			function onEachFeature(feature, layer) {
 				// does this feature have a property named popupContent?
 				if (feature.type == 'Gym') {
-					category = 'Gym'
+					category = 'Gym';
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>")
 				} else if (typeof feature.type === 'undefined') {
-					category = 'Ingress POI'
+					category = 'Ingress POI';
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3></div>")
 				} else if (feature.properties && feature.properties.Reward && (feature.properties.Category != 'Shadow')) {
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +".</div>");
@@ -111,7 +111,7 @@
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>" + feature.properties.Task + " for a " + feature.properties.Reward +".<br /><br />Team Rocket is currently attacking this stop. Defeat them to gain " + feature.properties['Shadow Pokemon'] + ".</div>");
 					layer.setIcon(new shadowIcon({iconUrl: "./img/"+feature.properties.Icon.toLowerCase()+".png"}));
 					category = feature.properties.Category;
-				} else if (feature.properties && feature.properties.Category == 'Shadow'){
+				} else if (feature.properties && feature.properties.Category == 'Shadow') {
 					layer.bindPopup("<div><h3>" + feature.properties['Stop Name'] + "</h3>Team Rocket is currently attacking this stop. Defeat them to gain " + feature.properties['Shadow Pokemon'] + ".</div>");
 					category = feature.properties.Category;
 					layer.setIcon(new shadowIcon({iconUrl: "./img/"+feature.properties.Icon.toLowerCase()+".png"}));
@@ -149,7 +149,7 @@
 
 			for (x in Object.keys(categories).sort()) {
 				categoryName = Object.keys(categories).sort()[x]
-				if (categoryName != 'Unreported') and (categoryName != 'Ingress POI') and (categoryName != 'Gym'){
+				if ((categoryName != 'Unreported') && (categoryName != 'Ingress POI') && (categoryName != 'Gym')) {
 					categoryArray = categories[categoryName];
 					categoryLG = L.layerGroup(categoryArray).addTo(map);
 					categoryLG.categoryName = categoryName;
