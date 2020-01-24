@@ -125,8 +125,13 @@ class Stop(pygeoj.Feature):
 
     def set_task(self, task):
         """Add a task to the stop."""
-        if self.properties['Type'] == 'Gym':
-            raise GymTaskAssignment()
+        try:
+            if self.properties['Type'] == 'Gym':
+                raise GymTaskAssignment()
+            elif self.properties['Type'] == 'POI':
+                self.properties['Type'] = 'Stop'
+        except KeyError:
+            self.properties['Type'] = 'Stop'
         if self.properties['Task'] == '':
             self.properties['Task'] = task.quest
             self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
