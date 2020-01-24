@@ -1042,7 +1042,7 @@ async def serverid(context):
 
 @client.command(pass_context=True)
 @has_permissions(administrator=True)
-async def iitcimport(context, filename):
+async def iitcimport(ctx, filename):
     """Force import from IITC data upload."""
     taskmap = maps[ctx.message.server.id]
     pokemap.iitcimport(taskmap, filename)
