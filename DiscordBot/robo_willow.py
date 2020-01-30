@@ -764,6 +764,19 @@ async def makegym(ctx, *args):
 
 @client.command(pass_context=True)
 @pass_errors
+async def notgym(ctx, *args):
+    """Reset the task associated with a stop."""
+    taskmap = maps[ctx.message.server.id]
+    stop_name = ' '.join(args)
+    stop_name = stop_name
+    stop = taskmap.find_stop(stop_name)
+    stop.make_gym(False)
+    taskmap.save()
+    await client.add_reaction(ctx.message, '👍')
+
+
+@client.command(pass_context=True)
+@pass_errors
 async def addtask(ctx, reward, quest, shiny=False):
     """Add a task to a stop."""
     tasklist.add_task(pokemap.Task(reward, quest, shiny))

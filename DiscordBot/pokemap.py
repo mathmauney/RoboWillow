@@ -185,10 +185,14 @@ class Stop(pygeoj.Feature):
         else:
             self.properties['Nicknames'].append(nickname.title())
 
-    def make_gym(self):
+    def make_gym(self, is_gym=True):
         """Make a stop into a gym."""
-        self.properties['Type'] = 'Gym'
-        self.reset()
+        if is_gym:
+            self.properties['Type'] = 'Gym'
+            self.reset()
+        else:
+            self.properties['Type'] = 'Stop'
+            self.reset()
 
 
 class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a default one that checks for proper long/lat formating
@@ -223,7 +227,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             feat = Stop(geometry=geometry, properties=properties).__geo_interface__
         self._data["features"].append(feat)
 
-    def find_stop(self, stop_name, coords=None, acc=80):
+    def find_stop(self, stop_name, coords=None, acc=80, force=False):
         """Find a stop within the map by its name or nickname."""
         stops_found = []
         stop_name = stop_name.replace('’', "'")
@@ -238,7 +242,10 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             best_ratio = 0
             best_stop = None
             for stop in self:
-                ratio = fuzz.partial_ratio(stop.properties['Stop Name'].title(), stop_name.title())
+                if force:
+                    ratio = fuzz.ratio(stop.properties['Stop Name'].title(), stop_name.title())
+                else:
+                    ratio = fuzz.partial_ratio(stop.properties['Stop Name'].title(), stop_name.title())
                 if ratio > acc and ratio > best_ratio:
                     best_ratio = ratio
                     best_stop = stop
@@ -470,7 +477,7 @@ def iitcimport(taskmap, filename):
                 lat = json_dict[key][poi]['lat']
                 long = json_dict[key][poi]['lng']
                 try:
-                    stop = taskmap.find_stop(name, [long, lat], acc=95)
+                    stop = taskmap.find_stop(name, [long, lat], acc=95, force=True)
                 except StopNotFound:
                     taskmap.new_stop([long, lat], name)
                     stop = taskmap.find_stop(name)
