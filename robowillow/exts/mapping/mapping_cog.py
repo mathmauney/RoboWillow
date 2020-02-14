@@ -7,8 +7,6 @@ from robowillow.core.checks import check_is_owner
 from . import map_checks
 from datetime import datetime
 import discord
-import requests
-import json
 
 
 class Mapper(Cog):
@@ -90,7 +88,8 @@ class Mapper(Cog):
     async def settask(self, ctx, task, *stop):
         """Set a task to a stop.
 
-        Can also be done by simple typing the stop name and task in a message seperated by a return."""
+        Can also be done by simple typing the stop name and task in a message seperated by a return.
+        """
         taskmap = self.maps[ctx.message.guild.id]
         n_args = len(stop)
         if n_args > 0:
@@ -243,7 +242,8 @@ class Mapper(Cog):
     async def nicknamestop(self, ctx, stop_name, nickname):
         """Add a nickname to a stop.
 
-        If the stop or nickname contain spaces they should be wrapped in quotes."""
+        If the stop or nickname contain spaces they should be wrapped in quotes.
+        """
         taskmap = self.maps[ctx.message.guild.id]
         stop = taskmap.find_stop(stop_name)
         stop.add_nickname(nickname)
@@ -256,7 +256,8 @@ class Mapper(Cog):
     async def nicknametask(self, ctx, task_name, nickname):
         """Add a nickname to a task.
 
-        If the task or nickname contain spaces they should be wrapped in quotes."""
+        If the task or nickname contain spaces they should be wrapped in quotes.
+        """
         task = self.tasklist.find_task(task_name)
         task.add_nickname(nickname)
         self.tasklist.save(self.task_path)
@@ -268,7 +269,8 @@ class Mapper(Cog):
     async def setlocation(self, ctx, lat, long):
         """Set the location of the map for the web view.
 
-        This will set the center of the default map view."""
+        This will set the center of the default map view.
+        """
         taskmap = self.maps[ctx.message.guild.id]
         taskmap.set_location(float(lat), float(long))
         try:
@@ -318,7 +320,8 @@ class Mapper(Cog):
     async def setbounds(self, ctx, lat1, long1, lat2, long2):
         """Set the boundaries of the maps for checking when pokestops are added.
 
-        The latitutes and longitudes will form a bounding rectangle, all stops added must fall within these coordinates."""
+        The latitutes and longitudes will form a bounding rectangle, all stops added must fall within these coordinates.
+        """
         taskmap = self.maps[ctx.message.guild.id]
         coords1 = [float(lat1), float(long1)]
         coords2 = [float(lat2), float(long2)]
@@ -336,7 +339,8 @@ class Mapper(Cog):
     async def settimezone(self, ctx, tz_str):
         """Set the timezone of the map so it resets itself correctly.
 
-        The timezone list can be found at: https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones"""
+        The timezone list can be found at: https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones
+        """
         taskmap = self.maps[ctx.message.guild.id]
         taskmap.set_time_zone(tz_str)
         try:
