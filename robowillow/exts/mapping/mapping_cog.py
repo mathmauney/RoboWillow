@@ -7,6 +7,8 @@ from robowillow.core.checks import check_is_owner
 from . import map_checks
 from datetime import datetime
 import discord
+import requests
+import json
 
 
 class Mapper(Cog):
@@ -138,6 +140,41 @@ class Mapper(Cog):
         backup_name = datetime.now().strftime("%Y.%m.%d.%H%M%S") + '_tasklist_backup.pkl'
         self.tasklist.save(backup_name)
         self.tasklist.clear()
+        await ctx.message.add_reaction('👍')
+
+    @command()
+    @map_checks.map_channel()
+    def iitcimport(self, ctx, taskmap, filename):
+        """Import an IITC file to get new potential stops and gyms."""
+        if '://' in filename:
+            file = requests.get(filename)
+            json_dict = file.json()
+        else:
+            with open(filename, 'r') as file:
+                json_dict = json.load(file)
+        for key in json_dict:
+            if 'Ignored' in key.title():
+                pass
+            else:
+                for poi in json_dict[key]:
+                    name = json_dict[key][poi]['name']
+                    lat = json_dict[key][poi]['lat']
+                    long = json_dict[key][poi]['lng']
+                    try:
+                        stop = taskmap.find_stop(name, [long, lat], acc=95, force=True)
+                    except pokemap.StopNotFound:
+                        taskmap.new_stop([long, lat], name)
+                        stop = taskmap.find_stop(name)
+                        if key == 'pokestops':
+                            stop.properties['Type'] = 'Stop'
+                        else:
+                            stop.properties['Type'] = 'POI'
+                    except pokemap.MultipleStopsFound:
+                        stop = None
+                    if key == 'gyms' and stop is not None:
+                        stop.properties['Type'] = 'Gym'
+        taskmap.save()
+        print("Loaded IITC data")
         await ctx.message.add_reaction('👍')
 
     @command()
