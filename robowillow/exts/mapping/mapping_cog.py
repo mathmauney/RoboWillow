@@ -111,6 +111,30 @@ class Mapper(Cog):
         else:
             await ctx.send('Not enough arguments.')
 
+    @command
+    @map_checks.map_ready()
+    async def makegym(self, ctx, *args):
+        """Reset the task associated with a stop."""
+        taskmap = self.maps[ctx.message.guild.id]
+        stop_name = ' '.join(args)
+        stop_name = stop_name
+        stop = taskmap.find_stop(stop_name)
+        stop.make_gym()
+        taskmap.save()
+        await ctx.message.add_reaction('👍')
+
+    @command
+    @map_checks.map_ready()
+    async def notgym(self, ctx, *args):
+        """Reset the task associated with a stop."""
+        taskmap = self.maps[ctx.message.guild.id]
+        stop_name = ' '.join(args)
+        stop_name = stop_name
+        stop = taskmap.find_stop(stop_name)
+        stop.make_gym(False)
+        taskmap.save()
+        await ctx.message.add_reaction('👍')
+
     @command()
     @map_checks.map_ready()
     async def resetstop(self, ctx, *args):
@@ -143,38 +167,13 @@ class Mapper(Cog):
         await ctx.message.add_reaction('👍')
 
     @command()
-    @map_checks.map_channel()
-    def iitcimport(self, ctx, taskmap, filename):
-        """Import an IITC file to get new potential stops and gyms."""
-        if '://' in filename:
-            file = requests.get(filename)
-            json_dict = file.json()
-        else:
-            with open(filename, 'r') as file:
-                json_dict = json.load(file)
-        for key in json_dict:
-            if 'Ignored' in key.title():
-                pass
-            else:
-                for poi in json_dict[key]:
-                    name = json_dict[key][poi]['name']
-                    lat = json_dict[key][poi]['lat']
-                    long = json_dict[key][poi]['lng']
-                    try:
-                        stop = taskmap.find_stop(name, [long, lat], acc=95, force=True)
-                    except pokemap.StopNotFound:
-                        taskmap.new_stop([long, lat], name)
-                        stop = taskmap.find_stop(name)
-                        if key == 'pokestops':
-                            stop.properties['Type'] = 'Stop'
-                        else:
-                            stop.properties['Type'] = 'POI'
-                    except pokemap.MultipleStopsFound:
-                        stop = None
-                    if key == 'gyms' and stop is not None:
-                        stop.properties['Type'] = 'Gym'
-        taskmap.save()
-        print("Loaded IITC data")
+    @map_checks.map_ready()
+    async def iitcimport(self, ctx, filename=None):
+        """Force import from IITC data upload."""
+        if filename is None:
+            filename = ctx.message.attachments[0]['url']
+        taskmap = self.maps[ctx.message.guild.id]
+        pokemap.iitcimport(taskmap, filename)
         await ctx.message.add_reaction('👍')
 
     @command()
