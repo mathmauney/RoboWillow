@@ -13,6 +13,7 @@ class Notifier(Cog):
         print("Notifier Loaded.")
 
     @command()
+    @notification_checks.notification_channel()
     async def want(self, ctx, *roles):
         """Set a given pokemon sighting role to a user."""
         all_pokemon = True
@@ -35,6 +36,7 @@ class Notifier(Cog):
             await ctx.send('Not all requests matched known pokemon. Unable to match:' + bad)
 
     @command()
+    @notification_checks.notification_channel()
     async def unwant(self, ctx, *roles):
         """Remove sighting role(s) from a user."""
         bad = ''
