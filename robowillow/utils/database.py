@@ -1,9 +1,11 @@
 import pymongo
+from robowillow.utils import pokemap
 
 host = "mongodb://localhost:27017/"
 my_client = pymongo.MongoClient(host)
 main_db = my_client['main']
 permissions = main_db['permissions']
+settings = main_db['settings']
 
 
 def add_channel(channel_id):
@@ -37,3 +39,17 @@ def check_permission(channel_id, permission):
         return channel[permission]
     except KeyError:
         return False
+
+
+def raid_pokemon(pokemon=None):
+    find_dict = {'category': 'Raid Pokemon'}
+    raid_settings = settings.find_one(find_dict)
+    if raid_settings is None:
+        new_dict = {"category": "Raid Pokemon",
+                    "5*": None}
+        permissions.insert_one(new_dict)
+    if pokemon is None:
+        return raid_settings['5*']
+    else:
+        update_dict = {'$set': {'5*': pokemon}}
+        settings.update_one(find_dict, update_dict)
