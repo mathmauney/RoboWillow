@@ -13,7 +13,8 @@ def add_channel(channel_id):
                  "trade": False,
                  "research": False,
                  "map_ready": False,
-                 "notifier": False}
+                 "notifier": False,
+                 "raids": False}
     permissions.insert_one(perm_dict)
 
 
