@@ -1,5 +1,5 @@
 """Commands to deal with arranging trades."""
-from discord.ext.commands import Cog, command, has_permissions
+from discord.ext.commands import Cog, command
 from robowillow.utils import trade_functions as tf
 from . import trade_checks
 import discord
@@ -358,7 +358,7 @@ class Trader(Cog):
                 offer_name = offer_name.split(":")[1]
                 offer = tf.find_offer(user, offer_name)
             if offer is None:
-                await bot_respond(ctx.message, 'Offer not found')
+                await ctx.send('Offer not found')
                 return
             (wants, haves) = tf.get_offer_contents(offer)
             if haves == []:
@@ -385,17 +385,17 @@ class Trader(Cog):
                             have_strs.append('')
                             want_strs.append('')
                     want_strs[i] = want_strs[i] + want + '\n'
-            prev_views[ctx.message.author.id] = (have_strs, want_strs)
+            self.prev_views[ctx.message.author.id] = (have_strs, want_strs)
             embed = discord.Embed(colour=discord.Colour(0x186a0))
-            embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), bot_prefix[0]))
+            embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), self.bot.default_prefix))
             embed.add_field(name='Have', value=have_strs[0], inline=False)
             embed.add_field(name='Want', value=want_strs[0], inline=False)
-            await bot_embed_respond(ctx.message, embed)
+            await ctx.send(embed=embed)
         elif len(args) >= 2:
             pogo_name = args[0]
             user = tf.find_user(pogo_name.title())
             if user is None:
-                await bot_respond(ctx.message, 'User not found')
+                await ctx.send('User not found')
             else:
                 search_terms = args[1:]
                 if len(search_terms) == 1:
@@ -405,7 +405,7 @@ class Trader(Cog):
                         offer_name = offer_name.split(":")[1]
                         offer = tf.find_offer(user, offer_name)
                     if offer is None:
-                        await bot_respond(ctx.message, 'Offer not found')
+                        await ctx.send('Offer not found')
                         return
                     (wants, haves) = tf.get_offer_contents(offer)
                     if haves == []:
@@ -432,14 +432,14 @@ class Trader(Cog):
                                     have_strs.append('')
                                     want_strs.append('')
                             want_strs[i] = want_strs[i] + want + '\n'
-                    prev_views[ctx.message.author.id] = (have_strs, want_strs)
+                    self.prev_views[ctx.message.author.id] = (have_strs, want_strs)
                     embed = discord.Embed(colour=discord.Colour(0x186a0))
-                    embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), bot_prefix[0]))
+                    embed.set_footer(text='Page 1 of %s. Use %sviewmore n to see page n.' % (len(want_strs), self.bot.default_prefix))
                     embed.add_field(name='Haves', value=have_strs[0], inline=False)
                     embed.add_field(name='Wants', value=want_strs[0], inline=False)
-                    await bot_embed_respond(ctx.message, embed)
+                    await ctx.send(embed=embed)
                 else:
-                    await bot_respond(ctx.message, 'Too many arguments')
+                    await ctx.send('Too many arguments')
 
     @command(hidden=True)
     @trade_checks.trade_channel()
@@ -495,27 +495,27 @@ class Trader(Cog):
                 tf.add_community(user, ctx.message.server.id)
             offer_names = tf.find_offers(user)
             if offer_names == []:
-                await bot_respond(ctx.message, 'No offers found')
+                await ctx.send('No offers found')
             else:
                 offer_str = '\n'.join(offer_names)
                 embed = discord.Embed(colour=discord.Colour(0x186a0))
                 embed.add_field(name='Offer Names', value=offer_str, inline=False)
-                await bot_embed_respond(ctx.message, embed)
+                await ctx.send(embed=embed)
         else:
             pogo_name = username
             user = tf.find_user(pogo_name.title())
             if user is None:
-                await bot_respond(ctx.message, 'User not found')
+                await ctx.send('User not found')
                 return
             offer_names = tf.find_offers(user)
             if offer_names == []:
-                await bot_respond(ctx.message, 'No offers found')
+                await ctx.send('No offers found')
                 return
             else:
                 offer_str = '\n'.join(offer_names)
                 embed = discord.Embed(colour=discord.Colour(0x186a0))
                 embed.add_field(name='Offer Names', value=offer_str, inline=False)
-                await bot_embed_respond(ctx.message, embed)
+                await ctx.send(embed=embed)
 
     @command()
     @trade_checks.trade_channel()
