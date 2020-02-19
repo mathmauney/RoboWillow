@@ -1,11 +1,13 @@
+"""Discord Cog for administrator commands to customize the bot for each server."""
 from discord.ext.commands import Cog, command, has_permissions
 from robowillow.utils import database as db
 
 
 class Admin(Cog):
-    """General bot functions."""
+    """General bot administration functions."""
 
     def __init__(self, bot):
+        """Initialize the adminstration command."""
         self.bot = bot
         print("Admin loaded")
 
