@@ -1,3 +1,4 @@
+"""Robowillow trading operations based on pymongo database."""
 import pymongo
 from robowillow.utils import pokemap
 import urllib.parse as urlparse
@@ -10,6 +11,7 @@ offers = trade_db['offers']
 
 
 def add_user(discord_id):
+    """Add a new user to the database."""
     if not isinstance(discord_id, int):
         discord_id = int(discord_id)
     check = {"discord_id": discord_id}
@@ -27,6 +29,7 @@ def add_user(discord_id):
 
 
 def set_name(user, pogo_name=None):
+    """Set PokemonGo username."""
     if pogo_name is None:
         update_dict = {'$set': {'name': ''}}
     else:
@@ -42,6 +45,7 @@ def set_name(user, pogo_name=None):
 
 
 def add_community(user, community_id):
+    """Add a particular communtiy to a user profile for matching."""
     if community_id not in users.find_one(user)['communities']:
         update_dict = {'$addToSet': {'communities': int(community_id)}}
         users.update(user, update_dict)
@@ -50,6 +54,7 @@ def add_community(user, community_id):
 
 
 def add_friend(user1, user2):
+    """Add a friend for matching."""
     user1_dict = users.find_one(user1)
     user2_dict = users.find_one(user2)
     update_dict1 = {'$addToSet': {'friends': user2_dict['_id']}}
@@ -67,6 +72,7 @@ def add_friend(user1, user2):
 
 
 def get_user(discord_id):
+    """Return user database entry based on discord id."""
     if not isinstance(discord_id, int):
         discord_id = int(discord_id)
     find_dict = {'discord_id': discord_id}
@@ -76,6 +82,7 @@ def get_user(discord_id):
 
 
 def find_user(pogo_name):
+    """Return user database entry based on PokemonGo username."""
     find_dict = {'name': pogo_name}
     return_dict = {}
     user = users.find_one(find_dict, return_dict)
@@ -83,6 +90,7 @@ def find_user(pogo_name):
 
 
 def delete_user(discord_id):
+    """Delete a user from the database."""
     user = get_user(discord_id)
     for offer in users.find_one(user)['offers']:
         offers.delete_one({'_id': offer})
@@ -90,6 +98,7 @@ def delete_user(discord_id):
 
 
 def add_offer(user, offer_name):
+    """Add a new offer."""
     if isinstance(user, int):
         user = get_user(user)
     if ('<:') in offer_name:
@@ -113,6 +122,7 @@ def add_offer(user, offer_name):
 
 
 def find_offer(user, offer_name):
+    """Find a user's offer by name."""
     if isinstance(user, int):
         user = get_user(user)
     if ('<:') in offer_name:
@@ -125,6 +135,7 @@ def find_offer(user, offer_name):
 
 
 def find_offers(user):
+    """Find all of a user's offers."""
     if isinstance(user, int):
         user = get_user(user)
     offer_names = []
@@ -137,6 +148,7 @@ def find_offers(user):
 
 
 def add_haves(offer, pokemon):
+    """Add current have pokemon to an offer."""
     if isinstance(pokemon, str):
         update_dict = {'$addToSet': {'haves': pokemon}}
     elif isinstance(pokemon, list):
@@ -145,6 +157,7 @@ def add_haves(offer, pokemon):
 
 
 def add_wants(offer, pokemon):
+    """Add wanted pokemon to an offer."""
     if isinstance(pokemon, str):
         update_dict = {'$addToSet': {'wants': pokemon}}
     elif isinstance(pokemon, list):
@@ -153,6 +166,7 @@ def add_wants(offer, pokemon):
 
 
 def remove_haves(offer, pokemon):
+    """Remove currently have pokemon from an offer."""
     if pokemon == 'all':
         update_dict = {'$set': {'haves': []}}
     elif isinstance(pokemon, str):
@@ -163,6 +177,7 @@ def remove_haves(offer, pokemon):
 
 
 def remove_wants(offer, pokemon):
+    """Remove wanted pokemon from an offer."""
     if pokemon == 'all':
         update_dict = {'$set': {'wants': []}}
     elif isinstance(pokemon, str):
@@ -173,11 +188,13 @@ def remove_wants(offer, pokemon):
 
 
 def get_offer_contents(offer):
+    """Return the wants and haves of an offer in a tuple."""
     _offer = offers.find_one(offer)
     return (_offer['wants'], _offer['haves'])
 
 
 def find_matches(offer):
+    """Find other offers that match with an offer."""
     _offer = offers.find_one(offer)
     _wants = _offer['wants']
     _haves = _offer['haves']
@@ -193,6 +210,7 @@ def find_matches(offer):
 
 
 def parse_matches(offer):
+    """Take a set of matches and return them in an organized format."""
     matches = find_matches(offer)
     offer_dict = offers.find_one(offer)
     parsed = []
@@ -205,11 +223,13 @@ def parse_matches(offer):
 
 
 def set_notified(offer, user_id):
+    """Mark that a user has been notified of a match by PM to prevent spam."""
     update_dict = {'$addToSet': {'notified': user_id}}
     offers.update(offer, update_dict)
 
 
 def delete_offer(offer):
+    """Delete an offer."""
     offer_dict = offers.find_one(offer)
     user = offer_dict['user']
     offers.delete_one(offer)
@@ -218,6 +238,7 @@ def delete_offer(offer):
 
 
 def clean_pokemon_list(pokemon_list, all_shinies=False):
+    """Take a list of pokemon, match them to known pokemon, and format them in a uniform way."""
     if 'leekduck' in pokemon_list[0]:
         url_str = pokemon_list[0]
         cleaned_list = parse_leekduck(url_str)
@@ -309,6 +330,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
 
 
 def parse_leekduck(url_str):
+    """Parse a LeekDuck.com export url to the format the database expects."""
     parsed = urlparse.urlparse(url_str)
     query_parsed = urlparse.parse_qs(url_str)
     return_list = []
@@ -336,6 +358,7 @@ def parse_leekduck(url_str):
 
 
 def search_haves(user, pokemon):
+    """Search for public offers that have a given pokemon."""
     user_dict = users.find_one(user)
     search_dict = {'haves': pokemon,
                    '$and': [{'name': {'$ne': ''}}, {'name': {'$exists': True}}],
@@ -351,6 +374,7 @@ def search_haves(user, pokemon):
 
 
 def search_wants(user, pokemon):
+    """Search for public offers that want a given pokemon."""
     user_dict = users.find_one(user)
     search_dict = {'wants': pokemon,
                    '$and': [{'name': {'$ne': ''}}, {'name': {'$exists': True}}],

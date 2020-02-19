@@ -1,5 +1,5 @@
+"""Robowillow database operations in pymongo."""
 import pymongo
-from robowillow.utils import pokemap
 
 host = "mongodb://localhost:27017/"
 my_client = pymongo.MongoClient(host)
@@ -9,6 +9,7 @@ settings = main_db['settings']
 
 
 def add_channel(channel_id):
+    """Add default permissions for a new channel."""
     if not isinstance(channel_id, int):
         channel_id = int(channel_id)
     perm_dict = {"discord_id": channel_id,
@@ -21,6 +22,7 @@ def add_channel(channel_id):
 
 
 def set_permission(channel_id, permission, value):
+    """Set a permission for a discord channel."""
     find_dict = {'discord_id': channel_id}
     channel = permissions.find_one(find_dict)
     if channel is None:
@@ -30,6 +32,7 @@ def set_permission(channel_id, permission, value):
 
 
 def check_permission(channel_id, permission):
+    """Check a permission for a discord channel."""
     find_dict = {'discord_id': channel_id}
     channel = permissions.find_one(find_dict)
     if channel is None:
@@ -42,6 +45,7 @@ def check_permission(channel_id, permission):
 
 
 def raid_pokemon(pokemon=None):
+    """Check or set the current 5* raid boss."""
     find_dict = {'category': 'Raid Pokemon'}
     raid_settings = settings.find_one(find_dict)
     if raid_settings is None:
