@@ -751,6 +751,32 @@ async def resetstop(ctx, *args):
 
 @client.command(pass_context=True)
 @pass_errors
+async def makegym(ctx, *args):
+    """Reset the task associated with a stop."""
+    taskmap = maps[ctx.message.server.id]
+    stop_name = ' '.join(args)
+    stop_name = stop_name
+    stop = taskmap.find_stop(stop_name)
+    stop.make_gym()
+    taskmap.save()
+    await client.add_reaction(ctx.message, '👍')
+
+
+@client.command(pass_context=True)
+@pass_errors
+async def notgym(ctx, *args):
+    """Reset the task associated with a stop."""
+    taskmap = maps[ctx.message.server.id]
+    stop_name = ' '.join(args)
+    stop_name = stop_name
+    stop = taskmap.find_stop(stop_name)
+    stop.make_gym(False)
+    taskmap.save()
+    await client.add_reaction(ctx.message, '👍')
+
+
+@client.command(pass_context=True)
+@pass_errors
 async def addtask(ctx, reward, quest, shiny=False):
     """Add a task to a stop."""
     tasklist.add_task(pokemap.Task(reward, quest, shiny))
@@ -1027,6 +1053,17 @@ async def serverid(context):
     await client.say(context.message.server.id)
 
 
+@client.command(pass_context=True)
+@pass_errors
+async def iitcimport(ctx, filename=None):
+    """Force import from IITC data upload."""
+    if filename is None:
+        filename = ctx.message.attachments[0]['url']
+    taskmap = maps[ctx.message.server.id]
+    pokemap.iitcimport(taskmap, filename)
+    await client.add_reaction(ctx.message, '👍')
+
+
 @client.event
 async def on_message(message):
     """Respond to messages.
@@ -1223,7 +1260,11 @@ When you and someone else match you will be notified automatically. You can view
                 task = tasklist.find_task(task_name)
                 prev_message_stop[message.server.id].set_task(task)
                 if task_name.title() in task.rewards:
-                    prev_message_stop[message.server.id].properties['Icon'] = task_name.title()
+                    if "Alolan" in task_name.title():
+                        icon = task_name.title().split(' ')[1] + '-alola'
+                    else:
+                        icon = task_name.title()
+                    prev_message_stop[message.server.id].properties['Icon'] = icon
                 taskmap.save()
                 await client.add_reaction(prev_message[message.server.id], '👍')
                 await client.add_reaction(message, '👍')
@@ -1260,7 +1301,11 @@ When you and someone else match you will be notified automatically. You can view
                         task = tasklist.find_task(task_name)
                         stop.set_task(task)
                         if task_name.title() in task.rewards:
-                            stop.properties['Icon'] = task_name.title()
+                            if "Alolan" in task_name.title():
+                                icon = task_name.title().split(' ')[1] + '-alola'
+                            else:
+                                icon = task_name.title()
+                            stop.properties['Icon'] = icon
                     taskmap.save()
                     await client.add_reaction(message, '👍')
                 except pokemap.TaskAlreadyAssigned:
