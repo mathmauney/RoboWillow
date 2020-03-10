@@ -14,7 +14,7 @@ class Raids(Cog):
 
     @command()
     @raid_checks.raid_channel()
-    def infographic(self, ctx, pokemon=None):
+    async def infographic(self, ctx, pokemon=None):
         """Return the pokebattler infographic for a pokemon if it exists."""
         if pokemon is None:
             pokemon = db.raid_pokemon()
@@ -29,7 +29,7 @@ class Raids(Cog):
     @command()
     @has_permissions(administrator=True)
     @raid_checks.raid_channel()
-    def set_current(self, ctx, pokemon):
+    async def set_current(self, ctx, pokemon):
         """Set the default 5* boss."""
         match = pokemap.match_pokemon(pokemon)
         db.raid_pokemon(match)
