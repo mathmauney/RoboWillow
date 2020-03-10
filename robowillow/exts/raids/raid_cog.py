@@ -14,7 +14,7 @@ class Raids(Cog):
 
     @command()
     @raid_checks.raid_channel()
-    async def infographic(self, ctx, pokemon=None):
+    async def pokebattler(self, ctx, pokemon=None):
         """Return the pokebattler infographic for a pokemon if it exists."""
         if pokemon is None:
             pokemon = db.raid_pokemon()
@@ -22,7 +22,7 @@ class Raids(Cog):
         if match is None:
             await ctx.send("Pokemon not found.")
             return
-        url = "https://static.pokebattler.com/graphics/Infographics/0/" + match.upper() + "_2160.png"
+        url = "https://www.pokebattler.com/raids/defenders/" + match.upper() + "/levels/RAID_LEVEL_5/attackers/levels/35/strategies/CINEMATIC_ATTACK_WHEN_POSSIBLE/DEFENSE_RANDOM_MC?sort=ESTIMATOR&weatherCondition=NO_WEATHER&dodgeStrategy=DODGE_REACTION_TIME&aggregation=AVERAGE&randomAssistants=-1"
         await ctx.send(url)   # TODO: try to grab the imgage and put it in
         # TODO: have it fallback to the pokebattler page for the pokemon if there ins't an infographic
 
