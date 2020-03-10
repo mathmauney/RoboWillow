@@ -23,7 +23,7 @@ class Raids(Cog):
             await ctx.send("Pokemon not found.")
             return
         url = "https://static.pokebattler.com/graphics/Infographics/0/" + match.upper() + "_2160.png"
-        ctx.send(url)   # TODO: try to grab the imgage and put it in
+        await ctx.send(url)   # TODO: try to grab the imgage and put it in
         # TODO: have it fallback to the pokebattler page for the pokemon if there ins't an infographic
 
     @command()
