@@ -27,12 +27,12 @@ class Raids(Cog):
                 await ctx.send("Pokemon not found.")
                 return
             for tier in self.raids:
-                for index in self.raids[tier]['raids']:
-                    if match.upper() in self.raids[tier]['raids'][index]['pokemon']:
-                        if self.raids[tier]['raids'][index]['article'] is None:
+                for item in tier['raids']:
+                    if match.upper() in item['pokemon']:
+                        if item['article'] is None:
                             pass
                         else:
-                            url = self.raids[tier]['raids'][index]['article']['infographicShareURL']
+                            url = item['article']['infographicShareURL']
                             await ctx.send(url)
                             return
             await ctx.send("Pokemon not found in pokebattler.")
