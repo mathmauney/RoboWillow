@@ -42,4 +42,4 @@ class Raids(Cog):
                             url = item['article']['infographicShareURL']
                             await ctx.send(url)
                             return
-            await ctx.send("Pokemon not found in pokebattler.")
+            await ctx.send(f"Pokebattler infographic not found for {match}.")
