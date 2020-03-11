@@ -1,7 +1,6 @@
 """Commands for raid organization and information."""
 from discord.ext.commands import Cog, command, has_permissions
 from robowillow.utils import pokemap
-from robowillow.utils import database as db
 from . import raid_checks
 import requests
 
