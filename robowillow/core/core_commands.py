@@ -23,7 +23,7 @@ class Core(Cog):
             try:
                 ctx.bot.load_extension(extension)
             except errors.ExtensionNotFound:
-                await ctx.send("Extension not found. Currently loaded: {str(loaded)}")
+                await ctx.send(f"Extension not found. Currently loaded: {str(loaded)}")
                 return
         await ctx.message.add_reaction('👍')
 
