@@ -16,10 +16,8 @@ async def is_map_ready(ctx, _map=None):
     def check_ready(_map):
         """Check if the map has the required fields."""
         if 'bounds' in _map._data and 'loc' in _map._data and 'timezone' in _map._data:
-            print("True")
             return True
         else:
-            print("False")
             return False
 
     if db.check_permission(channel_id, 'map_ready') is False:
