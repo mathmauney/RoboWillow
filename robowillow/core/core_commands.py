@@ -1,4 +1,4 @@
-from discord.ext.commands import Cog, command
+from discord.ext.commands import Cog, command, errors
 import subprocess
 from .checks import check_is_owner
 
@@ -20,7 +20,11 @@ class Core(Cog):
         if loaded:
             ctx.bot.reload_extension(extension)
         else:
-            ctx.bot.load_extension(extension)
+            try:
+                ctx.bot.load_extension(extension)
+            except errors.ExtensionNotFound:
+                ctx.send("Extension not found. Currently loaded: {str(loaded)}")
+                return
         await ctx.message.add_reaction('👍')
 
 
