@@ -19,7 +19,15 @@ class Raids(Cog):
     async def infographic(self, ctx, pokemon=None):
         """Return the pokebattler infographic for a pokemon if it exists."""
         if pokemon is None:
-            pass
+            for tier in self.raids:
+                if tier['tier'] == "RAID_LEVEL_5":
+                    for item in tier['raids']:
+                        if item['article'] is None:
+                            pass
+                        else:
+                            url = item['article']['infographicShareURL']
+                            await ctx.send(url)
+                            return
         else:
             match = pokemap.match_pokemon(pokemon)
             if match is None:
