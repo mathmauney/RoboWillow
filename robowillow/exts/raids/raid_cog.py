@@ -19,7 +19,7 @@ class Raids(Cog):
 
     def check(self):
         """Check for new raids if it has been long enough."""
-        delta = datetime.utcnow() - self.check_time()
+        delta = datetime.utcnow() - self.check_time
         if delta > 60*self.refresh_interval:
             response = requests.get("https://fight.pokebattler.com/raids")
             self.raids = response.json()['tiers']
