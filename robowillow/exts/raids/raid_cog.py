@@ -23,8 +23,15 @@ class Raids(Cog):
         else:
             match = pokemap.match_pokemon(pokemon)
             if match is None:
-                await ctx.send("Pokemon not found.")
-                return
+                for tier in self.raids:
+                    if tier['tier'] == "RAID_LEVEL_5":
+                        for item in tier['raids']:
+                            if item['article'] is None:
+                                pass
+                            else:
+                                url = item['article']['infographicShareURL']
+                                await ctx.send(url)
+                                return
             for tier in self.raids:
                 for item in tier['raids']:
                     if match.upper() in item['pokemon']:
