@@ -363,6 +363,7 @@ class Mapper(Cog):
 
     @command()
     @map_checks.map_ready()
+    @check_is_owner()
     async def where(self, ctx, name):
         taskmap = self.maps[ctx.message.guild.id]
         try:
