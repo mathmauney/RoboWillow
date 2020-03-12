@@ -46,7 +46,7 @@ class Admin(Cog):
     @command()
     @has_permissions(administrator=True)
     async def roleshere(self, ctx, arg=True):
-        """Turn on/off the ability to use raid commands in a channel."""
+        """Turn on/off the ability to use role wanting commands in a channel."""
         if isinstance(arg, str):
             if arg.lower in ['t', 'yes', 'on', 'true']:
                 arg = True
@@ -56,5 +56,21 @@ class Admin(Cog):
             db.set_permission(ctx.channel.id, 'notifier', True)
         elif arg is False or arg == 0:
             db.set_permission(ctx.channel.id, 'notifier', False)
+        else:
+            ctx.send("Unable to understand. Use on or off as arguement for clarity.")
+
+    @command()
+    @has_permissions(administrator=True)
+    async def raidhere(self, ctx, arg=True):
+        """Turn on/off the ability to use raid commands in a channel."""
+        if isinstance(arg, str):
+            if arg.lower in ['t', 'yes', 'on', 'true']:
+                arg = True
+            elif arg.lower in ['n', 'no', 'off', 'false']:
+                arg = False
+        if arg is True or arg == 1:
+            db.set_permission(ctx.channel.id, 'raids', True)
+        elif arg is False or arg == 0:
+            db.set_permission(ctx.channel.id, 'raids', False)
         else:
             ctx.send("Unable to understand. Use on or off as arguement for clarity.")
