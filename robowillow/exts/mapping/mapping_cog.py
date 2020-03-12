@@ -368,7 +368,7 @@ class Mapper(Cog):
         try:
             stop = taskmap.find_stop(name)
             long, lat = stop['geometry']['coordinates']
-            ctx.send(f"{self.map_url}/?map={str(ctx.message.guild.id)}&long={str(long)}&lat={str(lat)}"
+            ctx.send(f"{self.map_url}/?map={str(ctx.message.guild.id)}&long={str(long)}&lat={str(lat)}")
         except pokemap.StopNotFound:
             ctx.send("Stop not found.")
 
