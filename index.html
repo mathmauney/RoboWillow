@@ -51,7 +51,7 @@
 				loc = collection.loc
 				zoom = 12
 			} else {
-				loc = [GET.long, GET.lat]
+				loc = [GET.lat, GET.long]
 				zoom = 14
 			}
 			var map = L.map('mapid').setView(loc, zoom);
