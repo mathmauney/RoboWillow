@@ -6,14 +6,15 @@ import pygeoj
 import pickle
 import pytz
 import copy
+import json
 from fuzzywuzzy import fuzz
-import os
+import requests
 
 
 class Task:
     """Research task class, specified by the display name and quest."""
 
-    def __init__(self, name, quest, shiny=False):
+    def __init__(self, name, quest, shiny):
         """Initialize the task object and parse the input name into the rewards if possible."""
         self.reward = name.title()
         self.quest = quest
@@ -38,7 +39,10 @@ class Task:
             self.rewards = ['Bulbasaur', 'Squirtle', 'Charmander']
         else:
             self.rewards = [self.reward]
-        self.icon = self.rewards[0]
+        if "Alolan" in self.rewards[0]:
+            self.icon = self.rewards[0].split(' ')[1] + '-alola'
+        else:
+            self.icon = self.rewards[0]
 
     def add_nickname(self, name):
         """Add a nickname to the task."""
@@ -49,7 +53,10 @@ class Task:
         """Choose which reward to use as the icon."""
         icon = icon.title()
         if icon in self.rewards:
-            self.icon = icon
+            if "Alolan" in icon:
+                self.icon = icon.split(' ')[1] + '-alola'
+            else:
+                self.icon = icon
 
 
 class Tasklist:
@@ -58,20 +65,10 @@ class Tasklist:
     def __init__(self):
         """Initialize the tasklist."""
         self.tasks = []
-        self.permanent_tasks = []
-        self.add_permanent_task(Task("Rare Candy", "Unknown"))
-        self.add_permanent_task(Task("Silver Pinap", "Unknown"))
-        self.add_permanent_task(Task("Stardust", "Unknown"))
-        self.add_permanent_task(Task("Fast TM", "Unknown"))
-        self.add_permanent_task(Task("Charged TM", "Unknown"))
 
     def add_task(self, task):
         """Add a task to the tasklist."""
         self.tasks.append(task)
-
-    def add_permanent_task(self, task):
-        """Add a task to the tasklist."""
-        self.permanent_tasks.append(task)
 
     def find_task(self, task_str):
         """Find a task in the list and return it."""
@@ -86,14 +83,6 @@ class Tasklist:
         while task_not_found:
             for task in self.tasks:
                 if (task_str == task.reward.title()) or (task_str == task.quest.replace('é', 'e').title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames)):
-                    out_task = task
-                    task_not_found = False
-                    if custom_quest:
-                        out_task = copy.copy(task)
-                        out_task.quest = quest_str.title()
-                    return out_task
-            for task in self.permanent_tasks:
-                if (task_str == task.reward.title()) or (task_str == task.quest.replace('é', 'e').title()) or (task_str in (reward.title() for reward in task.rewards)) or (task_str in (nickname.title() for nickname in task.nicknames) or fuzz.partial_ratio(task.reward.title(), task_str) > 80):
                     out_task = task
                     task_not_found = False
                     if custom_quest:
@@ -138,6 +127,13 @@ class Stop(pygeoj.Feature):
 
     def set_task(self, task):
         """Add a task to the stop."""
+        try:
+            if self.properties['Type'] == 'Gym':
+                raise GymTaskAssignment()
+            elif self.properties['Type'] == 'POI':
+                self.properties['Type'] = 'Stop'
+        except KeyError:
+            self.properties['Type'] = 'Stop'
         if self.properties['Task'] == '':
             self.properties['Task'] = task.quest
             self.properties['Last Edit'] = int(self._map.now().strftime("%j"))
@@ -189,6 +185,15 @@ class Stop(pygeoj.Feature):
         else:
             self.properties['Nicknames'].append(nickname.title())
 
+    def make_gym(self, is_gym=True):
+        """Make a stop into a gym."""
+        if is_gym:
+            self.properties['Type'] = 'Gym'
+            self.reset()
+        else:
+            self.properties['Type'] = 'Stop'
+            self.reset()
+
 
 class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a default one that checks for proper long/lat formating
     """Class for the research map. Hopefully this will allow for multiple servers with seperate maps to be stored easily at once."""
@@ -222,7 +227,7 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             feat = Stop(geometry=geometry, properties=properties).__geo_interface__
         self._data["features"].append(feat)
 
-    def find_stop(self, stop_name):
+    def find_stop(self, stop_name, coords=None, acc=80, force=False):
         """Find a stop within the map by its name or nickname."""
         stops_found = []
         stop_name = stop_name.replace('’', "'")
@@ -237,8 +242,11 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             best_ratio = 0
             best_stop = None
             for stop in self:
-                ratio = fuzz.partial_ratio(stop.properties['Stop Name'].title(), stop_name.title())
-                if ratio > 80 and ratio > best_ratio:
+                if force:
+                    ratio = fuzz.ratio(stop.properties['Stop Name'].title(), stop_name.title())
+                else:
+                    ratio = fuzz.partial_ratio(stop.properties['Stop Name'].title(), stop_name.title())
+                if ratio > acc and ratio > best_ratio:
                     best_ratio = ratio
                     best_stop = stop
                 elif ratio == 100:
@@ -252,12 +260,16 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             stops_found[0]._map = self
             return stops_found[0]
         else:
+            if coords is not None:
+                for stop in stops_found:
+                    if coords[0] in stop.geometry.coordinates and coords[1] in stop.geometry.coordinates:
+                        return stop
             temp_num = 1
             for stop in stops_found:
                 if not(stop.properties['Nicknames']):
                     stop.properties['Nicknames'].append('Temp' + str(temp_num))
                     temp_num += 1
-            raise MutlipleStopsFound(stops_found)
+            raise MultipleStopsFound(stops_found, stop_name)
 
     def new_stop(self, coordinates, name):   # TODO Add check for being in the map range
         """Add a new stop to the map."""
@@ -346,15 +358,6 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
             filename = self._data['path']
         super().save(filename)
 
-    def check_ready(self):
-        """Check if the map has the required fields."""
-        if 'bounds' in self._data and 'loc' in self._data and 'timezone' in self._data:
-            print("True")
-            return True
-        else:
-            print("False")
-            return False
-
 
 # Custom functions
 def load(filepath=None, data=None, **kwargs):
@@ -371,13 +374,13 @@ def match_pokemon(input_):
     """Find the closest pokemon to a string or by number."""
     if isinstance(input_, str):
         name = input_
-        with open(data_file('data/pokemon.txt')) as file:
-            if name.title == 'Bulbasaur':
+        with open('pokemon.txt') as file:
+            if name.title() == 'Bulbasaur':
                 return name.title()
             elif '\n' + name.title() + '\n' in file.read():
                 return name.title()
-        current_best = (None, 90)
-        with open(data_file('data/pokemon.txt')) as file:
+        current_best = (None, 75)
+        with open('pokemon.txt') as file:
             line = file.readline().strip('\n')
             while line:
                 ratio = fuzz.partial_ratio(name.title(), line)
@@ -391,7 +394,7 @@ def match_pokemon(input_):
         return None
     if isinstance(input_, int):
         num = input_
-        with open(data_file('data/pokemon.txt')) as file:
+        with open('pokemon.txt') as file:
             for i, line in enumerate(file):
                 if i + 1 == num:
                     return line.strip('\n')
@@ -409,7 +412,7 @@ def match_form(pokemon, descriptor=None):
         input_ = pokemon
         input_mods = []
     current_best = (None, 90)
-    with open(data_file('data/forms.txt')) as file:
+    with open('forms.txt') as file:
         line = file.readline().strip('\n')
         while line:
             ratios = [fuzz.partial_ratio(input_, line)]
@@ -423,7 +426,7 @@ def match_form(pokemon, descriptor=None):
 
 
 def fetch_tasklist():
-    """Check TheSilphRoad for tasks and build them into a task list."""
+    """Fetch tasks from TSR and parse them."""
     page = urlopen("https://thesilphroad.com/research-tasks")
     doc = html.parse(page)
     raw_tasks = [[pkmn[0].text, pkmn.cssselect('img')] for pkmn in doc.xpath("//div[@class='task unconfirmed pkmn ' or @class='task unconfirmed pkmn long']")]
@@ -436,11 +439,19 @@ def fetch_tasklist():
         if ':' in quest:
             quest = quest.split(':')[-1].strip()
         for img_elem in raw_task[1]:
-            img_name = match_pokemon(int(img_elem.attrib['src'].split('/')[-1].strip('.png')))
+            try:
+                img_name = int(img_elem.attrib['src'].split('/')[-1].strip('.png'))
+                poke_name = match_pokemon(img_name)
+            except ValueError:
+                img_name = img_elem.attrib['src'].split('/')[-1].strip('.png')
+                if "alola" in img_name:
+                    poke_name = "Alolan " + match_pokemon(img_name)
+                else:
+                    poke_name = match_pokemon(img_name)
             if name is None:
-                name = img_name
+                name = poke_name
             else:
-                name += ' or ' + img_name
+                name += ' or ' + poke_name
             if 'shiny' in img_elem.getparent().attrib['class']:
                 shiny = True
         if name == 'Bulbasaur or Charmander or Squirtle':
@@ -449,9 +460,37 @@ def fetch_tasklist():
     return tasklist
 
 
-def data_file(fname):
-    """Return the path to a data file of ours."""
-    return os.path.join(os.path.split(__file__)[0], fname)
+def iitcimport(taskmap, filename):
+    """Import an IITC file to get new potential stops and gyms."""
+    if '://' in filename:
+        file = requests.get(filename)
+        json_dict = file.json()
+    else:
+        with open(filename, 'r') as file:
+            json_dict = json.load(file)
+    for key in json_dict:
+        if 'Ignored' in key.title():
+            pass
+        else:
+            for poi in json_dict[key]:
+                name = json_dict[key][poi]['name']
+                lat = json_dict[key][poi]['lat']
+                long = json_dict[key][poi]['lng']
+                try:
+                    stop = taskmap.find_stop(name, [long, lat], acc=95, force=True)
+                except StopNotFound:
+                    taskmap.new_stop([long, lat], name)
+                    stop = taskmap.find_stop(name)
+                    if key == 'pokestops':
+                        stop.properties['Type'] = 'Stop'
+                    else:
+                        stop.properties['Type'] = 'POI'
+                except MultipleStopsFound:
+                    stop = None
+                if key == 'gyms' and stop is not None:
+                    stop.properties['Type'] = 'Gym'
+    taskmap.save()
+    print("Loaded IITC data")
 
 
 # Custom Exceptions
@@ -477,10 +516,18 @@ class TaskAlreadyAssigned(PokemapException):
         self.message = msg
 
 
-class MutlipleStopsFound(PokemapException):
+class GymTaskAssignment(PokemapException):
+    """Exception for trying to assign a new task to a gym."""
+
+    def __init___(self):
+        """Add message based on error context."""
+        self.message = "Tasks cannot be assigned to gyms."
+
+
+class MultipleStopsFound(PokemapException):
     """Exception for when multiple stops are found using the same stop search query."""
 
-    def __init__(self, stops=None):
+    def __init__(self, stops=None, search=None):
         """Add message based on context of error."""
         msg = "Multiple stops found with this name. Use stop nicknames to prevent this. Stops without nicknames have been given temporary nicknames, please add unique nicknames now."
         if not(stops is None):
