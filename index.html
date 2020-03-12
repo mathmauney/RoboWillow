@@ -54,14 +54,14 @@
 				loc = [GET.lat, GET.long]
 				zoom = 14
 			}
-			var map = L.map('mapid').setView(loc, zoom);
+			var map = L.map('mapid').setView(collection.loc, zoom);
 			bounds = map.getBounds();
 			bounds._northEast.lat = Math.max(pokemap.responseJSON.bbox[1],pokemap.responseJSON.bbox[3]) + 0.01;
 			bounds._northEast.long = Math.max(pokemap.responseJSON.bbox[0],pokemap.responseJSON.bbox[2]) + 0.01;
 			bounds._southWest.lat = Math.min(pokemap.responseJSON.bbox[1],pokemap.responseJSON.bbox[3]) - 0.01;
 			bounds._southWest.long = Math.min(pokemap.responseJSON.bbox[0],pokemap.responseJSON.bbox[2]) - 0.01;
 			map.setMaxBounds(bounds);
-			map.setView(collection.loc, 14);
+			map.setView(loc, zoom);
 			map.options.minZoom = 13;
 
 			var basic = L.tileLayer('https://maps.tilehosting.com/styles/basic/{z}/{x}/{y}.png?key=vrAh6mrsR3TrwZ6KebJF', {
