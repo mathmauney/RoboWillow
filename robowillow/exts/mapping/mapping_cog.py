@@ -363,8 +363,9 @@ class Mapper(Cog):
 
     @command()
     @map_checks.where_ready()
-    async def where(self, ctx, name):
+    async def where(self, ctx, *args):
         """Generate a map url to a certain stop."""
+        name = ' '.join(args)
         taskmap = self.maps[ctx.message.guild.id]
         try:
             stop = taskmap.find_stop(name)
