@@ -55,6 +55,8 @@
 			} else {
 				loc = [GET.lat, GET.long]
 				zoom = 16
+				console.log(loc)
+				console.log(zoom)
 			}
 			var map = L.map('mapid').setView(loc, zoom);
 			bounds = map.getBounds();
