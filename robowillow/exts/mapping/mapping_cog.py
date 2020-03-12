@@ -39,6 +39,19 @@ class Mapper(Cog):
         await ctx.send(embed=msg)
 
     @command()
+    @map_checks.map_channel()
+    async def setup(self, ctx):
+        """View instructions for getting started with research mapping."""
+        msg = discord.Embed(colour=discord.Colour(0x186a0))
+        command_name = 'Initial Setup Commands'
+        command_help = '- First setup the location of your map by using "' + self.bot.default_prefix + 'setlocation lat long", with lat and long being the latitude and longitude near the center of your map area.\n'
+        command_help += '- Then define the bounds of your map using "' + self.bot.default_prefix + 'setbounds lat1 long1 lat2 long2" where the latitudes and longitudes are from opposite corners of your map boundary (SW and NE recommended). '
+        command_help += 'The extent of your boundary should be less than one degree of latitude and longitude.\n'
+        command_help += '- Lastly set the timezone your map is in (so it resets at midnight correctly) using "' + self.bot.default_prefix + 'settimezone timezone_str" where timezone_str is from the list https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones.'
+        msg.add_field(name=command_name, value=command_help, inline=False)
+        await ctx.send_message(embed=msg)
+
+    @command()
     @map_checks.map_ready()
     async def addstop(self, ctx, *args):
         """Add a stop to the map, contains multiple ways of doing so.
@@ -331,7 +344,6 @@ class Mapper(Cog):
         taskmap.save()
         db.set_permission(ctx.channel.id, 'map_ready', True)
         await ctx.message.add_reaction('👍')
-
 
     @command()
     @map_checks.map_channel()
