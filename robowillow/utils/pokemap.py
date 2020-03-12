@@ -15,7 +15,7 @@ import os
 class Task:
     """Research task class, specified by the display name and quest."""
 
-    def __init__(self, name, quest, shiny):
+    def __init__(self, name, quest, shiny=False):
         """Initialize the task object and parse the input name into the rewards if possible."""
         self.reward = name.title()
         self.quest = quest
