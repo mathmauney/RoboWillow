@@ -78,6 +78,8 @@ class Mapper(Cog):
             await ctx.send('Not enough arguments. Please give the stop a name and the latitude and longitude. Use the "' + self.bot.default_prefix + 'help addstop" command for detailed instructions')
         try:
             taskmap.new_stop([long, lat], name)
+            stop = taskmap.find_stop(name)
+            stop.reset()
             taskmap.save()
             await ctx.send('Creating stop named: ' + name + ' at [' + str(lat) + ', ' + str(long) + '].')
         except pokemap.PokemapException as e:
