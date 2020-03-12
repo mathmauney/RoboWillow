@@ -12,7 +12,7 @@ class Admin(Cog):
         print("Admin loaded")
 
     @command()
-    @has_permissions(moderator=True)
+    @has_permissions(administrator=True)
     async def tradehere(self, ctx, arg=True):
         """Turn on/off trading commands in this channel."""
         if isinstance(arg, str):
@@ -28,7 +28,7 @@ class Admin(Cog):
             ctx.send("Unable to understand. Use on or off as arguement for clarity.")
 
     @command()
-    @has_permissions(moderator=True)
+    @has_permissions(administrator=True)
     async def researchhere(self, ctx, arg=True):
         """Turn on/off research commands and reporting in this channel."""
         if isinstance(arg, str):
@@ -44,7 +44,7 @@ class Admin(Cog):
             ctx.send("Unable to understand. Use on or off as arguement for clarity.")
 
     @command()
-    @has_permissions(moderator=True)
+    @has_permissions(administrator=True)
     async def roleshere(self, ctx, arg=True):
         """Turn on/off the ability to use raid commands in a channel."""
         if isinstance(arg, str):
