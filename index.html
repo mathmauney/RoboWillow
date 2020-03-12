@@ -37,6 +37,13 @@
 		} else {
 			map_name = GET.map
 		}
+		if (!GET.long) || (!GET.lat) {
+			loc = collection.loc
+			zoom = 12
+		} else {
+			loc = [GET.long, GET.lat]
+			zoom = 14
+		}
     var pokemap = $.ajax({
       url:"http://robowillow.ddns.net/maps/" + map_name + '.json',
       dataType: "json",
@@ -47,7 +54,7 @@
     })
 		$.when(pokemap).done(function(){
 			var collection = pokemap.responseJSON;
-			var map = L.map('mapid').setView(collection.loc, 12);
+			var map = L.map('mapid').setView(loc, zoom);
 			bounds = map.getBounds();
 			bounds._northEast.lat = Math.max(pokemap.responseJSON.bbox[1],pokemap.responseJSON.bbox[3]) + 0.01;
 			bounds._northEast.long = Math.max(pokemap.responseJSON.bbox[0],pokemap.responseJSON.bbox[2]) + 0.01;

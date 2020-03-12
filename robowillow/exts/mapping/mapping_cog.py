@@ -361,6 +361,17 @@ class Mapper(Cog):
         except ValueError:
             pass
 
+    @command()
+    @map_checks.map_ready()
+    async def where(self, ctx, name):
+        taskmap = self.maps[ctx.message.guild.id]
+        try:
+            stop = taskmap.find_stop(name)
+            long, lat = stop['geometry']['coordinates']
+            ctx.send(f"{self.map_url}/?map={str(ctx.message.guild.id)}&long={str(long)}&lat={str(lat)}"
+        except pokemap.StopNotFound:
+            ctx.send("Stop not found.")
+
     @Cog.listener()
     async def on_message(self, message):
         """Deal with tasks and stops in plaintext messages."""
