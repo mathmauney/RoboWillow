@@ -326,12 +326,10 @@ class Mapper(Cog):
         coords1 = [float(lat1), float(long1)]
         coords2 = [float(lat2), float(long2)]
         taskmap.set_bounds(coords1, coords2)
-        try:
-            taskmap.save()
-            db.set_permission(ctx.channel.id, 'map_ready', True)
-            await ctx.message.add_reaction('👍')
-        except ValueError:
-            pass
+        taskmap.save()
+        db.set_permission(ctx.channel.id, 'map_ready', True)
+        await ctx.message.add_reaction('👍')
+
 
     @command()
     @map_checks.map_channel()
