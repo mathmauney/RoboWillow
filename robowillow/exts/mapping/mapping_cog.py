@@ -49,7 +49,7 @@ class Mapper(Cog):
         command_help += 'The extent of your boundary should be less than one degree of latitude and longitude.\n'
         command_help += '- Lastly set the timezone your map is in (so it resets at midnight correctly) using "' + self.bot.default_prefix + 'settimezone timezone_str" where timezone_str is from the list https://stackoverflow.com/questions/13866926/is-there-a-list-of-pytz-timezones.'
         msg.add_field(name=command_name, value=command_help, inline=False)
-        await ctx.send_message(embed=msg)
+        await ctx.send(embed=msg)
 
     @command()
     @map_checks.map_ready()
