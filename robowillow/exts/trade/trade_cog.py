@@ -351,8 +351,8 @@ class Trader(Cog):
             user = tf.get_user(ctx.message.author.id)
             if user is None:
                 user = tf.add_user(ctx.message.author.id)
-            if ctx.message.server is not None:
-                tf.add_community(user, ctx.message.server.id)
+            if ctx.message.guild is not None:
+                tf.add_community(user, ctx.message.guild.id)
             offer = tf.find_offer(user, offer_name)
             if ('<:') in offer_name and offer is None:
                 offer_name = offer_name.split(":")[1]
@@ -491,8 +491,8 @@ class Trader(Cog):
             user = tf.get_user(ctx.message.author.id)
             if user is None:
                 user = tf.add_user(ctx.message.author.id)
-            if ctx.message.server is not None:
-                tf.add_community(user, ctx.message.server.id)
+            if ctx.message.guild is not None:
+                tf.add_community(user, ctx.message.guild.id)
             offer_names = tf.find_offers(user)
             if offer_names == []:
                 await ctx.send('No offers found')
