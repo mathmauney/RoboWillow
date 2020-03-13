@@ -40,7 +40,7 @@ class Trader(Cog):
             match_user_id = match[2]
             if match_user_id not in offer_dict['notified']:
                 notification = "Trade matched! Your %s for <@%s>'s %s" % (want_str, str(sender.id), have_str)
-                match_user = await self.bot.get_user(match_user_id)
+                match_user = self.bot.get_user(match_user_id)
                 await match_user.send_message(notification)
                 tf.set_notified(offer, match_user_id)
             other_offer = tf.offers.find_one(match[3])
