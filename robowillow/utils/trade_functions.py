@@ -203,7 +203,7 @@ def find_matches(offer):
     _communities = _offer['communities']
     search_dict = {'wants': {'$in': _haves},
                    'haves': {'$in': _wants},
-                   'user': {'$not': _offer['user']},
+                   'user': {'$ne': _offer['user']},
                    '$or': [{'friends': _user_id},
                            {'communities': {'$in': _communities}}]}
     matches = offers.find(search_dict)
@@ -263,7 +263,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
             if all_shinies is True:
                 shiny = True
             if matched_poke is None and prev_space is False:
-                with open('pokemonwithspaces.txt') as file:
+                with open(data_file('data/pokemonwithspaces.txt')) as file:
                     if poke.title() in file.read():
                         prev_space = True
                         print('Found spacey boi')
@@ -388,6 +388,7 @@ def search_wants(user, pokemon):
         matched_user = users.find_one(match['user'])
         output.append((matched_user['discord_id'], matched_user['name'], match['offer_name']))
     return output
+
 
 def data_file(fname):
     """Return the path to a data file of ours."""
