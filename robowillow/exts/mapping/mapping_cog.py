@@ -386,7 +386,7 @@ class Mapper(Cog):
             return
         message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
         message.content = message.content.replace(u"\u201D", '"')
-        if message.content.title().startswith("Where is ") and message.content.endswith("?"):
+        if message.content.title().startswith("Where Is ") and message.content.endswith("?"):
             taskmap = self.maps[message.guild.id]
             stop = taskmap.find_stop(message.content[9:-1])
             long, lat = stop.geometry.coordinates
