@@ -2,6 +2,7 @@
 import pymongo
 from robowillow.utils import pokemap
 import urllib.parse as urlparse
+import os
 
 host = "mongodb://localhost:27017/"
 my_client = pymongo.MongoClient(host)
@@ -202,7 +203,7 @@ def find_matches(offer):
     _communities = _offer['communities']
     search_dict = {'wants': {'$in': _haves},
                    'haves': {'$in': _wants},
-                   'user': {'$not': _offer['user']},
+                   'user': {'$ne': _offer['user']},
                    '$or': [{'friends': _user_id},
                            {'communities': {'$in': _communities}}]}
     matches = offers.find(search_dict)
@@ -262,7 +263,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
             if all_shinies is True:
                 shiny = True
             if matched_poke is None and prev_space is False:
-                with open('pokemonwithspaces.txt') as file:
+                with open(data_file('data/pokemonwithspaces.txt')) as file:
                     if poke.title() in file.read():
                         prev_space = True
                         print('Found spacey boi')
@@ -299,7 +300,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                     elif modifier.startswith('A'):
                         matched_poke = 'Altered Forme Giratina'
                 elif i+1 != len(pokemon_list):
-                    with open('forms.txt') as file:
+                    with open(data_file('data/forms.txt')) as file:
                         if matched_poke in file.read():
                             matched_form = pokemap.match_form(matched_poke, pokemon_list[i+1])
                             if matched_form != matched_poke and matched_form is not None:
@@ -387,6 +388,11 @@ def search_wants(user, pokemon):
         matched_user = users.find_one(match['user'])
         output.append((matched_user['discord_id'], matched_user['name'], match['offer_name']))
     return output
+
+
+def data_file(fname):
+    """Return the path to a data file of ours."""
+    return os.path.join(os.path.split(__file__)[0], fname)
 
 
 class TradeException(Exception):
