@@ -386,7 +386,7 @@ class Mapper(Cog):
             return
         message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
         message.content = message.content.replace(u"\u201D", '"')
-        if message.content.title.startswith("Where") and message.content.endswith("?"):
+        if message.content.title().startswith("Where") and message.content.endswith("?"):
             taskmap = self.maps[message.guild.id]
         for role in message.role_mentions:
             role_str = '<@&' + str(role.id) + '>'
