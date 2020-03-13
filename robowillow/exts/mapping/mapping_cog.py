@@ -398,6 +398,7 @@ class Mapper(Cog):
             msg = discord.Embed(colour=discord.Colour(0x186a0))
             msg.add_field(name='Map with this stop centered:', value=f"Click [here](http://{self.map_url}/?map={str(message.guild.id)}&long={str(long)}&lat={str(lat)})", inline=False)
             await message.channel.send(embed=msg)
+            return
         else:
             return
         if await map_checks.is_map_ready(message, taskmap) is False:
