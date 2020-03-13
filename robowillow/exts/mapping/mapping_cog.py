@@ -370,7 +370,9 @@ class Mapper(Cog):
         try:
             stop = taskmap.find_stop(name)
             long, lat = stop.geometry.coordinates
-            await ctx.send(f"{self.map_url}/?map={str(ctx.message.guild.id)}&long={str(long)}&lat={str(lat)}")
+            msg = discord.Embed(colour=discord.Colour(0x186a0))
+            msg.add_field(name='Map with this stop centered:', value=f"Click [here](http://{self.map_url}/?map={str(ctx.message.guild.id)}&long={str(long)}&lat={str(lat)})", inline=False)
+            await ctx.send(embed=msg)
         except pokemap.StopNotFound:
             await ctx.send("Stop not found.")
 
