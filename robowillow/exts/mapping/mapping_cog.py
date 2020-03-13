@@ -386,9 +386,9 @@ class Mapper(Cog):
             return
         message.content = message.content.replace(u"\u201C", '"')   # Fixes errors with iOS quotes
         message.content = message.content.replace(u"\u201D", '"')
-        if message.content.title().startswith("Where") and message.content.endswith("?"):
+        if message.content.title().startswith("Where is ") and message.content.endswith("?"):
             taskmap = self.maps[message.guild.id]
-            stop = taskmap.find_stop(message.content)
+            stop = taskmap.find_stop(message.content[9:-1])
             long, lat = stop.geometry.coordinates
             msg = discord.Embed(colour=discord.Colour(0x186a0))
             msg.add_field(name='Map with this stop centered:', value=f"Click [here](http://{self.map_url}/?map={str(message.guild.id)}&long={str(long)}&lat={str(lat)})", inline=False)
