@@ -269,8 +269,6 @@ class ResearchMap(pygeoj.GeojsonFile):  # TODO Add map boundary here and a defau
                     best_ratio = ratio
                     best_stop = stop
                 elif ratio == 100:
-                    print(best_stop)
-                    print(stop)
                     raise StopNotFound()
             if best_stop is not None:
                 best_stop._map = self
@@ -511,11 +509,12 @@ def iitcimport(taskmap, filename):
                 if key == 'gyms' and stop is not None:
                     stop.properties['Type'] = 'Gym'
     taskmap.save()
-    print("Loaded IITC data")
+
 
 def data_file(fname):
     """Return the path to a data file of ours."""
     return os.path.join(os.path.split(__file__)[0], fname)
+
 
 # Custom Exceptions
 class PokemapException(Exception):
