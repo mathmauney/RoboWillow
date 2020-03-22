@@ -185,7 +185,7 @@ class Mapper(Cog):
     async def iitcimport(self, ctx, filename=None):
         """Force import from IITC data upload."""
         if filename is None:
-            filename = ctx.message.attachments[0]['url']
+            filename = ctx.message.attachments[0].url
         taskmap = self.maps[ctx.message.guild.id]
         pokemap.iitcimport(taskmap, filename)
         await ctx.message.add_reaction('👍')
