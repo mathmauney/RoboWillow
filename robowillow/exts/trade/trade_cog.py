@@ -41,11 +41,7 @@ class Trader(Cog):
             if match_user_id not in offer_dict['notified']:
                 notification = "Trade matched! Your %s for <@%s>'s %s" % (want_str, str(sender.id), have_str)
                 match_user = self.bot.get_user(match_user_id)
-                if hasattr(match_user, 'send'):
-                    pass
-                    # await match_user.send(notification)
-                else:
-                    print(match_user_id)
+                # await match_user.send(notification)
                 tf.set_notified(offer, match_user_id)
             other_offer = tf.offers.find_one(match[3])
             tf.set_notified(other_offer, int(sender.id))
@@ -465,9 +461,11 @@ class Trader(Cog):
 
     @command()
     @trade_checks.trade_channel()
-    async def check(self, ctx, offer_name=None):
+    async def check(self, ctx, offer_name=None, user_id=None):
         """Manually check for matches for an offer."""
         user = tf.get_user(ctx.message.author.id)
+        if user_id is not None:
+            user = tf.get_user(user_id)
         if user is None:
             user = tf.add_user(ctx.message.author.id)
         if ctx.message.guild is not None:
