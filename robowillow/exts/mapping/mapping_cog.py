@@ -380,6 +380,8 @@ class Mapper(Cog):
     @Cog.listener()
     async def on_message(self, message):
         """Deal with tasks and stops in plaintext messages."""
+        if message.guild.id is None:
+            return
         if message.content.startswith(self.bot.default_prefix):
             self.prev_message_was_stop[message.guild.id] = False
             self.prev_message[message.guild.id] = None
