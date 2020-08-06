@@ -41,7 +41,7 @@ class Trader(Cog):
             if match_user_id not in offer_dict['notified']:
                 notification = "Trade matched! Your %s for <@%s>'s %s" % (want_str, str(sender.id), have_str)
                 match_user = self.bot.get_user(match_user_id)
-                if match_user is not None:
+                if hasattr(match_user, 'send'):
                     await match_user.send(notification)
                 else:
                     print(match_user_id)
