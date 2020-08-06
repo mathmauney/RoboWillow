@@ -38,14 +38,13 @@ class Trader(Cog):
                 have_str = ', '.join(match[1][:-1]) + ', or ' + match[1][-1]
             embed_components.append((want_str, have_str, match[2]))
             match_user_id = match[2]
-            if match_user_id not in offer_dict['notified']:
+            match_user = self.bot.get_user(match_user_id)
+            if match_user_id not in offer_dict['notified'] and match_user is not None:
                 notification = "Trade matched! Your %s for <@%s>'s %s" % (want_str, str(sender.id), have_str)
-                match_user = self.bot.get_user(match_user_id)
-                if match_user is not None:
-                    await match_user.send(notification)
-                else:
-                    print(match_user_id)
+                await match_user.send(notification)
                 tf.set_notified(offer, match_user_id)
+            elif match_user is None:
+                tf.delete_user(match_user_id)
             other_offer = tf.offers.find_one(match[3])
             tf.set_notified(other_offer, int(sender.id))
         if embed_components != []:
