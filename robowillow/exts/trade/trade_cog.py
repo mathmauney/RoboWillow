@@ -42,7 +42,8 @@ class Trader(Cog):
                 notification = "Trade matched! Your %s for <@%s>'s %s" % (want_str, str(sender.id), have_str)
                 match_user = self.bot.get_user(match_user_id)
                 if hasattr(match_user, 'send'):
-                    await match_user.send(notification)
+                    pass
+                    # await match_user.send(notification)
                 else:
                     print(match_user_id)
                 tf.set_notified(offer, match_user_id)
