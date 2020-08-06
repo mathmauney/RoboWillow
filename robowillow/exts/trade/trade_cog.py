@@ -43,7 +43,7 @@ class Trader(Cog):
                 match_user = self.bot.get_user(match_user_id)
                 try:
                     await match_user.send(notification)
-                except AttributeError:
+                except:
                     pass
                 tf.set_notified(offer, match_user_id)
             other_offer = tf.offers.find_one(match[3])
