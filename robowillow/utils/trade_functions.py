@@ -249,6 +249,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
     form = None
     shiny = False
     alolan = False
+    galarian = False
     prev_space = False
     for (i, poke) in enumerate(pokemon_list):
         poke = poke.strip(',')
@@ -256,6 +257,8 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
             shiny = True
         elif poke.title() == 'Alolan':
             alolan = True
+        elif poke.title() == 'Galarian':
+            galarian = True
         elif poke.title() == 'Shinies':
             all_shinies = True
         else:
@@ -311,12 +314,21 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                     shiny = False
                     alolan = False
                     form = None
+                elif shiny is True and galarian is True:
+                    cleaned_list.append('Shiny Galarian ' + matched_poke)
+                    shiny = False
+                    galarian = False
+                    form = None
                 elif shiny is True:
                     cleaned_list.append('Shiny ' + matched_poke)
                     shiny = False
                     form = None
                 elif alolan is True:
                     cleaned_list.append('Alolan ' + matched_poke)
+                    alolan = False
+                    form = None
+                elif galarian is True:
+                    cleaned_list.append('Galarian ' + matched_poke)
                     alolan = False
                     form = None
                 else:
