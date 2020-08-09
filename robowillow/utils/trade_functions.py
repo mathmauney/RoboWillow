@@ -240,6 +240,7 @@ def delete_offer(offer):
 
 def clean_pokemon_list(pokemon_list, all_shinies=False):
     """Take a list of pokemon, match them to known pokemon, and format them in a uniform way."""
+    print(pokemon_list)
     if 'leekduck' in pokemon_list[0]:
         url_str = pokemon_list[0]
         cleaned_list = parse_leekduck(url_str)
