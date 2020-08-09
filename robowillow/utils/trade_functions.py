@@ -240,7 +240,6 @@ def delete_offer(offer):
 
 def clean_pokemon_list(pokemon_list, all_shinies=False):
     """Take a list of pokemon, match them to known pokemon, and format them in a uniform way."""
-    print(pokemon_list)
     if 'leekduck' in pokemon_list[0]:
         url_str = pokemon_list[0]
         cleaned_list = parse_leekduck(url_str)
@@ -260,7 +259,6 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
             alolan = True
         elif "Galar" in poke.title():
             galarian = True
-            print("Found galarian")
         elif poke.title() == 'Shinies':
             all_shinies = True
         else:
@@ -271,13 +269,10 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                 with open(data_file('data/pokemonwithspaces.txt')) as file:
                     if poke.title() in file.read():
                         prev_space = True
-                        print('Found spacey boi')
                         new_poke = pokemon_list[i-1] + ' ' + poke
-                        print('Trying to match %s' % new_poke)
                         matched_poke = pokemap.match_pokemon(new_poke)
                         if matched_poke is None:
                             new_poke = poke + ' ' + pokemon_list[i+1]
-                            print('Trying to match %s' % new_poke)
                             matched_poke = pokemap.match_pokemon(new_poke)
             else:
                 prev_space = False
@@ -330,7 +325,6 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                     alolan = False
                     form = None
                 elif galarian is True:
-                    print("galarian is True")
                     cleaned_list.append('Galarian ' + matched_poke)
                     galarian = False
                     form = None
