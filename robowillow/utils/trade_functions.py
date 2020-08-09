@@ -259,6 +259,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
             alolan = True
         elif poke.title() == 'Galarian':
             galarian = True
+            print("galarian found")
         elif poke.title() == 'Shinies':
             all_shinies = True
         else:
@@ -329,7 +330,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                     form = None
                 elif galarian is True:
                     cleaned_list.append('Galarian ' + matched_poke)
-                    alolan = False
+                    galarian = False
                     form = None
                 else:
                     cleaned_list.append(matched_poke)
