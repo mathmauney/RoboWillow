@@ -255,11 +255,10 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
         poke = poke.strip(',')
         if poke.title() == 'Shiny':
             shiny = True
-        elif poke.title() == 'Alolan':
+        elif "Alola" in poke.title():
             alolan = True
-        elif poke.title() == 'Galarian':
+        elif "Galar" in poke.title():
             galarian = True
-            print("galarian found")
         elif poke.title() == 'Shinies':
             all_shinies = True
         else:
