@@ -5,7 +5,14 @@ Shedinja Costume Bulbasaur, Halloween Bulbasaur, 1Fall2019
 Cubone Costume Charmander, Halloween Charmander, 4Fall2019
 Yamask Costume Squirtle, Halloween Squirtle, 7Fall2019
 Mimikyu Costume Pikachu, Halloween Pikachu, 25Fall2019
-Party Hat Pikachu, 25_02_02
+Party Hat Bulbasaur 
+Party Hat Charmander
+Party Hat Squirtle
+Pikachu Visor Bulbasaur 
+Pikachu Visor Charmander
+Pikachu Visor Squirtle
+Purple Party Hat Pikachu, 25_02_02
+Red Party Hat Pikachu
 Santa Hat Pikachu, 25_01
 Ash Hat Pikachu, 25_03
 Witch Hat Pikachu, 25_04
@@ -13,7 +20,15 @@ Summer Hat Pikachu, 25_05
 Fragment Hat Pikachu, Black Hat Pikachu, 25_06
 Flower Crown Pikachu, 25_07
 Detective Hat Pikachu
+Winter Beanie Pikachu
 Straw Hat Pikachu, 25_10
+Safari Hat Pikachu
+Flower Hat Pikachu
+Charizard Hat Pikachu
+Umbreon Hat Pikachu
+Raquaza Hat Pikachu
+Lucario Hat Pikachu
+Flying Pikachu
 Party Hat Raichu, 26_02
 Santa Hat Raichu, 26_01
 Ash Hat Raichu, 26_03
@@ -22,11 +37,13 @@ Summer Hat Raichu, 26_05
 Fragment Hat Raichu, Black Hat Raichu, 26_06
 Flower Crown Raichu, 26_07
 Detective Hat Raichu
+Winter Beanie Raichu
 Party Hat Pichu, 172_02
 Santa Hat Pichu, 172_01
 Ash Hat Pichu, 172_03
 Witch Hat Pichu, 172_04
 Summer Hat Pichu, 172_05
+Winter Beanie Pichu
 Flower Crown Eevee, 133_07
 Flower Crown Vaporeon, 134_07
 Flower Crown Jolteon, 135_07
@@ -35,6 +52,13 @@ Flower Crown Espeon, 196_07
 Flower Crown Umbreon, 197_07
 Flower Crown Leafeon, 470_07
 Flower Crown Glaceon, 471_07
+Party Hat Eevee
+Party Hat Raticate
+Party Hat Nidorino
+Party Hat Gengar
+Party Hat Wobbuffet
+Party Hat Wurmple
+Bell Stantler
 Armored Mewtwo
 Normal Castform
 Sunny Castform
@@ -50,11 +74,21 @@ Trash Cloak Burmy
 Plant Cloak Wormadam
 Sandy Cloak Wormadam
 Trash Cloak Wormadam
-Overcast Cherrim
-Sunshine Cherrim
+Overcast Cherrim, Cloudy Cherrim
+Sunshine Cherrim, Sunny Cherrim
 Altered Forme Giratina
 Origin Forme Giratina
 West Sea Shellos, Pink Shellos
 East Sea Shellos, Blue Shellos
 West Sea Gastrodon, Pink Gastrodon
 East Sea Gastrodon, Blue Gastrodon
+Red Striped Basculin
+Blue Striped Basculin
+Incarnate Forme Tornadus
+Therian Forme Tornadus
+Incarnate Forme Thundurus
+Therian Forme Thundurus
+Incarnate Forme Landorus
+Therian Forme Landorus
+White Kyurem
+Black Kyurem
