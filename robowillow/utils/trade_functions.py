@@ -246,6 +246,8 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
         return cleaned_list
     cleaned_list = []
     numbered_pokemon = ['Unown', 'Spinda']
+    quotes = ["'", '"']
+    ignore_until = -1
     form = None
     shiny = False
     alolan = False
@@ -253,7 +255,24 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
     prev_space = False
     for (i, poke) in enumerate(pokemon_list):
         poke = poke.strip(',')
-        if poke.title() == 'Shiny':
+        if i < ignore_until:
+            pass
+        elif poke[0] in quotes:
+            in_quotes = True
+            j = i+1
+            while in_quotes:
+                if pokemon_list[j][-1] in quotes:
+                    in_quotes = False
+                    ignore_until = j+1
+                    poke = ' '.join(pokemon_list[i, j+1])
+                    matched_form = pokemap.match_form(poke)
+                    if shiny is True:
+                        cleaned_list.append('Shiny' + matched_form)
+                    else:
+                        cleaned_list.append(matched_form)
+                else:
+                    j += 1
+        elif poke.title() == 'Shiny':
             shiny = True
         elif "Alola" in poke.title():
             alolan = True
