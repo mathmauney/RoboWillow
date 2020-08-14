@@ -450,7 +450,6 @@ def all_forms(pokemon):
     with open(data_file('data/forms.txt')) as file:
         line = file.readline().strip('\n').title()
         while line:
-            print(line)
             if pokemon in line:
                 output.append(line.split(',')[0])
             line = file.readline().strip('\n')
