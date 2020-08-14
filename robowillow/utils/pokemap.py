@@ -444,6 +444,17 @@ def match_form(pokemon, descriptor=None):
     return current_best[0]
 
 
+def all_forms(pokemon):
+    """Return a list of all the known forms of a pokemon."""
+    output = []
+    with open(data_file('data/forms.txt')) as file:
+        line = file.readline().strip('\n').title()
+        while line:
+            if pokemon in line:
+                output.append(line.split(',')[0])
+    return output
+
+
 def fetch_tasklist():
     """Fetch tasks from TSR and parse them."""
     page = urlopen("https://thesilphroad.com/research-tasks")
