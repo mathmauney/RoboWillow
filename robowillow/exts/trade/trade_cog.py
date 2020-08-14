@@ -345,7 +345,7 @@ class Trader(Cog):
         """Search for matching forms."""
         form_list = tf.all_forms(pokemon)
         if form_list != []:
-            form_str = ['']
+            form_str = ''
             for form in form_list:
                 form_str += form + '\n'
             print(form_str)
