@@ -265,6 +265,7 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                     in_quotes = False
                     ignore_until = j+1
                     poke = ' '.join(pokemon_list[i:j+1])
+                    print(poke)
                     matched_form = pokemap.match_form(poke)
                     if shiny is True:
                         cleaned_list.append('Shiny' + matched_form)
