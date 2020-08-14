@@ -264,6 +264,9 @@ def clean_pokemon_list(pokemon_list, all_shinies=False):
                 if pokemon_list[j][-1] in quotes:
                     in_quotes = False
                     ignore_until = j+1
+                    print(i)
+                    print(j)
+                    return
                     poke = ' '.join(pokemon_list[i, j+1])
                     matched_form = pokemap.match_form(poke)
                     if shiny is True:
