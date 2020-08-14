@@ -663,3 +663,4 @@ When you and someone else match you will be notified automatically. You can view
         message.content = message.content.replace(u"\u201D", '"')
         message.content = message.content.replace(u"\u2018", "'")   # Replace iOS single quote with ascii
         message.content = message.content.replace(u"\u2019", "'")
+        await self.process_commands()
