@@ -406,8 +406,10 @@ def all_forms(pokemon):
         line = file.readline().strip('\n').title()
         while line:
             if pokemon in line:
-                if pokemon in line.split(',')[0].split(' ')[-1]:
-                    output.append(line.split(',')[0])
+                full_form = line.split(',')[0]
+                if pokemon in full_form.split(' ')[-1]:
+                    form = full_form.replace(' ' + pokemon, '')
+                    output.append(form)
             line = file.readline().strip('\n')
     return output
 
