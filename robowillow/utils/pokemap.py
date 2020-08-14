@@ -402,7 +402,7 @@ def match_pokemon(input_):
         with open(data_file('data/pokemon.txt')) as file:
             line = file.readline().strip('\n')
             while line:
-                ratio = fuzz.partial_ratio(name.title(), line)
+                ratio = fuzz.ratio(name.title(), line)
                 if ratio > current_best[1]:
                     current_best = (line, ratio)
                 elif ratio == current_best[1]:
