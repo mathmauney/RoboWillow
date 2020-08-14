@@ -453,6 +453,7 @@ def all_forms(pokemon):
             print(line)
             if pokemon in line:
                 output.append(line.split(',')[0])
+            line = file.readline().strip('\n')
     return output
 
 
