@@ -655,3 +655,11 @@ When you and someone else match you will be notified automatically. You can view
         msg.add_field(name='Tutorial', value=instruction_text, inline=False)
         msg.add_field(name='Tutorial cont.', value=instruction_text2, inline=False)
         await ctx.send(embed=msg)
+
+    @Cog.listener()
+    async def on_message(self, message):
+        """Deals with preprocessing for trade messages."""
+        message.content = message.content.replace(u"\u201C", '"')   # Replace iOS double quotes with ascii
+        message.content = message.content.replace(u"\u201D", '"')
+        message.content = message.content.replace(u"\u2018", "'")   # Replace iOS single quote with ascii
+        message.content = message.content.replace(u"\u2019", "'")
