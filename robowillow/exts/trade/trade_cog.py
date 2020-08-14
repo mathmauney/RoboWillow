@@ -672,9 +672,22 @@ When you and someone else match you will be notified automatically. You can view
     @command()
     @trade_checks.trade_channel()
     async def test(self, ctx, *pokemon):
+        """Echo inputs for debugging."""
+        quotes = ["'", '"']
         poke_str = ''
+        in_quotes = False
         for poke in pokemon:
-            poke_str += poke + '\n'
+            if in_quotes:
+                if poke[-1] in quotes:
+                    poke_str += poke[:-1] + '\n'
+                    in_quotes = False
+                else:
+                    poke_str += poke + ' '
+            elif poke[0] in quotes:
+                in_quotes = True
+                poke_str += poke[1:] + ' '
+            else:
+                poke_str += poke + '\n'
         embed = discord.Embed(colour=discord.Colour(0x186a0))
         embed.add_field(name='Found:', value=poke_str, inline=False)
         await ctx.send(embed=embed)
