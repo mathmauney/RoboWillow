@@ -339,6 +339,19 @@ class Trader(Cog):
             await ctx.send('Added: ' + ', '.join(cleaned_list))
             await self.process_matches(ctx, ctx.message, offer)
 
+    @command()
+    @trade_checks.trade_channel()
+    async def forms(self, ctx, pokemon):
+        """Search for matching forms."""
+        form_list = tf.all_forms(pokemon)
+        if form_list != []:
+            form_str = ['']
+            for form in form_list:
+                form_str += form + '\n'
+            embed = discord.Embed(colour=discord.Colour(0x186a0))
+            embed.add_field(name='Found:', value=form_str, inline=False)
+            await ctx.send(embed=embed)
+
     @command(aliases=['viewoffer'])
     @trade_checks.trade_channel()
     async def view(self, ctx, *args):

@@ -399,6 +399,18 @@ def search_wants(user, pokemon):
     return output
 
 
+def all_forms(pokemon):
+    """Return a list of all the known forms of a pokemon."""
+    output = []
+    with open(data_file('data/forms.txt')) as file:
+        line = file.readline().strip('\n').title()
+        while line:
+            if pokemon in line:
+                output.append(line.split(',')[0])
+            line = file.readline().strip('\n')
+    return output
+
+
 def data_file(fname):
     """Return the path to a data file of ours."""
     return os.path.join(os.path.split(__file__)[0], fname)
