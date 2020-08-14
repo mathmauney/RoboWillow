@@ -669,3 +669,14 @@ When you and someone else match you will be notified automatically. You can view
         msg.add_field(name='Tutorial', value=instruction_text, inline=False)
         msg.add_field(name='Tutorial cont.', value=instruction_text2, inline=False)
         await ctx.send(embed=msg)
+
+    @command()
+    @trade_checks.trade_channel()
+    async def test(self, ctx, *pokemon):
+        poke_str = ''
+        for poke in pokemon:
+            poke_str += poke + '\n'
+        print(poke_str)
+        embed = discord.Embed(colour=discord.Colour(0x186a0))
+        embed.add_field(name='Found:', value=poke_str, inline=False)
+        await ctx.send(embed=embed)
