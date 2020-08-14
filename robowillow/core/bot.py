@@ -91,6 +91,11 @@ class Bot(commands.Bot):
         self.maps[guild.id] = taskmap
 
     async def on_message(self, message):
+        """Deals with preprocessing for trade messages."""
+        message.content = message.content.replace(u"\u201C", '"')   # Replace iOS double quotes with ascii
+        message.content = message.content.replace(u"\u201D", '"')
+        message.content = message.content.replace(u"\u2018", "'")   # Replace iOS single quote with ascii
+        message.content = message.content.replace(u"\u2019", "'")
         await self.process_commands(message)
 
     async def on_connect(self):
