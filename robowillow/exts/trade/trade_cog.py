@@ -348,6 +348,7 @@ class Trader(Cog):
             form_str = ['']
             for form in form_list:
                 form_str += form + '\n'
+            print(form_str)
             embed = discord.Embed(colour=discord.Colour(0x186a0))
             embed.add_field(name='Found:', value=form_str, inline=False)
             await ctx.send(embed=embed)

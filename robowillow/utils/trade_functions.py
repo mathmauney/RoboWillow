@@ -402,6 +402,7 @@ def search_wants(user, pokemon):
 def all_forms(pokemon):
     """Return a list of all the known forms of a pokemon."""
     output = []
+    pokemon = pokemap.match_pokemon(pokemon)
     with open(data_file('data/forms.txt')) as file:
         line = file.readline().strip('\n').title()
         while line:
