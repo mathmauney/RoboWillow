@@ -434,9 +434,9 @@ def match_form(pokemon, descriptor=None):
     with open(data_file('data/forms.txt')) as file:
         line = file.readline().strip('\n')
         while line:
-            ratios = [fuzz.ratio(input_, line)]
+            ratios = [fuzz.partial_ratio(input_, line)]
             for input_mod in input_mods:
-                ratios.append(fuzz.ratio(input_mod, line))
+                ratios.append(fuzz.partial_ratio(input_mod, line))
             if max(ratios) > current_best[1]:
                 line = line.split(',')[0]
                 current_best = (line, max(ratios))
