@@ -3,6 +3,7 @@ from discord.ext.commands import Cog, command
 from robowillow.utils import pokemap
 from . import notification_checks
 import discord
+from robowillow.utils.trade_functions import data_file
 
 
 class Notifier(Cog):
@@ -75,7 +76,7 @@ class Notifier(Cog):
         str_num = 0
         embed_str.append('')
 
-        with open('pokemon.txt') as file:
+        with open(data_file('data/forms.txt'))  as file:
             line = file.readline()
             while line:
                 for role in roles:
