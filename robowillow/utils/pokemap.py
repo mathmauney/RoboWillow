@@ -448,7 +448,7 @@ def fetch_tasklist():
     """Fetch tasks from TSR and parse them."""
     page = urlopen("https://thesilphroad.com/research-tasks")
     doc = html.parse(page)
-    raw_tasks = [[pkmn[0].text, pkmn.cssselect('img')] for pkmn in doc.xpath("//div[@class='task unconfirmed pkmn ' or @class='task unconfirmed pkmn long']")]
+    raw_tasks = [[pkmn[0].text, pkmn.cssselect('img')[0]] for pkmn in doc.xpath("//div[@class='task unconfirmed pkmn ' or @class='task unconfirmed pkmn long']")]
     tasklist = Tasklist()
 
     for raw_task in raw_tasks:
@@ -457,7 +457,7 @@ def fetch_tasklist():
         quest = raw_task[0].strip('.')
         if ':' in quest:
             quest = quest.split(':')[-1].strip()
-        for img_elem in raw_task[1][0]:
+        for img_elem in raw_task[1]:
             try:
                 img_name = int(img_elem.attrib['src'].split('/')[-1].strip('.png'))
                 poke_name = match_pokemon(img_name)
