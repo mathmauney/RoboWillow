@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """This module implements the functions and classes for making maps of research tasks in pokemon go."""
 from lxml import html
 from urllib.request import urlopen
