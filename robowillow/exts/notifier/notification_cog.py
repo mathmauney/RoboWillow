@@ -64,3 +64,34 @@ class Notifier(Cog):
             await ctx.message.add_reaction('👍')
         else:
             await ctx.send('Not all requests matched known pokemon. Unable to match:' + bad)
+
+    @command()
+    @notification_checks.notification_channel()
+    async def listwants(self, ctx):
+        """List all pokemon sighting roles a user has."""
+        roles = ctx.message.author.roles
+        pokemon = []
+        embed_str = []
+        str_num = 0
+        embed_str.append('')
+
+        with open('pokemon.txt') as file:
+            line = file.readline()
+            while line:
+                for role in roles:
+                    if role.name.title() in line:
+                        pokemon.append(role.name.title())
+                line = file.readline()
+        if pokemon == []:
+            await ctx.send('No want roles found.')
+        else:
+            for mon in pokemon:
+                to_add = mon + '\n'
+                if (len(embed_str[str_num]) + len(to_add) > 1000):
+                    str_num += 1
+                    embed_str.append('')
+                embed_str[str_num] += to_add
+            for i in range(len(embed_str)):
+                msg = discord.Embed(colour=discord.Colour(0x186a0))
+                msg.add_field(name='You are looking for:', value=embed_str[i], inline=False)
+                await ctx.send(embed=msg)
