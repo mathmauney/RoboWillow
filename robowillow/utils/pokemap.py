@@ -457,7 +457,7 @@ def fetch_tasklist():
         quest = raw_task[0].strip('.')
         if ':' in quest:
             quest = quest.split(':')[-1].strip()
-        for img_elem in raw_task[1]:
+        for img_elem in raw_task[1][0]:
             try:
                 img_name = int(img_elem.attrib['src'].split('/')[-1].strip('.png'))
                 poke_name = match_pokemon(img_name)
