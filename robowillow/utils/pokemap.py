@@ -467,15 +467,17 @@ def fetch_tasklist():
                     poke_name = "Alolan " + match_pokemon(img_name)
                 else:
                     poke_name = match_pokemon(img_name)
-            if name is None:
-                name = poke_name
-            else:
-                name += ' or ' + poke_name
-            if 'shiny' in img_elem.getparent().attrib['class']:
-                shiny = True
+            if poke_name is not None:
+                if name is None:
+                    name = poke_name
+                else:
+                    name += ' or ' + poke_name
+                if 'shiny' in img_elem.getparent().attrib['class']:
+                    shiny = True
         if name == 'Bulbasaur or Charmander or Squirtle':
             name = 'Gen 1 Starter'
-        tasklist.add_task(Task(name, quest, shiny))
+        if name is not None:
+            tasklist.add_task(Task(name, quest, shiny))
     return tasklist
 
 
