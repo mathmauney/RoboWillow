@@ -11,6 +11,9 @@ Party Hat Squirtle
 Pikachu Visor Bulbasaur 
 Pikachu Visor Charmander
 Pikachu Visor Squirtle
+Clone Venusaur
+Clone Charizard
+Clone Bastoise
 Purple Party Hat Pikachu, 25_02_02
 Red Party Hat Pikachu
 Santa Hat Pikachu, 25_01
@@ -29,6 +32,9 @@ Umbreon Hat Pikachu
 Raquaza Hat Pikachu
 Lucario Hat Pikachu
 Flying Pikachu
+Clone Pikachu
+Libre Pikachu
+World Cap Pikachu 
 Party Hat Raichu, 26_02
 Santa Hat Raichu, 26_01
 Ash Hat Raichu, 26_03
@@ -59,6 +65,14 @@ Party Hat Gengar
 Party Hat Wobbuffet
 Party Hat Wurmple
 Bell Stantler
+Litwick Hat Sableye
+Mega Banette Costume Gengar
+Flower Crown Buneary
+Flower Crown Togepi
+Bow Smoochum
+Top Hat Kirlia
+Top Hat Shinx
+Baseball Cap Croagunk
 Armored Mewtwo
 Normal Castform
 Sunny Castform
